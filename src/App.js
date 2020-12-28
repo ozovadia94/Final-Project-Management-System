@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import firebase from './Firebase/Firebase';
+import Add_User from './User/Add_User'
+import Login from './Login/login'
+import './App.css';
 
 /*
 
@@ -9,9 +12,9 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 */
 
 
-import Login from './Login/login'
 
-import './App.css';
+
+
 
 document.onreadystatechange = function () {
   if (document.readyState !== "complete") {
@@ -63,9 +66,12 @@ class App extends Component {
 
         <div class="after_loading">
           {this.state.login ? (
-            <div>YouLoggedin
+            <div>
               <button id="but_login" type="submit" class="btn btn-black" onClick={this.logout}>Disconnect</button>
+              <Add_User/>
             </div>
+            
+            
 
           ) : (<div> <Login /> </div>)}
         </div>
