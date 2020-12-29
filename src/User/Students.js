@@ -3,6 +3,7 @@ import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import Users from './Users'
+import axios from 'axios';
 
 import './Add_User.css' /* CSS */
 
@@ -16,11 +17,14 @@ class Add_User extends Component {
         users: [],
         loading: true,
         selectedUserId: null,
+        gitdiv: [],
     }
 
 
     componentDidMount() {
-        axiosFirebase.get('/users.json')
+        axios.get('https://api.github.com/repos/roipinto/YeshTikva/commits', {
+            ref: 'ref'
+          })
             .then(res => {
                 const fetchedUsers = [];
                 for (let key in res.data) {
@@ -31,9 +35,11 @@ class Add_User extends Component {
                 }
                 this.setState({ loading: false, users: fetchedUsers });
             })
+
             .catch(err => {
                 this.setState({ loading: false });
             })
+
     }
 
 
@@ -75,43 +81,28 @@ class Add_User extends Component {
         return (
             <div>
 
-                <MyTitle title="הוסף סטודנט חדש" />
+                <MyTitle title="לוח התקדמות" />
 
-                <div id="show" class="rtt11"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
+                <div>
+                    <table>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Changes</th>
+                        </tr>
 
+                    {this.state.users.map(com => (
+                        <tr>
+                            <td>{com.commit.committer.date}</td>
+                            <td>{com.commit.message}</td>
+                            <td>{}</td>
+                        </tr>
 
+                        ))}
+                    </table>
 
-                <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
+                </div>
 
-                    <div class="col-lg-4">
-                        <div class="Card bg-white text-center card-form">
-                            <div class="card-body">
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" required placeholder="שם מלא" ref={(input) => this.input = input}></input>
-                                </div>
-                                <div class="form-group">
-                                    <input type="number" class="form-control form-control-lg text-right" required placeholder="תעודת זהות" ref={(input2) => this.input2 = input2}></input>
-                                </div>
-                                <div class="form-group">
-                                    <input type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת גיט" ref={(input4) => this.input4 = input4}></input>
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת ג'ירה" ref={(input5) => this.input5 = input5}></input>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <input type="submit" value="הגש בקשה" className="btn btn btn-info btn-sm center-block agreeBut"></input>
-                    </div>
-
-
-                </form>
                 {this.state.users.map(user => (
                     <Users
                         name={user.name}
@@ -121,8 +112,8 @@ class Add_User extends Component {
                         jira={user.jira}
                         clicked={() => this.deleteUserId(user.id)}
                     />
-                ))}
 
+                ))}
 
 
             </div>
