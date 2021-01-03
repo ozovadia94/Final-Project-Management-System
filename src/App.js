@@ -34,6 +34,7 @@ class App extends Component {
     }
     this.logout = this.logout.bind(this);
     this.checkRole = this.checkAuth.bind(this);
+    this.ozclick = this.ozclick.bind(this);
   }
 
   componentDidMount() {
@@ -44,10 +45,8 @@ class App extends Component {
     firebase.auth().onAuthStateChanged((user) => {
       console.log(user);
       if (user) {
-        this.setState(state => {
-          this.state.login = 'yes'
-          return state;
-        });
+
+        this.setState({ login: 'yes' });
       }
     })
   }
@@ -56,6 +55,10 @@ class App extends Component {
     firebase.auth().signOut();
     alert("התנתקת!")
     window.location.reload();
+  }
+
+  ozclick() {
+    
   }
 
   render() {
@@ -68,7 +71,9 @@ class App extends Component {
           {this.state.login ? (
             <div>
               <button id="but_login" type="submit" class="btn btn-black" onClick={this.logout}>Disconnect</button>
+              <button id="but_login" type="submit" class="btn btn-black" onClick={this.ozclick}>עמוד</button>
               <Add_User/>
+      
             </div>
             
             
