@@ -3,6 +3,7 @@ import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import Users from './Users'
+import Student from './‏‏Students'
 
 import './Add_User.css' /* CSS */
 
@@ -30,6 +31,7 @@ class Add_User extends Component {
                     });
                 }
                 this.setState({ loading: false, users: fetchedUsers });
+                console.log(fetchedUsers)
             })
             .catch(err => {
                 this.setState({ loading: false });
@@ -55,13 +57,24 @@ class Add_User extends Component {
         }
     }
 
+    progress_in_Git = (gituser,gitproject) => {
+        alert('XXX')
+        window.open('','MyWindow','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=600,height=300')
+
+        {<Student
+              gituser={gituser}
+              gitproject={gitproject}
+        />}
+    }
+
 
     handleSubmit(e) {
         const user = {
             name: this.input.value,
-            id: this.input2.value,
+            idd: this.input2.value,
             email: this.input3.value,
-            git: this.input4.value,
+            gituser: this.input4.value,
+            gitproject: this.input6.value,
             jira: this.input5.value
         }
         axiosFirebase.post('/users.json', user).then(function (response) {
@@ -97,7 +110,10 @@ class Add_User extends Component {
                                     <input type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת גיט" ref={(input4) => this.input4 = input4}></input>
+                                    <input type="text" class="form-control form-control-lg text-right" placeholder="משתמש גיט" ref={(input4) => this.input4 = input4}></input>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control form-control-lg text-right" placeholder="פרוייקט בגיט" ref={(input6) => this.input6 = input6}></input>
                                 </div>
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת ג'ירה" ref={(input5) => this.input5 = input5}></input>
@@ -110,19 +126,40 @@ class Add_User extends Component {
                         <input type="submit" value="הגש בקשה" className="btn btn btn-info btn-sm center-block agreeBut"></input>
                     </div>
 
-
                 </form>
-                {this.state.users.map(user => (
-                    <Users
-                        name={user.name}
-                        id={user.id}
-                        email={user.email}
-                        git={user.git}
-                        jira={user.jira}
-                        clicked={() => this.deleteUserId(user.id)}
-                    />
-                ))}
 
+
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Git User</th>
+                            <th scope="col">Git Project</th>
+                            <th scope="col">Jira</th>
+                            <th scope="col">Git Going</th>
+                            <th scope="col">delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.users.map(user => (
+                                <Users
+                                    name={user.name}
+                                    id={user.idd}
+                                    email={user.email}
+                                    gituser={user.gituser}
+                                    gitproject={user.gitproject}
+                                    jira={user.jira}
+                                    clicked={() => this.deleteUserId(user.id)}
+                                    clicked2={() => this.progress_in_Git(user.gituser,user.gitproject)}
+
+
+                                />
+                        ))}
+
+                    </tbody>
+                </table>
 
 
             </div>
