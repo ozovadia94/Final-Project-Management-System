@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
-import Users from './Users'
-import Student from './‏‏Students'
 
 import './Add_User.css' /* CSS */
 
@@ -18,55 +16,6 @@ class Add_User extends Component {
         loading: true,
         selectedUserId: null,
     }
-
-
-    componentDidMount() {
-        axiosFirebase.get('/users.json')
-            .then(res => {
-                const fetchedUsers = [];
-                for (let key in res.data) {
-                    fetchedUsers.push({
-                        ...res.data[key],
-                        id: key
-                    });
-                }
-                this.setState({ loading: false, users: fetchedUsers });
-                console.log(fetchedUsers)
-            })
-            .catch(err => {
-                this.setState({ loading: false });
-            })
-    }
-
-
-    selectedUserId = (id) => {
-        this.setState({ selectedUserId: id });
-        alert(id);
-    }
-
-    deleteUserId = (id) => {
-        const r = window.confirm("האם אתה בטוח?");
-        if (r === true) {
-            axiosFirebase.delete('/users/' + id + '.json').catch(error => console.log(error)).then(function (response) {
-                alert('אירוע נמחק');
-
-            }).then(function (response) {
-                window.location.reload();
-            });
-
-        }
-    }
-
-    progress_in_Git = (gituser,gitproject) => {
-        alert('XXX')
-        window.open('','MyWindow','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=600,height=300')
-
-        {<Student
-              gituser={gituser}
-              gitproject={gitproject}
-        />}
-    }
-
 
     handleSubmit(e) {
         const user = {
@@ -127,41 +76,6 @@ class Add_User extends Component {
                     </div>
 
                 </form>
-
-
-                <table class="table table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Git User</th>
-                            <th scope="col">Git Project</th>
-                            <th scope="col">Jira</th>
-                            <th scope="col">Git Going</th>
-                            <th scope="col">delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.users.map(user => (
-                                <Users
-                                    name={user.name}
-                                    id={user.idd}
-                                    email={user.email}
-                                    gituser={user.gituser}
-                                    gitproject={user.gitproject}
-                                    jira={user.jira}
-                                    clicked={() => this.deleteUserId(user.id)}
-                                    clicked2={() => this.progress_in_Git(user.gituser,user.gitproject)}
-
-
-                                />
-                        ))}
-
-                    </tbody>
-                </table>
-
-
             </div>
         );
     }
