@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
+import MaterialTable from 'material-table'
 import Student from './‏‏Students'
 
-import './Add_User.css' /* CSS */
+import '../CSS/Add_User.css' /* CSS */
 
 class Add_User extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ class Add_User extends Component {
         users: [],
         loading: true,
         selectedUserId: null,
+        show: false,
     }
 
 
@@ -44,28 +46,21 @@ class Add_User extends Component {
     deleteUserId = (id) => {
         const r = window.confirm("האם אתה בטוח?");
         if (r === true) {
+
             axiosFirebase.delete('/users/' + id + '.json').catch(error => console.log(error)).then(function (response) {
-                alert('אירוע נמחק');
 
             }).then(function (response) {
+                alert('סטודנט נמחק');
                 window.location.reload();
             });
 
         }
     }
 
-
     studentclick = (user) => {
-        <div>
-        <Student
-            gituser={user.gituser}
-            gitproject={user.gitproject}
-        />
+        window.open('/Students?gituser=' + user.gituser + '&gitproject=' + user.gitproject, 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
 
-        </div>
-        alert(user.gituser + ' ~ ' + user.gitproject);
     }
-
 
 
     render() {
@@ -88,7 +83,7 @@ class Add_User extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.users.map(user => (
+                        {this.state.users.map((user,index) => (
 
 
                             <tr>
@@ -98,21 +93,21 @@ class Add_User extends Component {
                                 <td>{user.gituser}</td>
                                 <td>{user.gitproject}</td>
                                 <td>{user.jira}</td>
-                                <td><a href="#home" onClick={() => this.studentclick(user)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#modalLRForm">חלון התקדמות בגיט</a>
-                                <Student
-            gituser={user.gituser}
-            gitproject={user.gitproject}
-        />
+                                <td><a href="" onClick={() => this.studentclick(user)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#modalLRForm">חלון התקדמות בגיט</a>
+
 
                                 </td>
 
-                                <td><button onClick={(user) => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button> </td>
+                                <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button> </td>
                             </tr>
+
+
                         ))}
+
 
                     </tbody>
                 </table>
-
+                
 
             </div>
         );

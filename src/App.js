@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Redirect } from 'react-router-dom'
 import firebase from './Firebase/Firebase';
-import Add_User from './User/Add_User'
-import Login from './Login/login'
+import Add_User from './JS/Add_User'
+import Student_Dashboard from './JS/Student_Dashboard'
+import Login from './JS/Login'
+import MenuPage from './JS/MenuPage'
+
+import Students from './JS/‏‏Students'
 import './App.css';
 
 /*
@@ -34,7 +40,6 @@ class App extends Component {
     }
     this.logout = this.logout.bind(this);
     this.checkRole = this.checkAuth.bind(this);
-    this.ozclick = this.ozclick.bind(this);
   }
 
   componentDidMount() {
@@ -57,33 +62,59 @@ class App extends Component {
     window.location.reload();
   }
 
-  ozclick() {
-    
-  }
 
   render() {
     return (
-      <div className="App">
+      <BrowserRouter>
+        <div className="App">
 
-        <div class="loader"></div>
 
-        <div class="after_loading">
-          {this.state.login ? (
-            <div>
-              <button id="but_login" type="submit" class="btn btn-black" onClick={this.logout}>Disconnect</button>
-              <button id="but_login" type="submit" class="btn btn-black" onClick={this.ozclick}>עמוד</button>
-              <Add_User/>
-      
-            </div>
-            
-            
 
-          ) : (<div> <Login /> </div>)}
+          <div class="after_loading">
+            {this.state.login ? (
+              <div>
+
+                <nav class="navbar navbar-dark bg-dark" dir="rtl">
+                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >                      
+                      <a href="/MenuPage" type="submit" class="btn btn-dark">תפריט</a>
+                      <a href="/Student_Dashboard" type="submit" class="btn btn-dark">לוח סטודנטים</a>
+                      <a href="/Add_User" type="submit" class="btn btn-dark">הוספת סטודנט</a>
+                      <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                  </div>
+
+
+
+
+
+                </nav>
+
+                  <Switch>
+                    <Route path="/MenuPage" component={MenuPage} />
+                    <Route path="/Add_User" component={Add_User} />
+                    <Route path="/Student_Dashboard" component={Student_Dashboard} />
+                    <Route path="/Students" component={Students} />
+                    <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                  </Switch>
+              </div>
+
+
+
+
+
+            ) : (<div>
+                  <Login />
+                  <div class="loader"></div>
+
+
+
+
+                </div>)}
+              </div>
+
+
+
         </div>
-
-
-
-      </div>
+      </BrowserRouter>
     );
   }
 }

@@ -12,8 +12,9 @@ class MenuPage extends Component {
         
         <section id="boxes" class="py-3">
         <p></p> <br/>
-          <a href="/Add_User" class="btn btn-outline-primary btn-ctrl-panel">הוספת סטודנט</a>
-          <a href="/Student_Dashboard" class="btn btn-outline-primary btn-ctrl-panel">לוח סטודנטים</a>
+          <a href="/Add_User" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת סטודנט</a>
+          <p></p>
+          <a href="/Student_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח סטודנטים</a>
         </section>
       </div>
 

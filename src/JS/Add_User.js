@@ -3,7 +3,7 @@ import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 
-import './Add_User.css' /* CSS */
+import '../CSS/Add_User.css' /* CSS */
 
 class Add_User extends Component {
     constructor(props) {
@@ -27,6 +27,7 @@ class Add_User extends Component {
             jira: this.input5.value
         }
         axiosFirebase.post('/users.json', user).then(function (response) {
+            alert('סטודנט נוסף');
             window.location.reload();
         });
         //.catch (error => console.log(error));
@@ -67,13 +68,14 @@ class Add_User extends Component {
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת ג'ירה" ref={(input5) => this.input5 = input5}></input>
                                 </div>
+                                <div>
+                                    <input type="submit" value="הגש בקשה" className="btn btn-dark"></input>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div>
-                        <input type="submit" value="הגש בקשה" className="btn btn btn-info btn-sm center-block agreeBut"></input>
-                    </div>
+
 
                 </form>
             </div>
