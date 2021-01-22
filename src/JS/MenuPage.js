@@ -8,7 +8,7 @@ class MenuPage extends Component {
     return (
 
       <div class="MenuPage">
-        <MyTitle title="לוח בקרה למשתמש" />
+        <MyTitle title="תפריט" />
         
         <section id="boxes" class="py-3">
         <p></p> <br/>

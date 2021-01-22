@@ -66,7 +66,7 @@ class Add_User extends Component {
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="פרוייקט בגיט" ref={(input6) => this.input6 = input6}></input>
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת ג'ירה" ref={(input5) => this.input5 = input5}></input>
+                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                 </div>
                                 <div>
                                     <input type="submit" value="הגש בקשה" className="btn btn-dark"></input>

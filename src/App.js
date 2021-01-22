@@ -6,8 +6,9 @@ import Add_User from './JS/Add_User'
 import Student_Dashboard from './JS/Student_Dashboard'
 import Login from './JS/Login'
 import MenuPage from './JS/MenuPage'
+import Students from './JS/Students'
+import NotFoundPage from './JS/NotFoundPage'
 
-import Students from './JS/‏‏Students'
 import './App.css';
 
 /*
@@ -75,26 +76,23 @@ class App extends Component {
               <div>
 
                 <nav class="navbar navbar-dark bg-dark" dir="rtl">
-                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >                      
-                      <a href="/MenuPage" type="submit" class="btn btn-dark">תפריט</a>
-                      <a href="/Student_Dashboard" type="submit" class="btn btn-dark">לוח סטודנטים</a>
-                      <a href="/Add_User" type="submit" class="btn btn-dark">הוספת סטודנט</a>
-                      <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
+                    <a href="/MenuPage" type="submit" class="btn btn-dark">תפריט</a>
+                    <a href="/Student_Dashboard" type="submit" class="btn btn-dark">לוח סטודנטים</a>
+                    <a href="/Add_User" type="submit" class="btn btn-dark">הוספת סטודנט</a>
+                    <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
                   </div>
-
-
-
-
-
                 </nav>
 
-                  <Switch>
-                    <Route path="/MenuPage" component={MenuPage} />
-                    <Route path="/Add_User" component={Add_User} />
-                    <Route path="/Student_Dashboard" component={Student_Dashboard} />
-                    <Route path="/Students" component={Students} />
-                    <Route exact path="/"><Redirect to="/MenuPage" /></Route>
-                  </Switch>
+                <Switch>
+                  <Route path="/MenuPage" component={MenuPage} />
+                  <Route path="/Add_User" component={Add_User} />
+                  <Route path="/Student_Dashboard" component={Student_Dashboard} />
+                  <Route path="/Students" component={Students} />
+                  <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                  <Route path="/404" component={NotFoundPage} />
+                  <Redirect to="/404" />
+                </Switch>
               </div>
 
 
@@ -102,14 +100,18 @@ class App extends Component {
 
 
             ) : (<div>
-                  <Login />
-                  <div class="loader"></div>
+              <Switch>
+                <Route path="/" component={Login} />
+              </Switch>
+
+       
+              <div class="loader"></div>
 
 
 
 
-                </div>)}
-              </div>
+            </div>)}
+          </div>
 
 
 

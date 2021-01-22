@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import MaterialTable from 'material-table'
-import Student from './‏‏Students'
+import Student from './Students'
 
 import '../CSS/Add_User.css' /* CSS */
 
