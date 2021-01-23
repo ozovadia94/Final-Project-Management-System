@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import MyTitle from '../Titles/Title';
 
-
 class MenuPage extends Component {
 
   render() {
@@ -12,8 +11,11 @@ class MenuPage extends Component {
         
         <section id="boxes" class="py-3">
         <p></p> <br/>
-          <a href="/Add_User" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת סטודנט</a>
-          <p></p>
+        <a href="/Add_User" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת סטודנט</a>
+        <p></p> <br/>
+        <a href="/Add_moderator" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת מנחה</a>
+        <p></p> <br/>
+
           <a href="/Student_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח סטודנטים</a>
         </section>
       </div>

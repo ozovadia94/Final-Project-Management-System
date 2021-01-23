@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import MaterialTable from 'material-table'
-import Student from './Students'
 
 import '../CSS/Add_User.css' /* CSS */
 
@@ -58,6 +57,7 @@ class Add_User extends Component {
     }
 
     studentclick = (user) => {
+        console.log(user)
         window.open('/Students?gituser=' + user.gituser + '&gitproject=' + user.gitproject, 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
 
     }
