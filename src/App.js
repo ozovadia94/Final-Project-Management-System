@@ -4,23 +4,20 @@ import { Redirect } from 'react-router-dom'
 import firebase from './Firebase/Firebase';
 import Add_User from './JS/Add_User'
 import Student_Dashboard from './JS/Student_Dashboard'
+import Edit_Student from './JS/Edit_Student'
+
+import Add_moderator from './JS/Add_moderator'
+import Moderators_Dashboard from './JS/Moderators_Dashboard'
+
+
+
+
 import Login from './JS/Login'
 import MenuPage from './JS/MenuPage'
 import Students from './JS/Students'
 import NotFoundPage from './JS/NotFoundPage'
 
 import './App.css';
-
-/*
-
-import { Redirect } from 'react-router-dom'
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-
-*/
-
-
-
-
 
 
 document.onreadystatechange = function () {
@@ -79,7 +76,9 @@ class App extends Component {
                   <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
                     <a href="/MenuPage" type="submit" class="btn btn-dark">תפריט</a>
                     <a href="/Student_Dashboard" type="submit" class="btn btn-dark">לוח סטודנטים</a>
+                    <a href="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</a>
                     <a href="/Add_User" type="submit" class="btn btn-dark">הוספת סטודנט</a>
+                    <a href="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</a>
                     <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
                   </div>
                 </nav>
@@ -88,6 +87,11 @@ class App extends Component {
                   <Route path="/MenuPage" component={MenuPage} />
                   <Route path="/Add_User" component={Add_User} />
                   <Route path="/Student_Dashboard" component={Student_Dashboard} />
+                  <Route path="/Add_moderator" component={Add_moderator} />
+                  <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
+                  <Route path="/Edit_Student" component={Edit_Student} />
+
+
                   <Route path="/Students" component={Students} />
                   <Route exact path="/"><Redirect to="/MenuPage" /></Route>
                   <Route path="/404" component={NotFoundPage} />

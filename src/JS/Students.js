@@ -35,9 +35,10 @@ class git extends Component {
         const url = this.return_address()
 
         let promise = new Promise((res) => {
-            setTimeout(() => res("Now it's done!"), 1000)
+            setTimeout(() => res("Now it's done!"), 1600)
             axios.get(url)
                 .then(res => {
+                    console.log(this)
                     return res.data
                 }).then(res => {
                     console.log('size:' + res.length)

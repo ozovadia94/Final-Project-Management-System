@@ -15,7 +15,8 @@ class MenuPage extends Component {
         <p></p> <br/>
         <a href="/Add_moderator" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת מנחה</a>
         <p></p> <br/>
-
+        <a href="/Moderators_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח מנחים</a>
+        <p></p> <br/>
           <a href="/Student_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח סטודנטים</a>
         </section>
       </div>
