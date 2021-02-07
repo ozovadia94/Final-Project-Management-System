@@ -1,52 +1,47 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { Redirect } from 'react-router-dom'
-import firebase from './Firebase/Firebase';
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import './App.css';
+
+//pages
+import MenuPage from './JS/MenuPage'
 import Add_User from './JS/Add_User'
 import Student_Dashboard from './JS/Student_Dashboard'
-import Edit_Student from './JS/Edit_Student'
-
 import Add_moderator from './JS/Add_moderator'
 import Moderators_Dashboard from './JS/Moderators_Dashboard'
-
-
-
-
-import Login from './JS/Login'
-import MenuPage from './JS/MenuPage'
 import Students from './JS/Students'
 import NotFoundPage from './JS/NotFoundPage'
 
-import './App.css';
-
-
-document.onreadystatechange = function () {
-  if (document.readyState !== "complete") {
-    document.querySelector(".after_loading").style.visibility = "hidden";
-    document.querySelector(".loader").style.visibility = "visible";
-  } else {
-    document.querySelector(".loader").style.display = "none";
-    document.querySelector(".after_loading").style.visibility = "visible";
-  }
-};
+//More Components
+import Login from './JS/Login'
+import firebase from './Firebase/Firebase';
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      login: null,
-    }
     this.logout = this.logout.bind(this);
     this.checkRole = this.checkAuth.bind(this);
   }
+  state = {
+    login: null,
+  }
 
   componentDidMount() {
+    document.onreadystatechange = function () {
+      if (document.readyState !== "complete") {
+        document.querySelector(".after_loading").style.visibility = "hidden";
+        document.querySelector(".loader").style.visibility = "visible";
+      } else {
+        document.querySelector(".loader").style.display = "none";
+        document.querySelector(".after_loading").style.visibility = "visible";
+      }
+    };
     this.checkAuth()
+    console.clear()
   }
 
   checkAuth() {
     firebase.auth().onAuthStateChanged((user) => {
-      console.log(user);
+      console.log('Connected');
       if (user) {
 
         this.setState({ login: 'yes' });
@@ -89,7 +84,6 @@ class App extends Component {
                   <Route path="/Student_Dashboard" component={Student_Dashboard} />
                   <Route path="/Add_moderator" component={Add_moderator} />
                   <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
-                  <Route path="/Edit_Student" component={Edit_Student} />
 
 
                   <Route path="/Students" component={Students} />
@@ -108,7 +102,7 @@ class App extends Component {
                 <Route path="/" component={Login} />
               </Switch>
 
-       
+
               <div class="loader"></div>
 
 

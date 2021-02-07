@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
+import alerts from './Alerts'
 
 import '../CSS/Add_User.css' /* CSS */
 
@@ -22,7 +23,7 @@ class Add_User extends Component {
 
                     });
                 }
-                this.setState({ loading: false, moderator: fetchedUsers,res_data: res.data});
+                this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
             })
             .catch(err => {
                 this.setState({ loading: false });
@@ -40,8 +41,6 @@ class Add_User extends Component {
 
     handleSubmit(e) {
         var mod = document.getElementById("moderator_f");
-        console.log(mod.value)
-
 
         const user = {
             name: this.input.value,
@@ -53,11 +52,10 @@ class Add_User extends Component {
             moderator_id: mod.value,
         }
         axiosFirebase.post('/users.json', user).then(function (response) {
-            alert('סטודנט נוסף');
-            window.location.reload();
-        });
-        //.catch (error => console.log(error));
-        e.preventDefault();        
+            alerts.alert('סטודנט נוסף',false)
+            document.getElementById("myForm").reset();
+        }).catch(error => console.log(error));
+        e.preventDefault();
     }
 
     render() {
@@ -70,43 +68,38 @@ class Add_User extends Component {
 
 
 
-                <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
+                <form id="myForm" onSubmit={this.handleSubmit} class="row justify-content-md-center" dir='rtl'>
 
                     <div class="col-lg-4">
                         <div class="Card bg-white text-center card-form">
                             <div class="card-body">
 
-                                <div class="form-group">
+                                <div class="form-group" >
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם מלא" ref={(input) => this.input = input}></input>
-                                </div>
-                                <div class="form-group">
+                                    <p></p>
                                     <input type="number" class="form-control form-control-lg text-right" required placeholder="תעודת זהות" ref={(input2) => this.input2 = input2}></input>
-                                </div>
-                                <div class="form-group">
+                                    <p></p>
                                     <input type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
-                                </div>
-
-                                
-
-                                <div class="form-group">
+                                    <p></p>
                                     <select id="moderator_f" name="cars" class="form-control form-control-lg text-right" dir='rtl'>
                                         <option value='Not selected'>בחר מנחה מהרשימה</option>
                                         {this.state.moderator.map((user) => (
                                             <option value={user.id}>{user.name}</option>
                                         ))}
                                     </select>
-
-                                </div>
-
+                                </div></div></div></div>
+                                
+                    <div class="col-lg-4">
+                        <div class="Card bg-white text-center card-form">
+                            <div class="card-body">
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="משתמש גיט" ref={(input4) => this.input4 = input4}></input>
-                                </div>
-                                <div class="form-group">
+                                    <p></p>
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="פרוייקט בגיט" ref={(input6) => this.input6 = input6}></input>
-                                </div>
-                                <div class="form-group">
+                                    <p></p>
                                     <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                 </div>
+
                                 <div>
                                     <input type="submit" value="הוסף סטודנט" className="btn btn-dark"></input>
                                 </div>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
-import MaterialTable from 'material-table'
-import Edit_Student from './Edit_Student'
 
+import alerts from './Alerts'
 import '../CSS/Add_User.css' /* CSS */
 
 class Add_User extends Component {
@@ -48,7 +47,11 @@ class Add_User extends Component {
                         return res.data
                     }).then((res) => {
                         for (let key in fetchedUsers) {
-                            fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
+                            if(res[fetchedUsers[key].moderator_id]!==undefined)
+                                fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
+                            else
+                                fetchedUsers[key]['mod_name']='לא נבחר מנחה!'
+                                
                         }
                     }).then(() => {
                         this.setState({ users: fetchedUsers });
@@ -59,6 +62,7 @@ class Add_User extends Component {
             })
             .catch(err => {
                 this.setState({ loading: false });
+                console.log(err)
             })
 
     }
@@ -66,21 +70,16 @@ class Add_User extends Component {
 
     selectedUserId = (id) => {
         this.setState({ selectedUserId: id });
-        alert(id);
     }
 
     deleteUserId = (id) => {
-        const r = window.confirm("האם אתה בטוח?");
-        if (r === true) {
-
-            axiosFirebase.delete('/users/' + id + '.json').catch(error => console.log(error)).then(function (response) {
-
-            }).then(function (response) {
-                alert('סטודנט נמחק');
-                window.location.reload();
-            });
-
+        const del = (id) => {
+            axiosFirebase.delete('/users/' + id + '.json')
+                .then(function (response) {
+                    alerts.alert('סטודנט נמחק')
+                }).catch(error => console.log(error))
         }
+        alerts.are_you_sure('האם ברצונך למחוק סטודנט זה', id, del)
     }
 
     studentclick = (user) => {
@@ -112,7 +111,7 @@ class Add_User extends Component {
             var student_daybook = document.getElementById("student_daybook");
             student_daybook.value = user.daybook
         }
-        this.setState({edit: user.id});
+        this.setState({ edit: user.id });
     }
 
 
@@ -131,11 +130,11 @@ class Add_User extends Component {
             moderator_id: mod.value,
         }
 
-        axiosFirebase.put(`users/` + this.state.edit + '.json', user).then(function (response) {
-            alert('סטודנט עודכן');
-            window.location.reload();
+        axiosFirebase.put(`users/` + this.state.edit + '.json', user)
+        .then(function (response) {
+            alerts.alert('סטודנט עודכן')
         })
-        .catch (error => console.log(error));
+        .catch(error => console.log(error));
         e.preventDefault();
     }
 
@@ -173,7 +172,7 @@ class Add_User extends Component {
                                 <td>{user.gituser}</td>
                                 <td>{user.gitproject}</td>
                                 <td>{user.jira}</td>
-                                <td><a href="" onClick={() => this.studentclick(user)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
+                                <td><a href="/" onClick={() => this.studentclick(user)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
                                 </td>
 
                                 <td>
@@ -210,19 +209,14 @@ class Add_User extends Component {
                                     <div class="modal-body mb-1">
 
 
-                                        <div class="form-group">
+                                        <div class="form-group" id='myform'>
                                             <input id='student_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם מלא" ref={(input) => this.input = input}></input>
-                                        </div>
-                                        <div class="form-group">
+                                            <p></p>
                                             <input id='student_id' type="number" class="form-control form-control-lg text-right" required placeholder="תעודת זהות" ref={(input2) => this.input2 = input2}></input>
-                                        </div>
-                                        <div class="form-group">
+                                            <p></p>
                                             <input id='student_email' type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
-                                        </div>
+                                            <p></p>
 
-
-
-                                        <div class="form-group">
                                             <select id="moderator_f" name="cars" class="form-control form-control-lg text-right" dir='rtl'>
                                                 <option value='Not selected'>בחר מנחה מהרשימה</option>
                                                 {this.state.moderator.map((user) => (
@@ -230,23 +224,19 @@ class Add_User extends Component {
                                                 ))}
                                             </select>
 
-                                        </div>
-
-                                        <div class="form-group">
+                                            <p></p>
                                             <input id='student_gitUser' type="text" class="form-control form-control-lg text-right" placeholder="משתמש גיט" ref={(input4) => this.input4 = input4}></input>
-                                        </div>
-                                        <div class="form-group">
+                                            <p></p>
                                             <input id='student_gitProject' type="text" class="form-control form-control-lg text-right" placeholder="פרוייקט בגיט" ref={(input6) => this.input6 = input6}></input>
-                                        </div>
-                                        <div class="form-group">
+                                            <p></p>
                                             <input id='student_daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                         </div>
-                                        
+
 
                                     </div>
-                                            <button id="buttClose" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
-                                            <p></p>
-                                    
+                                    <button id="buttClose" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
+                                    <p></p>
+
                                     <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
                                 </div>
                             </div>

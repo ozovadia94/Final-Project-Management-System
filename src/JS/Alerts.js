@@ -40,9 +40,10 @@ var my_error = (props) => {
     })
 
 }
+var Alerts = {
+    alert : my_success,
+    error : my_error,
+    are_you_sure: are_you_sure,
+}
 
-export default {
-    my_success,
-    my_error,
-    are_you_sure,
-};
+export default Alerts;

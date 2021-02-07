@@ -3,7 +3,14 @@ import MyTitle from '../Titles/Title'
 import axios from 'axios';
 import '../CSS/Add_User.css' /* CSS */
 
-//import urlParams from 'url-search-params'
+import my_header from '../Firebase/axiosGithub'
+
+require('dotenv').config()
+
+//import myheader from '../Firebase/axiosGithub'
+
+
+//import URLSearchParams from 'url-search-params'
 
 var URLSearchParams = require('url-search-params');
 
@@ -33,21 +40,24 @@ class git extends Component {
 
     create_Users = async () => {
         const url = this.return_address()
+        const headers = my_header
 
         let promise = new Promise((res) => {
             setTimeout(() => res("Now it's done!"), 1600)
-            axios.get(url)
+            axios.get(url, {
+                "headers": headers
+            }).then(res => {
+                return res.data
+            })
                 .then(res => {
-                    console.log(this)
-                    return res.data
-                }).then(res => {
-                    console.log('size:' + res.length)
                     const fetchedUsers = new Array(res.length);
 
                     for (let key = 0; key < res.length; key++) {
-                        axios.get(res[key].url)
+                        axios.get(res[key].url, {
+                            "headers": headers
+                        })
                             .then(res2 => {
-                                fetchedUsers[key]={
+                                fetchedUsers[key] = {
                                     date: res2.data.commit.author.date,
                                     title: res2.data.commit.message,
                                     total: res2.data.stats.total,
@@ -59,21 +69,19 @@ class git extends Component {
 
                     return fetchedUsers
                 }).then((res) => {
-                    this.setState({ users: res,check:true})
-                    console.log('print!')
-                }).catch((err)=>{
+                    this.setState({ users: res, check: true })
+                }).catch((err) => {
                     alert(err)
                     window.location.replace('/404');
                     console.log(err)
                 });
         });
         // wait until the promise returns us a value
-
         await promise;
 
         // "Now it's done!"
         this.setState({ loading: true })
-        
+
         return 0
     }
 
@@ -93,6 +101,8 @@ class git extends Component {
         var user = params2.get('gituser')
         var repos = params2.get('gitproject')
         return `https://api.github.com/repos/${user}/${repos}/commits`
+
+
 
     }
 
@@ -115,7 +125,6 @@ class git extends Component {
                                 <th>Changed words</th>
 
                             </tr>
-                            {console.log(this.state.users)}
 
                             {this.state.users.map(user => (
                                 <tr>
@@ -124,7 +133,7 @@ class git extends Component {
                                     <th>{user.title}</th>
                                     <th>{user.files}</th>
                                     <th>{user.total}</th>
-                                    
+
 
                                 </tr>
                             ))}
