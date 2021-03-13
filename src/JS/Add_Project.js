@@ -5,8 +5,6 @@ import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 
 import '../CSS/Add_User.css' /* CSS */
-import { each } from 'underscore';
-import { Container } from '@material-ui/core';
 
 class Add_Project extends Component {
     constructor(props) {
@@ -69,14 +67,14 @@ class Add_Project extends Component {
         const user = {
             name: this.input.value,
             partners: numOfPartners.value,
-            jira: this.input5.value,
+            daybook: this.input5.value,
             moderator_id: mod.value,
             members: members,
             numOfGits: numOfGits.value,
             gits: gits,
         }
         axiosFirebase.post('/projects.json', user).then(function (response) {
-            alerts.alert('פרוייקט נוסף', true)//true for refresh!
+            alerts.alert('פרוייקט נוסף')//true for refresh!
 
 
         }).catch(error => {
@@ -223,12 +221,11 @@ class Add_Project extends Component {
                         <div class="Card bg-white text-center card-form">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                    <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                     <p></p>
-                                    <label>מספר גיטים</label>
                                     <select id="numOfgits" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsGits}>
-                                        <option selected="selected" value='1'>1</option>
-                                        <option value='2'>2</option>
+                                        <option selected="selected" value='1'>מספר גיטים: 1</option>
+                                        <option value='2'>מספר גיטים: 2</option>
                                     </select>
 
                                 </div>
