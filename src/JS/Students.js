@@ -51,14 +51,44 @@ class git extends Component {
             })
                 .then(res => {
                     const fetchedUsers = new Array(res.length);
-
+                    var k = -1
                     for (let key = 0; key < res.length; key++) {
+                        k++
                         axios.get(res[key].url, {
                             "headers": headers
                         })
                             .then(res2 => {
+                                var tempDate = ''
+                                var myTime = ''
+                                var myDate = ''
+
+                                const gitdate = res2.data.commit.author.date
+
+                                
+                                for (let i = 0; i < gitdate.length; i++) {
+                                    
+                                        if (gitdate[i] === 'T') {
+                                            tempDate = gitdate.substring(0, i);
+                                            myTime = gitdate.substring(i+1, gitdate.length-1);
+                                            break
+                                        }
+                                    
+                                }
+                                
+                                    let num = 0
+                                    for(let i = 0; i < tempDate.length; i++)
+                                    {
+                                        if(tempDate[i]==='-'){
+                                            myDate = '/' + gitdate.substring(num,i) + myDate
+                                            num = i+1
+                                        }
+                                        else if(i+1===tempDate.length)
+                                            myDate = gitdate.substring(num,i+1) + myDate
+                                    }
+                                
+
                                 fetchedUsers[key] = {
-                                    date: res2.data.commit.author.date,
+                                    date: myDate + '\n' + myTime,
                                     title: res2.data.commit.message,
                                     total: res2.data.stats.total,
                                     files: res2.data.files.length,
@@ -98,9 +128,9 @@ class git extends Component {
     return_address() {
         const queryString = window.location.search;
         var params2 = new URLSearchParams(queryString);
-        var user = params2.get('gituser')
-        var repos = params2.get('gitproject')
-        return `https://api.github.com/repos/${user}/${repos}/commits`
+        var user_repos = params2.get('git')
+
+        return `https://api.github.com/repos/${user_repos}/commits`
 
 
 
