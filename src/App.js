@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect, Link } from "react-router-dom";
 import './App.css';
 
 //pages
 import MenuPage from './JS/MenuPage'
-import Add_User from './JS/Add_User'
-import Student_Dashboard from './JS/Student_Dashboard'
 import Add_moderator from './JS/Add_moderator'
 import Moderators_Dashboard from './JS/Moderators_Dashboard'
+import Add_Project from './JS/Add_Project'
+import Project_Dashboard from './JS/Project_Dashboard'
+
 import Students from './JS/Students'
 import NotFoundPage from './JS/NotFoundPage'
 
@@ -25,14 +26,27 @@ class App extends Component {
     login: null,
   }
 
+
   componentDidMount() {
     document.onreadystatechange = function () {
+      var after = document.querySelector(".after_loading")
+      var loader = document.querySelector(".loader")
+
       if (document.readyState !== "complete") {
-        document.querySelector(".after_loading").style.visibility = "hidden";
-        document.querySelector(".loader").style.visibility = "visible";
-      } else {
-        document.querySelector(".loader").style.display = "none";
-        document.querySelector(".after_loading").style.visibility = "visible";
+        if (after !== null)
+          if (after.style !== null)
+            after.style.visibility = "hidden";
+        if (loader !== null)
+          if (loader.style !== null)
+            loader.style.visibility = "visible";
+      }
+      else {
+        if (loader !== null)
+          if (loader.style !== null)
+            loader.style.visibility = "none";
+        if (after !== null)
+          if (after.style !== null)
+            after.style.visibility = "visible";
       }
     };
     this.checkAuth()
@@ -41,10 +55,9 @@ class App extends Component {
 
   checkAuth() {
     firebase.auth().onAuthStateChanged((user) => {
-      console.log('Connected');
       if (user) {
 
-        this.setState({ login: 'yes' });
+        this.setState({ login: 'true' });
       }
     })
   }
@@ -52,69 +65,78 @@ class App extends Component {
   logout() {
     firebase.auth().signOut();
     alert("התנתקת!")
+    this.setState({ login: null });
     window.location.reload();
   }
 
 
   render() {
+    if (!this.state.login) {
+      return <Login></Login>
+    }
+
+
     return (
-      <BrowserRouter>
-        <div className="App">
 
 
 
-          <div class="after_loading">
-            {this.state.login ? (
-              <div>
-
-                <nav class="navbar navbar-dark bg-dark" dir="rtl">
-                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
-                    <a href="/MenuPage" type="submit" class="btn btn-dark">תפריט</a>
-                    <a href="/Student_Dashboard" type="submit" class="btn btn-dark">לוח סטודנטים</a>
-                    <a href="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</a>
-                    <a href="/Add_User" type="submit" class="btn btn-dark">הוספת סטודנט</a>
-                    <a href="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</a>
-                    <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
-                  </div>
-                </nav>
-
-                <Switch>
-                  <Route path="/MenuPage" component={MenuPage} />
-                  <Route path="/Add_User" component={Add_User} />
-                  <Route path="/Student_Dashboard" component={Student_Dashboard} />
-                  <Route path="/Add_moderator" component={Add_moderator} />
-                  <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
-
-
-                  <Route path="/Students" component={Students} />
-                  <Route exact path="/"><Redirect to="/MenuPage" /></Route>
-                  <Route path="/404" component={NotFoundPage} />
-                  <Redirect to="/404" />
-                </Switch>
-              </div>
+      <div className="App">
 
 
 
+        <div class="after_loading">
+          {this.state.login ? (
+            <div>
 
+              <nav class="navbar navbar-dark bg-dark" dir="rtl">
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
+                  <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
+                  <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
+                  <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
+                  <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
+                  <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
+                  <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                </div>
+              </nav>
 
-            ) : (<div>
               <Switch>
-                <Route path="/" component={Login} />
+                <Route path="/MenuPage" component={MenuPage} exact />
+                <Route path="/Add_moderator" component={Add_moderator} />
+                <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
+                <Route path="/Add_Project" component={Add_Project} />
+                <Route path="/Project_Dashboard" component={Project_Dashboard} />
+
+                <Route path="/Students" component={Students} />
+                <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                <Route path="/404" component={NotFoundPage} />
+                <Redirect to="/404" />
               </Switch>
-
-
-              <div class="loader"></div>
-
+            </div>
 
 
 
-            </div>)}
-          </div>
+
+
+          ) : (<div>
+            <Switch>
+              <Route path="/" component={Login} />
+            </Switch>
+
+
+            <div class="loader"></div>
 
 
 
+
+          </div>)}
         </div>
-      </BrowserRouter>
+
+
+
+      </div>
+
+
+
     );
   }
 }

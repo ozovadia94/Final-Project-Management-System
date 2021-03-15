@@ -1,0 +1,17 @@
+git init
+git add .
+git commit -m "package"
+git remote add origin https://github.com/ozovadia94/Final-Project-Management-System.git 
+git push -u origin master
+
+
+git clone https://github.com/roipinto/YeshTikva
+
+
+ + e63c273...7c62f1b master -> master (forced update)
+
+
+
+
+npm run build
+firebase deploy
