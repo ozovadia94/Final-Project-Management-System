@@ -51,9 +51,7 @@ class git extends Component {
             })
                 .then(res => {
                     const fetchedUsers = new Array(res.length);
-                    var k = -1
                     for (let key = 0; key < res.length; key++) {
-                        k++
                         axios.get(res[key].url, {
                             "headers": headers
                         })

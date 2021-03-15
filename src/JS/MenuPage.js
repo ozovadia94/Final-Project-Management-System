@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import MyTitle from '../Titles/Title';
 
 class MenuPage extends Component {
@@ -11,13 +12,16 @@ class MenuPage extends Component {
         
         <section id="boxes" class="py-3">
         <p></p> <br/>
-        <a href="/Add_User" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת סטודנט</a>
+        <Link to="/Project_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח פרויקטים</Link>
         <p></p> <br/>
-        <a href="/Add_moderator" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת מנחה</a>
+        <Link to="/Moderators_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח מנחים</Link>
         <p></p> <br/>
-        <a href="/Moderators_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח מנחים</a>
+        <Link to="/Add_Project" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת פרויקט</Link>
         <p></p> <br/>
-          <a href="/Student_Dashboard" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">לוח סטודנטים</a>
+        <Link to="/Add_moderator" class="btn btn-outline-dark btn-lg btn-block btn-ctrl-panel">הוספת מנחה</Link>
+        <p></p> <br/>
+        
+          
         </section>
       </div>
 

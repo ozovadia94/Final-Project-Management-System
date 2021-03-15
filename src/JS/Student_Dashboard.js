@@ -5,7 +5,7 @@ import MyTitle from '../Titles/Title'
 import alerts from './Alerts'
 import '../CSS/Add_User.css' /* CSS */
 
-class Add_User extends Component {
+class Student_Dashboard extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -250,4 +250,4 @@ class Add_User extends Component {
 
 }
 
-export default Add_User;
+export default Student_Dashboard;
