@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import MyTitle from '../Titles/Title';
+import '../CSS/Pages.css' /* CSS */
 
 class MenuPage extends Component {
 
   render() {
     return (
 
-      <div class="MenuPage">
+      <div className="MenuPage backgroundPage">
         <MyTitle title="תפריט" />
         
         <section id="boxes" class="py-3">

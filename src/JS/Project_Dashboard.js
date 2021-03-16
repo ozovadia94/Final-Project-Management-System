@@ -3,7 +3,7 @@ import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
-import '../CSS/Add_User.css' /* CSS */
+import '../CSS/Pages.css' /* CSS */
 
 
 class Project_Dashboard extends Component {
@@ -339,9 +339,9 @@ class Project_Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <div className='backgroundPage'>
 
-                <MyTitle title="לוח סטודנטים" />
+                <MyTitle title="לוח פרוייקטים" />
 
                 <table class="table table-dark" dir='rtl'>
                     <thead>

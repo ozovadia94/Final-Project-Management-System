@@ -3,7 +3,7 @@ import axiosFirebase from '../Firebase/axiosFirebase';
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
-import '../CSS/Add_User.css' /* CSS */
+import '../CSS/Pages.css' /* CSS */
 
 class Student_Dashboard extends Component {
     constructor(props) {
@@ -140,7 +140,7 @@ class Student_Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <div className='backgroundPage'>
 
                 <MyTitle title="לוח סטודנטים" />
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import MyTitle from '../Titles/Title'
 import axios from 'axios';
-import '../CSS/Add_User.css' /* CSS */
+import '../CSS/Pages.css' /* CSS */
 
 import my_header from '../Firebase/axiosGithub'
 
@@ -40,7 +40,9 @@ class git extends Component {
 
     create_Users = async () => {
         const url = this.return_address()
+        console.log(url)
         const headers = my_header
+        console.log(headers)
 
         let promise = new Promise((res) => {
             setTimeout(() => res("Now it's done!"), 1600)
@@ -99,9 +101,10 @@ class git extends Component {
                 }).then((res) => {
                     this.setState({ users: res, check: true })
                 }).catch((err) => {
+                    console.log(err)
                     alert(err)
                     window.location.replace('/404');
-                    console.log(err)
+                    
                 });
         });
         // wait until the promise returns us a value
@@ -138,7 +141,7 @@ class git extends Component {
 
         return (
 
-            <div className="col-md-6">
+            <div className="col-md-6 backgroundPage">
 
                 <MyTitle title="לוח התקדמות" />
 

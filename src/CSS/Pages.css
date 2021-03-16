@@ -1,12 +1,19 @@
-
 #hide {
     visibility: hidden
 }
 
-.rtt11{
-    background-color:blanchedalmond;
-    color: darkslateblue;
-  }
+
+
+.backgroundPage{
+    overflow-x: hidden;
+    background-color: rgb(167, 188, 194);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+
+    
+    
+}
 
 
 

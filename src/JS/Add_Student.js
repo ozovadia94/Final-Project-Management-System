@@ -4,7 +4,7 @@ import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 
-import '../CSS/Add_User.css' /* CSS */
+import '../CSS/Pages.css' /* CSS */
 
 class Add_User extends Component {
     constructor(props) {
@@ -60,7 +60,7 @@ class Add_User extends Component {
 
     render() {
         return (
-            <div>
+            <div className='backgroundPage'>
 
                 <MyTitle title="הוסף סטודנט חדש" />
 

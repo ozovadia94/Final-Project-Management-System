@@ -2,6 +2,13 @@ body {
     font-family: "Lato", sans-serif;
 }
 
+.main {
+    height: 100%;
+    background-color: #000;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
 
 
 .main-head{
@@ -10,9 +17,16 @@ body {
    
 }
 
-.sidenav {
-    height: 100%;
+.s11{
+    background-color: #008cff9c;
+}
+
+.s12{
     background-color: #000;
+}
+
+.sidenav, .s12{
+    height: 100%;
     overflow-x: hidden;
     padding-top: 20px;
 }
@@ -41,12 +55,19 @@ body {
         margin-left: 40%; 
     }
 
-    .sidenav{
+    .s12{
         width: 40%;
         position: fixed;
         z-index: 1;
         top: 0;
         left: 0;
+    }
+    .s11{
+        width: 60%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 40%;
     }
 
     .login-form{

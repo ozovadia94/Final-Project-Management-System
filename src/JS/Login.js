@@ -30,15 +30,15 @@ class Login extends Component {
 
     render() {
         return (
-            <div>
+            <div className='backgroundPage'>
 
-                <div class="sidenav">
+                <div class="sidenav s12">
                     <div class="login-main-text">
                         <h2>מערכת לניהול פרוייקטי גמר</h2>
                         <p>דף התחברות</p>
                     </div>
                 </div>
-                <div class="main">
+                <div class="sidenav s11">
                     <div class="col-md-6 col-sm-12">
                         <div class="login-form">
                             <form>
@@ -50,7 +50,7 @@ class Login extends Component {
                                     <label>Password</label>
                                     <input id="password_input" class="form-control"  type="password" name="password" onChange={this.handleChange} placeholder="הכנס סיסמא" value={this.state.password}></input>
                                 </div>
-                                <button id="but_login" type="submit" class="btn btn-black" onClick={this.login}>Login</button>
+                                <button id="but_login" type="submit" class="btn btn-dark btn-lg btn-block" onClick={this.login}>Login</button>
                             </form>
                         </div>
                     </div>
