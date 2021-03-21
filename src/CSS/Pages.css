@@ -6,13 +6,20 @@
 
 .backgroundPage{
     overflow-x: hidden;
-    background-color: rgb(167, 188, 194);
     position: fixed;
     height: 100%;
     width: 100%;
+}
 
-    
-    
+
+.form-control, .card-body, .form-group, .card-form, .col-lg-4, .backgroundPage, .ozbackground{
+    background-color: #008cff9c;
+}
+
+
+input[type="text"], input[type="number"],input[type="email"],input[type="password"],select[type="text"]{
+    background-color : #e4e7dab4; 
+    padding: 1px;
 }
 
 

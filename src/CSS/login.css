@@ -56,22 +56,30 @@ body {
     }
 
     .s12{
-        width: 40%;
-        position: fixed;
-        z-index: 1;
-        top: 0;
-        left: 0;
-    }
-    .s11{
         width: 60%;
         position: fixed;
         z-index: 1;
         top: 0;
         left: 40%;
     }
+    .s11{
+        width: 40%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0%;
+    }
 
     .login-form{
-        margin-top: 65%;
+        margin-top: 85%;
+        
+    }
+
+    .form1234{
+        position: fixed;
+        left: 20%;
+        direction: rtl;
+        text-align: right;
     }
 
     .register-form{

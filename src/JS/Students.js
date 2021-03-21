@@ -5,6 +5,8 @@ import '../CSS/Pages.css' /* CSS */
 
 import my_header from '../Firebase/axiosGithub'
 
+import axiosMonday from '../Firebase/axiosMonday'
+
 require('dotenv').config()
 
 //import myheader from '../Firebase/axiosGithub'
@@ -35,14 +37,55 @@ class git extends Component {
 
 
     componentDidMount() {
+        let url = 'https://api.monday.com/v2'
+
+        const query = `query{
+            boards(ids: 1139310891){
+              id
+              name
+              description
+              items{id name}
+            }
+          }`;
+
+
+
+        
+        let options = {
+            "headers": axiosMonday
+        }
+
+        axios.get("https://api.monday.com/v2",{
+            body: JSON.stringify({
+                query,
+            })},options
+        ).then(res => {
+            console.log(res.data)
+            console.log('WTF?')
+        }).catch((err)=>{
+            console.log(err)
+        })
+
+
+        console.log(options)
+
+        // axios.get(url, body, options).then(res => {
+        //     console.log('Succes')
+        //     console.log(res)
+        //     return res.data
+        // }).catch(err => {
+        //     console.log(err)
+        // })
+
+
+
+
         this.create_Users();
     }
 
     create_Users = async () => {
         const url = this.return_address()
-        console.log(url)
         const headers = my_header
-        console.log(headers)
 
         let promise = new Promise((res) => {
             setTimeout(() => res("Now it's done!"), 1600)
@@ -64,28 +107,27 @@ class git extends Component {
 
                                 const gitdate = res2.data.commit.author.date
 
-                                
+
                                 for (let i = 0; i < gitdate.length; i++) {
-                                    
-                                        if (gitdate[i] === 'T') {
-                                            tempDate = gitdate.substring(0, i);
-                                            myTime = gitdate.substring(i+1, gitdate.length-1);
-                                            break
-                                        }
-                                    
-                                }
-                                
-                                    let num = 0
-                                    for(let i = 0; i < tempDate.length; i++)
-                                    {
-                                        if(tempDate[i]==='-'){
-                                            myDate = '/' + gitdate.substring(num,i) + myDate
-                                            num = i+1
-                                        }
-                                        else if(i+1===tempDate.length)
-                                            myDate = gitdate.substring(num,i+1) + myDate
+
+                                    if (gitdate[i] === 'T') {
+                                        tempDate = gitdate.substring(0, i);
+                                        myTime = gitdate.substring(i + 1, gitdate.length - 1);
+                                        break
                                     }
-                                
+
+                                }
+
+                                let num = 0
+                                for (let i = 0; i < tempDate.length; i++) {
+                                    if (tempDate[i] === '-') {
+                                        myDate = '/' + gitdate.substring(num, i) + myDate
+                                        num = i + 1
+                                    }
+                                    else if (i + 1 === tempDate.length)
+                                        myDate = gitdate.substring(num, i + 1) + myDate
+                                }
+
 
                                 fetchedUsers[key] = {
                                     date: myDate + '\n' + myTime,
@@ -104,7 +146,7 @@ class git extends Component {
                     console.log(err)
                     alert(err)
                     window.location.replace('/404');
-                    
+
                 });
         });
         // wait until the promise returns us a value
@@ -141,40 +183,43 @@ class git extends Component {
 
         return (
 
-            <div className="col-md-6 backgroundPage">
+            <div className="ozbackground">
 
-                <MyTitle title="לוח התקדמות" />
+                <div className="col-md-6">
 
-                {this.state.loading ? (
-                    <div>
-                        <table id="commit_table" class="table">
-                            <tr>
-                                <th>#</th>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Changed files</th>
-                                <th>Changed words</th>
+                    <MyTitle title="לוח התקדמות" />
 
-                            </tr>
-
-                            {this.state.users.map(user => (
+                    {this.state.loading ? (
+                        <div>
+                            <table id="commit_table" class="table">
                                 <tr>
-                                    <th>{parseInt(user.id) + 1}</th>
-                                    <th>{user.date}</th>
-                                    <th>{user.title}</th>
-                                    <th>{user.files}</th>
-                                    <th>{user.total}</th>
-
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Changed files</th>
+                                    <th>Changed words</th>
 
                                 </tr>
-                            ))}
+
+                                {this.state.users.map(user => (
+                                    <tr>
+                                        <th>{parseInt(user.id) + 1}</th>
+                                        <th>{user.date}</th>
+                                        <th>{user.title}</th>
+                                        <th>{user.files}</th>
+                                        <th>{user.total}</th>
 
 
-                        </table>
-                    </div>
-                ) : (<div>  </div>)}
+                                    </tr>
+                                ))}
 
 
+                            </table>
+                        </div>
+                    ) : (<div>  </div>)}
+
+
+                </div>
             </div>
 
 

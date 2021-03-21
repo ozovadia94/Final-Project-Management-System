@@ -189,14 +189,14 @@ class Add_Project extends Component {
                                 <div class="form-group" id='form1'>
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                     <p></p>
-                                    <select id="moderator_f" class="form-control form-control-lg text-right" dir='rtl'>
+                                    <select  id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
                                         <option value='Not selected'>בחר מנחה מהרשימה</option>
                                         {this.state.moderator.map((user) => (
                                             <option value={user.id}>{user.name}</option>
                                         ))}
                                     </select>
                                     <p></p>
-                                    <select id="members" name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsMembers}>
+                                    <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsMembers}>
                                         <option selected="selected" value='1'>פרוייקט יחיד</option>
                                         <option value='2'>פרוייקט זוגי</option>
                                     </select>
@@ -223,7 +223,7 @@ class Add_Project extends Component {
                                 <div class="form-group">
                                     <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                     <p></p>
-                                    <select id="numOfgits" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsGits}>
+                                    <select id="numOfgits" type='text' name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsGits}>
                                         <option selected="selected" value='1'>מספר גיטים: 1</option>
                                         <option value='2'>מספר גיטים: 2</option>
                                     </select>

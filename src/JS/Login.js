@@ -41,16 +41,16 @@ class Login extends Component {
                 <div class="sidenav s11">
                     <div class="col-md-6 col-sm-12">
                         <div class="login-form">
-                            <form>
+                            <form class='form1234'>
                                 <div class="form-group">
-                                    <label>Mail</label>
+                                    
                                     <input id="mail_input" class="form-control" type="email" name="email" onChange={this.handleChange}  placeholder="הכנס מייל" value={this.state.email}></input>
                                 </div>
                                 <div class="form-group">
-                                    <label>Password</label>
+                                    
                                     <input id="password_input" class="form-control"  type="password" name="password" onChange={this.handleChange} placeholder="הכנס סיסמא" value={this.state.password}></input>
                                 </div>
-                                <button id="but_login" type="submit" class="btn btn-dark btn-lg btn-block" onClick={this.login}>Login</button>
+                                <button id="but_login" type="submit" class="btn btn-dark btn-lg btn-block" onClick={this.login}>התחבר</button>
                             </form>
                         </div>
                     </div>

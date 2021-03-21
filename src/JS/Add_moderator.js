@@ -40,7 +40,7 @@ class Add_moderator extends Component {
 
 
 
-                <form id="myForm" onSubmit={this.handleSubmit} class="row justify-content-md-center">
+                <form id="myForm" onSubmit={this.handleSubmit} class="backgroundPage row justify-content-md-center">
 
                     <div class="col-lg-4">
                         <div class="Card bg-white text-center card-form">

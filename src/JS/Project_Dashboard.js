@@ -339,73 +339,75 @@ class Project_Dashboard extends Component {
 
     render() {
         return (
-            <div className='backgroundPage'>
+            <div className='ozbackground spec'>
 
                 <MyTitle title="לוח פרוייקטים" />
 
-                <table class="table table-dark" dir='rtl'>
-                    <thead>
-                        <tr>
-                            <th scope="col">שם הפרוייקט</th>
-                            <th scope="col">מספר שותפים</th>
-                            <th scope="col">ת.ז</th>
-                            <th scope="col">שמות</th>
-                            <th scope="col">אימיילים</th>
-                            <th scope="col">מנחה</th>
-                            <th scope="col">יומן</th>
-                            <th scope="col">מצב התקדמות בגיט</th>
-                            <th scope="col">עריכה</th>
-                            <th scope="col">מחיקה</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.users.map((user, index) => (
-
-
-
+                <div className='ozbackground'>
+                    <table class="table table-dark" dir='rtl'>
+                        <thead>
                             <tr>
-                                <td>{user.name}</td>
-                                <td>{user.partners}</td>
-                                <td><div>{user.members[0].id}</div>
-                                    {user.members[1] ? (<div><p></p> {user.members[1].id}</div>) : (<div></div>)}
-                                </td>
-                                <td><div>{user.members[0].name}</div>
-                                    {user.members[1] ? (<div><p></p>{user.members[1].name}</div>) : (<div></div>)}
-                                </td>
-                                <td><div>{user.members[0].email}</div>
-                                    {user.members[1] ? (<div><p></p>{user.members[1].email}</div>) : (<div></div>)}
-                                </td>
-
-
-
-                                <td>{user.mod_name}</td>
-                                <td>{user.daybook}</td>
-                                <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
-                                    {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
-                                </td>
-
-                                <td>
-                                    <a href="#home" onClick={() => {
-                                        this.myEdit(user)
-
-                                    }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#modalLRForm">ערוך</a>
-                                </td>
-
-
-
-
-
-
-
-                                <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button></td>
+                                <th scope="col">שם הפרוייקט</th>
+                                <th scope="col">מספר שותפים</th>
+                                <th scope="col">ת.ז</th>
+                                <th scope="col">שמות</th>
+                                <th scope="col">אימיילים</th>
+                                <th scope="col">מנחה</th>
+                                <th scope="col">יומן</th>
+                                <th scope="col">מצב התקדמות בגיט</th>
+                                <th scope="col">עריכה</th>
+                                <th scope="col">מחיקה</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.users.map((user, index) => (
 
 
-                        ))}
+
+                                <tr>
+                                    <td>{user.name}</td>
+                                    <td>{user.partners}</td>
+                                    <td><div>{user.members[0].id}</div>
+                                        {user.members[1] ? (<div><p></p> {user.members[1].id}</div>) : (<div></div>)}
+                                    </td>
+                                    <td><div>{user.members[0].name}</div>
+                                        {user.members[1] ? (<div><p></p>{user.members[1].name}</div>) : (<div></div>)}
+                                    </td>
+                                    <td><div>{user.members[0].email}</div>
+                                        {user.members[1] ? (<div><p></p>{user.members[1].email}</div>) : (<div></div>)}
+                                    </td>
 
 
-                    </tbody>
-                </table>
+
+                                    <td>{user.mod_name}</td>
+                                    <td>{user.daybook}</td>
+                                    <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
+                                        {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
+                                    </td>
+
+                                    <td>
+                                        <a href="#home" onClick={() => {
+                                            this.myEdit(user)
+
+                                        }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#modalLRForm">ערוך</a>
+                                    </td>
+
+
+
+
+
+
+
+                                    <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button></td>
+                                </tr>
+
+
+                            ))}
+
+
+                        </tbody>
+                    </table>
+                </div>
 
 
 
@@ -421,7 +423,7 @@ class Project_Dashboard extends Component {
                                         <div class="form-group" id='myform'>
                                             <input id='project_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                             <p></p>
-                                            <select id="moderator_f" name="cars" class="form-control form-control-lg text-right" dir='rtl'>
+                                            <select id="moderator_f" type='text' name="cars" class="form-control form-control-lg text-right" dir='rtl'>
                                                 <option value='Not selected'>בחר מנחה מהרשימה</option>
                                                 {this.state.project.map((user) => (
                                                     <option value={user.id}>{user.name}</option>
@@ -430,7 +432,7 @@ class Project_Dashboard extends Component {
 
 
                                             <p></p>
-                                            <select id="members" name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsMembers}>
+                                            <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsMembers}>
                                                 <option selected="selected" value='1'>פרוייקט יחיד</option>
                                                 <option value='2'>פרוייקט זוגי</option>
                                             </select>
@@ -448,16 +450,19 @@ class Project_Dashboard extends Component {
                                             <p></p><p></p><p></p>
 
                                             <p></p>
-                                            <select id="numOfgits" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsGits}>
+                                            <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                            <p></p>
+
+                                            <select id="numOfgits" type="text" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsGits}>
                                                 <option selected="selected" value='1'>1</option>
                                                 <option value='2'>2</option>
                                             </select>
                                             <div class="form-group" id="containerGit">
                                                 <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
                                             </div>
-                                            <p></p>
 
-                                            <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+
+
                                         </div>
 
 

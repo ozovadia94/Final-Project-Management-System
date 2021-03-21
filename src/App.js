@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect, Link } from "react-router-dom";
+import { Route, Switch, Redirect, Link, HashRouter, BrowserRouter } from "react-router-dom";
 import './App.css';
 
 //pages
@@ -79,61 +79,64 @@ class App extends Component {
     return (
 
 
+      <HashRouter basename='/'>
+        <div className="App">
 
-      <div className="App">
 
 
 
-        <div class="after_loading">
-          {this.state.login ? (
-            <div>
+          <div class="after_loading">
+            {this.state.login ? (
+              <div>
 
-              <nav class="navbar navbar-dark bg-dark" dir="rtl">
-                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
-                  <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
-                  <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
-                  <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
-                  <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
-                  <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
-                  <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
-                </div>
-              </nav>
+                <nav class="navbar navbar-dark bg-dark" dir="rtl">
+                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
+                    <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
+                    <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
+                    <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
+                    <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
+                    <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
+                    <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                  </div>
+                </nav>
 
+                <Switch>
+                  <Route path="/MenuPage" component={MenuPage} exact />
+                  <Route path="/Add_moderator" component={Add_moderator} />
+                  <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
+                  <Route path="/Add_Project" component={Add_Project} />
+                  <Route path="/Project_Dashboard" component={Project_Dashboard} />
+
+                  <Route path="/Students" component={Students} />
+                  <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                  <Route path="/404" component={NotFoundPage} />
+                  <Redirect to="/404" />
+                </Switch>
+              </div>
+
+
+
+
+
+            ) : (<div>
               <Switch>
-                <Route path="/MenuPage" component={MenuPage} exact />
-                <Route path="/Add_moderator" component={Add_moderator} />
-                <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
-                <Route path="/Add_Project" component={Add_Project} />
-                <Route path="/Project_Dashboard" component={Project_Dashboard} />
-
-                <Route path="/Students" component={Students} />
-                <Route exact path="/"><Redirect to="/MenuPage" /></Route>
-                <Route path="/404" component={NotFoundPage} />
-                <Redirect to="/404" />
+                <Route path="/" component={Login} />
               </Switch>
-            </div>
+
+
+              <div class="loader"></div>
 
 
 
 
-
-          ) : (<div>
-            <Switch>
-              <Route path="/" component={Login} />
-            </Switch>
-
-
-            <div class="loader"></div>
+            </div>)}
+          </div>
 
 
 
-
-          </div>)}
         </div>
+      </HashRouter>
 
-
-
-      </div>
 
 
 
@@ -141,5 +144,8 @@ class App extends Component {
   }
 }
 
+
+const Home = () => <div><h2>Home</h2></div>
+const About = () => <div><h2>About</h2></div>
 
 export default App;

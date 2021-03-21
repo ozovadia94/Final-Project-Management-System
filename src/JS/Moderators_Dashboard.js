@@ -56,11 +56,11 @@ class Moderators_Dashboard extends Component {
     deleteUserId = (id) => {
         const del = (id) => {
             axiosFirebase.delete('/moderators/' + id + '.json')
-            .then(function (response) {
-                alerts.alert('מנחה נמחק!')
-            }).catch(error => console.log(error))
+                .then(function (response) {
+                    alerts.alert('מנחה נמחק!')
+                }).catch(error => console.log(error))
         }
-        alerts.are_you_sure('האם ברצונך למחוק מנחה זה',id,del)
+        alerts.are_you_sure('האם ברצונך למחוק מנחה זה', id, del)
     }
 
     handleSubmit(e) {
@@ -70,58 +70,60 @@ class Moderators_Dashboard extends Component {
         }
 
         axiosFirebase.put('moderators/' + this.state.edit + '.json', moderator)
-        .then(function (response) {
-            alerts.alert('מנחה עודכן')
-        }).catch(error => console.log(error));
+            .then(function (response) {
+                alerts.alert('מנחה עודכן')
+            }).catch(error => console.log(error));
         e.preventDefault();
     }
 
 
     render() {
         return (
-            <div className='backgroundPage'>
+            <div >
+                <div className='backgroundPage'>
 
-                <MyTitle title="לוח מנחים" />
+                    <MyTitle title="לוח מנחים" />
 
-                <table class="table table-dark" dir='rtl'>
-                    <thead>
-                        <tr>
-                            <th scope="col">שם</th>
-                            <th scope="col">אימייל</th>
-                            <th scope="col">עריכה</th>
-                            <th scope="col">מחיקה</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.users.map((user, index) => (
-
-
+                    <table class="table table-dark" dir='rtl'>
+                        <thead>
                             <tr>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <a href="#home" onClick={() => {
-                                        this.editedUserId(user)
-
-                                    }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#moderator_edit_form">ערוך</a>
-                                </td>
-                                <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button> </td>
+                                <th scope="col">שם</th>
+                                <th scope="col">אימייל</th>
+                                <th scope="col">עריכה</th>
+                                <th scope="col">מחיקה</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.users.map((user, index) => (
 
 
-                        ))}
+                                <tr>
+                                    <td>{user.name}</td>
+                                    <td>{user.email}</td>
+                                    <td>
+                                        <a href="#home" onClick={() => {
+                                            this.editedUserId(user)
+
+                                        }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#moderator_edit_form">ערוך</a>
+                                    </td>
+                                    <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button> </td>
+                                </tr>
 
 
-                    </tbody>
-                </table>
+                            ))}
+
+
+                        </tbody>
+                    </table>
+                </div>
 
                 <div className="col-md-6">
 
                     <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
                         <div class="modal fade" id="moderator_edit_form" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                            <div class="modal-dialog cascading-modal" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-body mb-1">
+                            <div class="ozbackground modal-dialog cascading-modal" role="document">
+                                <div class="ozbackground modal-content">
+                                    <div class="ozbackground modal-body">
 
 
                                         <div class="form-group">
@@ -132,10 +134,16 @@ class Moderators_Dashboard extends Component {
                                         </div>
 
                                     </div>
-                                    <button id="buttClose" type="submit" class="btn btn-dark btn-lg">עדכן מנחה</button>
-                                    <p></p>
+                                    <div class="ozbackground modal-content">
+                                        <div class="ozbackground modal-body ozbackground">
+                                            <div class="form-group ozbackground">
+                                                <button id="buttClose" type="submit" class="btn btn-dark btn-lg btn-block">עדכן מנחה</button>
+                                                <p></p>
 
-                                    <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
+                                                <button type="button" class="btn btn-danger btn-lg btn-block" data-dismiss="modal">סגור</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
