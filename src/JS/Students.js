@@ -38,7 +38,7 @@ class git extends Component {
 
     componentDidMount() {
         x=2
-        let y = 3-2-1
+        let t=2
         let url = 'https://api.monday.com/v2'
 
         const query = `query{
