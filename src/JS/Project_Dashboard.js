@@ -4,6 +4,7 @@ import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
+import firebase from '../Firebase/Firebase'
 
 
 class Project_Dashboard extends Component {
@@ -11,12 +12,14 @@ class Project_Dashboard extends Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addFieldsMembers = this.addFieldsMembers.bind(this)
+        this.projects_Ref = firebase.database().ref().child('projects');
+        this.moderators_Ref = firebase.database().ref().child('moderators');
     }
 
     state = {
-        res_moder: [],
-        project: [],
+        moderators: [],
         users: [],
+        moder_res: [],
         edit: '',
         loading: true,
         selectedUserId: null,
@@ -24,7 +27,53 @@ class Project_Dashboard extends Component {
     }
 
 
+    get_moderators = () => {
+        const fetched = [];
+        var res = [];
+        this.moderators_Ref.orderByChild('name').on('value', (categories) => {
+            categories.forEach((category) => {
+                fetched.push({
+                    ...category.val(),
+                });
+            })
+
+            res = categories.val();
+        })
+        this.setState({ moderators: fetched, moder_res: res });
+    }
+
+    get_projects = () => {
+
+        const fetchedUsers = [];
+        this.projects_Ref.orderByChild('name').on('value', (categories) => {
+            categories.forEach((category) => {
+                fetchedUsers.push({
+                    ...category.val(),
+                });
+            })
+        })
+
+        //this.setState({ users: fetched });
+        console.log(fetchedUsers)
+
+        for (let key in fetchedUsers) {
+            console.log(this.state.moder_res)
+            console.log(fetchedUsers[key].moderator_id)
+
+            if (this.state.moder_res[fetchedUsers[key].moderator_id] !== undefined) {
+                fetchedUsers[key]['mod_name'] = this.state.moder_res[fetchedUsers[key].moderator_id].name
+            }
+
+            else
+                fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
+        }
+
+        console.log(fetchedUsers)
+    }
+
     componentDidMount() {
+        // this.get_moderators()
+        // this.get_projects()
 
         const fetchedUsers = [];
         axiosFirebase.get('/projects.json')
@@ -45,9 +94,12 @@ class Project_Dashboard extends Component {
                                 id: key
                             });
                         }
-                        this.setState({ res_moder: res.data, project: fetched });
+
+                        this.setState({ moderators: fetched });
+
                         return res.data
                     }).then((res) => {
+
                         for (let key in fetchedUsers) {
                             if (res[fetchedUsers[key].moderator_id] !== undefined)
                                 fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
@@ -425,7 +477,7 @@ class Project_Dashboard extends Component {
                                             <p></p>
                                             <select id="moderator_f" type='text' name="cars" class="form-control form-control-lg text-right" dir='rtl'>
                                                 <option value='Not selected'>בחר מנחה מהרשימה</option>
-                                                {this.state.project.map((user) => (
+                                                {this.state.moderators.map((user) => (
                                                     <option value={user.id}>{user.name}</option>
                                                 ))}
                                             </select>
