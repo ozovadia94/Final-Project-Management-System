@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect, Link, HashRouter, BrowserRouter } from "react-router-dom";
+import { Route, Switch, Redirect, Link } from "react-router-dom";
 import './App.css';
+import ReactDOM from 'react-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 
 //pages
 import MenuPage from './JS/MenuPage'
@@ -28,6 +30,8 @@ class App extends Component {
 
 
   componentDidMount() {
+    
+
     document.onreadystatechange = function () {
       var after = document.querySelector(".after_loading")
       var loader = document.querySelector(".loader")
@@ -51,6 +55,7 @@ class App extends Component {
     };
     this.checkAuth()
     console.clear()
+    
   }
 
   checkAuth() {
@@ -71,73 +76,62 @@ class App extends Component {
 
 
   render() {
-    if (!this.state.login) {
-      return <Login></Login>
-    }
 
 
     return (
+      <div className="App">
 
 
-      <HashRouter basename='/'>
-        <div className="App">
+        <div class="after_loading">
+          {this.state.login ? (
+            <div>
 
+              <nav class="navbar navbar-dark bg-dark" dir="rtl">
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
+                  <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
+                  <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
+                  <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
+                  <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
+                  <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
+                  <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                </div>
+              </nav>
 
-
-
-          <div class="after_loading">
-            {this.state.login ? (
-              <div>
-
-                <nav class="navbar navbar-dark bg-dark" dir="rtl">
-                  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
-                    <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
-                    <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
-                    <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
-                    <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
-                    <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
-                    <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
-                  </div>
-                </nav>
-
-                <Switch>
-                  <Route path="/MenuPage" component={MenuPage} exact />
-                  <Route path="/Add_moderator" component={Add_moderator} />
-                  <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
-                  <Route path="/Add_Project" component={Add_Project} />
-                  <Route path="/Project_Dashboard" component={Project_Dashboard} />
-
-                  <Route path="/Students" component={Students} />
-                  <Route exact path="/"><Redirect to="/MenuPage" /></Route>
-                  <Route path="/404" component={NotFoundPage} />
-                  <Redirect to="/404" />
-                </Switch>
-              </div>
-
-
-
-
-
-            ) : (<div>
               <Switch>
-                <Route path="/" component={Login} />
+                <Route path="/MenuPage" component={MenuPage} exact />
+                <Route path="/Add_moderator" component={Add_moderator} />
+                <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
+                <Route path="/Add_Project" component={Add_Project} />
+                <Route path="/Project_Dashboard" component={Project_Dashboard} />
+
+                <Route path="/Students" component={Students} />
+                <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                <Route path="/404" component={NotFoundPage} />
+                <Redirect to="/404" />
               </Switch>
-
-
-              <div class="loader"></div>
-
+            </div>
 
 
 
-            </div>)}
-          </div>
+
+
+          ) : (<div>
+            <Switch>
+              <Route path="/" component={Login} />
+            </Switch>
+
+
+            <div class="loader"></div>
 
 
 
+
+          </div>)}
         </div>
-      </HashRouter>
 
 
+
+      </div>
 
 
     );

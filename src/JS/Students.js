@@ -6,6 +6,7 @@ import '../CSS/Pages.css' /* CSS */
 import my_header from '../Firebase/axiosGithub'
 
 import axiosMonday from '../Firebase/axiosMonday'
+import { use } from 'passport';
 
 require('dotenv').config()
 
@@ -37,39 +38,38 @@ class git extends Component {
 
 
     componentDidMount() {
-        x=2
-        let t=2
-        let url = 'https://api.monday.com/v2'
+        this.create_Users();
+        // let url = 'https://api.monday.com/v2'
 
-        const query = `query{
-            boards(ids: 1139310891){
-              id
-              name
-              description
-              items{id name}
-            }
-          }`;
+        // const query = `query{
+        //     boards(ids: 1139310891){
+        //       id
+        //       name
+        //       description
+        //       items{id name}
+        //     }
+        //   }`;
 
 
 
         
-        let options = {
-            "headers": axiosMonday
-        }
+        // let options = {
+        //     "headers": axiosMonday
+        // }
 
-        axios.get("https://api.monday.com/v2",{
-            body: JSON.stringify({
-                query,
-            })},options
-        ).then(res => {
-            console.log(res.data)
-            console.log('WTF?')
-        }).catch((err)=>{
-            console.log(err)
-        })
+        // axios.get("https://api.monday.com/v2",{
+        //     body: JSON.stringify({
+        //         query,
+        //     })},options
+        // ).then(res => {
+        //     console.log(res.data)
+        //     console.log('WTF?')
+        // }).catch((err)=>{
+        //     console.log(err)
+        // })
 
 
-        console.log(options)
+        // console.log(options)
 
         // axios.get(url, body, options).then(res => {
         //     console.log('Succes')
@@ -79,14 +79,11 @@ class git extends Component {
         //     console.log(err)
         // })
 
-
-
-
-        this.create_Users();
     }
 
     create_Users = async () => {
         const url = this.return_address()
+        console.log(url)
         const headers = my_header
 
         let promise = new Promise((res) => {
@@ -130,12 +127,13 @@ class git extends Component {
                                         myDate = gitdate.substring(num, i + 1) + myDate
                                 }
 
-
                                 fetchedUsers[key] = {
                                     date: myDate + '\n' + myTime,
                                     title: res2.data.commit.message,
                                     total: res2.data.stats.total,
                                     files: res2.data.files.length,
+                                    name: res2.data.commit.committer.name,
+                                    email: res2.data.commit.author.email,
                                     id: key
                                 }
                             })
@@ -197,9 +195,12 @@ class git extends Component {
                                 <tr>
                                     <th>#</th>
                                     <th>Date</th>
-                                    <th>Name</th>
+                                    <th>Committer's Email</th>
+                                    <th>Committer's Name</th>
+                                    <th>Commit's Name</th>
                                     <th>Changed files</th>
                                     <th>Changed words</th>
+                                    
 
                                 </tr>
 
@@ -207,9 +208,15 @@ class git extends Component {
                                     <tr>
                                         <th>{parseInt(user.id) + 1}</th>
                                         <th>{user.date}</th>
+                                        <th>{user.email}</th>
+                                        <th>{user.name}</th>
                                         <th>{user.title}</th>
                                         <th>{user.files}</th>
                                         <th>{user.total}</th>
+                                        
+
+                                        
+                                        
 
 
                                     </tr>
