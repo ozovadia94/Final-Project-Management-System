@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect, Link } from "react-router-dom";
 import './App.css';
-import ReactDOM from 'react-dom';
-import { BrowserRouter, HashRouter } from 'react-router-dom';
 
 //pages
 import MenuPage from './JS/MenuPage'
@@ -139,7 +137,7 @@ class App extends Component {
 }
 
 
-const Home = () => <div><h2>Home</h2></div>
-const About = () => <div><h2>About</h2></div>
+// const Home = () => <div><h2>Home</h2></div>
+// const About = () => <div><h2>About</h2></div>
 
 export default App;

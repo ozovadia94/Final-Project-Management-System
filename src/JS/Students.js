@@ -6,11 +6,9 @@ import '../CSS/Pages.css' /* CSS */
 import my_header from '../Firebase/axiosGithub'
 
 import axiosMonday from '../Firebase/axiosMonday'
-import { use } from 'passport';
+
 
 require('dotenv').config()
-
-//import myheader from '../Firebase/axiosGithub'
 
 
 //import URLSearchParams from 'url-search-params'
@@ -39,6 +37,8 @@ class git extends Component {
 
     componentDidMount() {
         this.create_Users();
+
+
         // let url = 'https://api.monday.com/v2'
 
         // const query = `query{
@@ -52,7 +52,7 @@ class git extends Component {
 
 
 
-        
+
         // let options = {
         //     "headers": axiosMonday
         // }
@@ -83,7 +83,6 @@ class git extends Component {
 
     create_Users = async () => {
         const url = this.return_address()
-        console.log(url)
         const headers = my_header
 
         let promise = new Promise((res) => {
@@ -173,6 +172,19 @@ class git extends Component {
         var params2 = new URLSearchParams(queryString);
         var user_repos = params2.get('git')
 
+        console.log(user_repos)
+
+
+        axios.get('http://localhost:3000/deepcode/' + user_repos).then(res => {
+            if (res.data.status !== "DONE")
+                console.log('failed!')
+            else
+                console.log(res)
+
+        }).catch(err => {
+            console.log(err)
+        })
+
         return `https://api.github.com/repos/${user_repos}/commits`
 
 
@@ -200,7 +212,7 @@ class git extends Component {
                                     <th>Commit's Name</th>
                                     <th>Changed files</th>
                                     <th>Changed words</th>
-                                    
+
 
                                 </tr>
 
@@ -213,10 +225,10 @@ class git extends Component {
                                         <th>{user.title}</th>
                                         <th>{user.files}</th>
                                         <th>{user.total}</th>
-                                        
 
-                                        
-                                        
+
+
+
 
 
                                     </tr>
