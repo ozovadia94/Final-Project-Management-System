@@ -7,16 +7,14 @@ class Login extends Component {
         super(props);
         this.login = this.login.bind(this);
         this.handleChange = this.handleChange.bind(this);
-
-        this.state = {
-            email: '',
-            password: '',
-        };
     }
 
     login(e) {
         e.preventDefault();
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+        var mail_input = document.getElementById("mail_input");
+        var password_input = document.getElementById("password_input");
+
+        firebase.auth().signInWithEmailAndPassword(mail_input.value, password_input.value).then(() => {
             window.location.href = "";
         }).catch((error) => {
             alert("המשתמש או הסיסמא שגויים");
@@ -44,11 +42,11 @@ class Login extends Component {
                             <form class='form1234'>
                                 <div class="form-group">
                                     
-                                    <input id="mail_input" class="form-control" type="email" name="email" onChange={this.handleChange}  placeholder="הכנס מייל" value={this.state.email}></input>
+                                    <input id="mail_input" class="form-control" type="email" name="email" onChange={this.handleChange}  placeholder="הכנס מייל" ></input>
                                 </div>
                                 <div class="form-group">
                                     
-                                    <input id="password_input" class="form-control"  type="password" name="password" onChange={this.handleChange} placeholder="הכנס סיסמא" value={this.state.password}></input>
+                                    <input id="password_input" class="form-control"  type="password"  onChange={this.handleChange} placeholder="הכנס סיסמא" ></input>
                                 </div>
                                 <button id="but_login" type="submit" class="btn btn-dark btn-lg btn-block" onClick={this.login}>התחבר</button>
                             </form>
