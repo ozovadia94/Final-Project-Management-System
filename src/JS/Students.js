@@ -6,6 +6,7 @@ import '../CSS/Pages.css' /* CSS */
 import my_header from '../Firebase/axiosGithub'
 
 import axiosMonday from '../Firebase/axiosMonday'
+import { use } from 'passport';
 
 
 require('dotenv').config()
@@ -32,6 +33,7 @@ class git extends Component {
         loading: false,
         check: false,
         selectedUserId: null,
+        user_repos: null,
     }
 
 
@@ -82,12 +84,20 @@ class git extends Component {
     }
 
     create_Users = async () => {
-        const url = this.return_address()
-        const headers = my_header
-
 
         let promise = new Promise((res) => {
             setTimeout(() => res("Now it's done!"), 1600)
+            const url = this.return_address()
+
+
+            console.log(url)
+            this.sleep(0).then(() => {
+                console.log(this.state.user_repos)
+                this.func()
+            })
+
+            const headers = my_header
+
             axios.get(url, {
                 "headers": headers
             }).then(res => {
@@ -127,6 +137,7 @@ class git extends Component {
                             }
 
                             fetchedUsers[key] = {
+                                sha: res2.data.sha,
                                 date: myDate + '\n' + myTime,
                                 title: res2.data.commit.message,
                                 total: res2.data.stats.total,
@@ -141,6 +152,28 @@ class git extends Component {
                 return fetchedUsers
             }).then((res) => {
                 this.setState({ users: res, check: true })
+                console.log(res)
+
+                var data = {
+                    "owner": '111',
+                    "repo": '222'
+                }
+
+                var options = {
+                    "headers": {
+                        "Content-Type": "application/json",
+                    }
+                }
+
+                axios.post('http://localhost:3000/vsdeepcode',data,options).then((x) => {
+                    console.log(x)
+
+                    
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+
             }).catch((err) => {
                 console.log(err)
                 alert(err)
@@ -158,46 +191,53 @@ class git extends Component {
     }
 
 
-
-    sleep(milliseconds) {
-        const date = Date.now();
-        let currentDate = null;
-        do {
-            currentDate = Date.now();
-        } while (currentDate - date < milliseconds);
-    }
-
     return_address() {
         const queryString = window.location.search;
         var params2 = new URLSearchParams(queryString);
-        var user_repos = params2.get('git')
+        var user = params2.get('git')
+        this.setState({ user_repos: user })
 
-        const sleep = (milliseconds) => {
-            return new Promise(resolve => setTimeout(resolve, milliseconds))
-          }
+        return `https://api.github.com/repos/${user}/commits`
+    }
 
-        var func = () => {
-            axios.get('http://localhost:3000/deepcode/' + user_repos).then(res => {
-                if (res.data.status === 'WAITING' || res.data.status === 'ANALYZING') {
-                    sleep(500).then(() => {
-                        console.log('wait!')
-                        return func()
-                      })
+    sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+    func = () => {
+        axios.get('http://localhost:3000/deepcode/' + this.state.user_repos).then(res => {
+            if (res.data.status === 'WAITING' || res.data.status === 'ANALYZING') {
+                this.sleep(500).then(() => {
+                    console.log('wait!')
+                    return this.func()
+                })
+            }
+            return res.data.analysisResults.suggestions
+        }).then((res)=>{
+            this.sleep(2000)
+            console.log(res)
+            const th=[]
+            for (const property in res) {
+                console.log(`${property}`);
+                console.log(res[property])
+                for(const cat in res[property].categories)
+                {
+                    console.log(res[property].categories[cat])
+                    th[res[property].categories[cat]]+=1
                 }
-                else
-                    console.log(res)
-
-            }).catch(err => {
-                console.log(err)
-            })
-        }
-        func()
-
-
-        return `https://api.github.com/repos/${user_repos}/commits`
-
-
-
+              }
+            
+            
+            
+            return th
+        }).then((res)=>{
+            for(let x in res){
+                res[x]=0
+            }
+            
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     render() {
