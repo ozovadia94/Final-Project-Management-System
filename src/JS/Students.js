@@ -152,7 +152,7 @@ class git extends Component {
                 return fetchedUsers
             }).then((res) => {
                 this.setState({ users: res, check: true })
-                console.log(res)
+                //console.log(res)
 
                 var data = {
                     "owner": '111',
