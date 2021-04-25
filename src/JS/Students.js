@@ -161,7 +161,7 @@ class git extends Component {
 
         const url = await this.return_address()
         const headers = my_header
-        
+        console.log(url)
 
         let res = await axios.get(url, { "headers": headers })
             .then(res => {
