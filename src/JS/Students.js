@@ -37,8 +37,8 @@ class git extends Component {
     }
 
 
-    componentDidMount() {
-        this.create_Users();
+    async componentDidMount() {
+        let res2 = await this.create_Users()
 
 
         // let url = 'https://api.monday.com/v2'
@@ -83,115 +83,121 @@ class git extends Component {
 
     }
 
-    create_Users = async () => {
 
-        let promise = new Promise((res) => {
-            setTimeout(() => res("Now it's done!"), 1600)
-            const url = this.return_address()
+    create_Array = async (res) => {
+        const fetchedUsers = new Array(res.length);
 
+        for (let key = 0; key < res.length; key++) {
+            axios.get(res[key].url, { "headers": my_header })
+                .then(res2 => {
+                    var tempDate = ''
+                    var myTime = ''
+                    var myDate = ''
 
-            console.log(url)
-            this.sleep(0).then(() => {
-                console.log(this.state.user_repos)
-                this.func()
-            })
-
-            const headers = my_header
-
-            axios.get(url, {
-                "headers": headers
-            }).then(res => {
-                return res.data
-            }).then(res => {
-                const fetchedUsers = new Array(res.length);
-                for (let key = 0; key < res.length; key++) {
-                    axios.get(res[key].url, {
-                        "headers": headers
-                    })
-                        .then(res2 => {
-                            var tempDate = ''
-                            var myTime = ''
-                            var myDate = ''
-
-                            const gitdate = res2.data.commit.author.date
+                    const gitdate = res2.data.commit.author.date
 
 
-                            for (let i = 0; i < gitdate.length; i++) {
+                    for (let i = 0; i < gitdate.length; i++) {
 
-                                if (gitdate[i] === 'T') {
-                                    tempDate = gitdate.substring(0, i);
-                                    myTime = gitdate.substring(i + 1, gitdate.length - 1);
-                                    break
-                                }
+                        if (gitdate[i] === 'T') {
+                            tempDate = gitdate.substring(0, i);
+                            myTime = gitdate.substring(i + 1, gitdate.length - 1);
+                            break
+                        }
 
-                            }
-
-                            let num = 0
-                            for (let i = 0; i < tempDate.length; i++) {
-                                if (tempDate[i] === '-') {
-                                    myDate = '/' + gitdate.substring(num, i) + myDate
-                                    num = i + 1
-                                }
-                                else if (i + 1 === tempDate.length)
-                                    myDate = gitdate.substring(num, i + 1) + myDate
-                            }
-
-                            fetchedUsers[key] = {
-                                sha: res2.data.sha,
-                                date: myDate + '\n' + myTime,
-                                title: res2.data.commit.message,
-                                total: res2.data.stats.total,
-                                files: res2.data.files.length,
-                                name: res2.data.commit.committer.name,
-                                email: res2.data.commit.author.email,
-                                id: key
-                            }
-                        })
-                }
-
-                return fetchedUsers
-            }).then((res) => {
-                this.setState({ users: res, check: true })
-                //console.log(res)
-
-                var data = {
-                    "owner": '111',
-                    "repo": '222'
-                }
-
-                var options = {
-                    "headers": {
-                        "Content-Type": "application/json",
                     }
-                }
 
-                axios.post('http://localhost:3000/vsdeepcode',data,options).then((x) => {
-                    console.log(x)
+                    let num = 0
+                    for (let i = 0; i < tempDate.length; i++) {
+                        if (tempDate[i] === '-') {
+                            myDate = '/' + gitdate.substring(num, i) + myDate
+                            num = i + 1
+                        }
+                        else if (i + 1 === tempDate.length)
+                            myDate = gitdate.substring(num, i + 1) + myDate
+                    }
 
-                    
-                }).catch((err) => {
-                    console.log(err)
+
+                    fetchedUsers[key] = {
+                        sha: res2.data.sha,
+                        date: myDate + '\n' + myTime,
+                        title: res2.data.commit.message,
+                        total: res2.data.stats.total,
+                        files: res2.data.files.length,
+                        name: res2.data.commit.committer.name,
+                        email: res2.data.commit.author.email,
+                        id: key
+                    }
                 })
+        }
 
-
-            }).catch((err) => {
-                console.log(err)
-                alert(err)
-                //window.location.replace('/404');
-
-            });
-        });
-        // wait until the promise returns us a value
-        await promise;
-
-        // "Now it's done!"
-        this.setState({ loading: true })
-
-        return 0
+        return fetchedUsers;
     }
 
 
-    return_address() {
+    deepcode_func = async () => {
+        var data = {
+            "owner": '111',
+            "repo": '222'
+        }
+
+        var options = {
+            "headers": {
+                "Content-Type": "application/json",
+            }
+        }
+
+
+
+        let res2 = await axios.post('http://localhost:3000/vsdeepcode', data, options).then((x) => {
+            console.log(x)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+
+    create_Users = async () => {
+
+        const url = await this.return_address()
+        const headers = my_header
+        console.log(url)
+
+        let res = await axios.get(url, { "headers": headers })
+            .then(res => {
+                return this.create_Array(res.data);
+            }).then((x) => {
+                this.setState({ users: x, check: true })
+            }).then(() => {
+                this.sleep(2000).then(() => {
+                    
+                })
+                console.log('1')
+
+            })
+            .catch(err => err)
+
+        console.log('2')
+
+
+        this.sleep(150).then(() => {
+            this.func()
+            console.log('sss')
+        }).then(()=>{
+            this.setState({ loading: true })
+        }).catch((err)=>{
+            this.setState({ loading: true })
+        })
+
+
+
+        //let xx = await this.deepcode_func()
+
+    }
+
+
+
+    async return_address() {
         const queryString = window.location.search;
         var params2 = new URLSearchParams(queryString);
         var user = params2.get('git')
@@ -212,28 +218,29 @@ class git extends Component {
                 })
             }
             return res.data.analysisResults.suggestions
-        }).then((res)=>{
+        }).then((res) => {
             this.sleep(2000)
-            console.log(res)
-            const th=[]
-            for (const property in res) {
-                console.log(`${property}`);
-                console.log(res[property])
-                for(const cat in res[property].categories)
-                {
-                    console.log(res[property].categories[cat])
-                    th[res[property].categories[cat]]+=1
-                }
-              }
-            
-            
-            
-            return th
-        }).then((res)=>{
-            for(let x in res){
-                res[x]=0
+
+            const th = {
+                'API': 0,
+                'Check': 0,
+                'Defect': 0,
+                'Info': 0,
+                'Security': 0,
             }
-            
+
+            for (const property in res) {
+                // console.log(`${property}`);
+                //console.log(res[property])
+                for (const cat in res[property].categories) {
+                    console.log(res[property].categories[cat])
+                    th[res[property].categories[cat]] += 1
+                }
+            }
+
+            return th
+        }).then((res) => {
+
             console.log(res)
         }).catch(err => {
             console.log(err)
