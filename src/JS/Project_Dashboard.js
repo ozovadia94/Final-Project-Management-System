@@ -74,7 +74,6 @@ class Project_Dashboard extends Component {
     componentDidMount() {
         // this.get_moderators()
         // this.get_projects()
-
         const fetchedUsers = [];
         axiosFirebase.get('/projects.json')
             .then(res => {

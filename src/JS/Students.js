@@ -7,10 +7,12 @@ import my_header from '../Firebase/axiosGithub'
 
 import axiosMonday from '../Firebase/axiosMonday'
 import { use } from 'passport';
+import { isCompositeComponent } from 'react-dom/test-utils';
 
 
 require('dotenv').config()
 
+const Epsilon = 180
 
 //import URLSearchParams from 'url-search-params'
 
@@ -85,7 +87,7 @@ class git extends Component {
 
 
     create_Array = async (res) => {
-        const fetchedUsers = new Array(res.length);
+        let fetchedUsers = []; // new Array(res.length);
 
         for (let key = 0; key < res.length; key++) {
             axios.get(res[key].url, { "headers": my_header })
@@ -130,9 +132,62 @@ class git extends Component {
                     }
                 })
         }
-
+        // console.log(fetchedUsers, fetchedUsers.length);
         return fetchedUsers;
     }
+
+
+    create_Array2_helper = async (res, key) => {
+        let response = await axios.get(res.url, { "headers": my_header })
+
+        var tempDate = '';
+        var myTime = '';
+        var myDate = '';
+        const gitdate = response.data.commit.author.date;
+
+        for (let i = 0; i < gitdate.length; i++) {
+            if (gitdate[i] === 'T') {
+                tempDate = gitdate.substring(0, i);
+                myTime = gitdate.substring(i + 1, gitdate.length - 1);
+                break
+            }
+        }
+
+        let num = 0
+        for (let i = 0; i < tempDate.length; i++) {
+            if (tempDate[i] === '-') {
+                myDate = '/' + gitdate.substring(num, i) + myDate
+                num = i + 1
+            }
+            else if (i + 1 === tempDate.length)
+                myDate = gitdate.substring(num, i + 1) + myDate
+        }
+
+        return {
+            sha: response.data.sha,
+            date: myDate,
+            time: myTime,
+            gitDate: gitdate,
+            title: response.data.commit.message,
+            total: response.data.stats.total,
+            files: response.data.files.length,
+            name: response.data.commit.committer.name,
+            email: response.data.commit.author.email,
+            id: key
+        }
+
+    }
+
+    create_Array2 = async (res) => {
+        let fetchedUsers = [];
+        for (let i = 0; i < res.length; i++) {
+            fetchedUsers[i] = await this.create_Array2_helper(res[i], i);
+        }
+        return fetchedUsers;
+    }
+
+
+
 
 
     deepcode_func = async () => {
@@ -150,7 +205,7 @@ class git extends Component {
 
 
         let res2 = await axios.post('http://localhost:3000/vsdeepcode', data, options).then((x) => {
-            console.log(x)
+            //console.log(x)
         }).catch((err) => {
             console.log(err)
         })
@@ -161,38 +216,51 @@ class git extends Component {
 
         const url = await this.return_address()
         const headers = my_header
-        console.log(url)
+        // console.log(url)
+
 
         let res = await axios.get(url, { "headers": headers })
             .then(res => {
-                return this.create_Array(res.data);
+                return this.create_Array2(res.data);
+                // return this.create_Array(res.data);
             }).then((x) => {
                 this.setState({ users: x, check: true })
-            }).then(() => {
+
+
+                let len = x.length
+                console.log(len)
+                console.log(x)
+                for (let i = 0; i < len - 1; i++) {
+                    let a1 = Date.parse(x[i].gitDate)/(1000)
+                    let a2 = Date.parse(x[i+1].gitDate)/(1000)
+                    //console.log(a1, a2, a1 - a2)
+                    if(a1-a2<Epsilon){
+                        console.log(a1, a2, a1 - a2)
+                    }
+                   
+                }
+            })
+
+            .then(() => {
                 this.sleep(2000).then(() => {
-                    
+                    this.setState({ loading: true })
                 })
-                console.log('1')
 
             })
             .catch(err => err)
 
-        console.log('2')
-
 
         this.sleep(150).then(() => {
             this.func()
-            console.log('sss')
-        }).then(()=>{
-            this.setState({ loading: true })
-        }).catch((err)=>{
-            this.setState({ loading: true })
+
+            let temp = document.getElementById('deepcode_id')
+            temp.innerText = 'OFir tabay'
+
+        }).catch((err) => {
+            console.log(err)
         })
 
-
-
         //let xx = await this.deepcode_func()
-
     }
 
 
@@ -230,10 +298,8 @@ class git extends Component {
             }
 
             for (const property in res) {
-                // console.log(`${property}`);
-                //console.log(res[property])
                 for (const cat in res[property].categories) {
-                    console.log(res[property].categories[cat])
+                    //console.log(res[property].categories[cat])
                     th[res[property].categories[cat]] += 1
                 }
             }
@@ -241,7 +307,7 @@ class git extends Component {
             return th
         }).then((res) => {
 
-            console.log(res)
+            //console.log(res)
         }).catch(err => {
             console.log(err)
         })
@@ -256,6 +322,8 @@ class git extends Component {
                 <div className="col-md-6">
 
                     <MyTitle title="לוח התקדמות" />
+
+                    <div id='deepcode_id'></div>
 
                     {this.state.loading ? (
                         <div>
@@ -275,7 +343,7 @@ class git extends Component {
                                 {this.state.users.map(user => (
                                     <tr>
                                         <th>{parseInt(user.id) + 1}</th>
-                                        <th>{user.date}</th>
+                                        <th>{user.date + '\n' + user.time}</th>
                                         <th>{user.email}</th>
                                         <th>{user.name}</th>
                                         <th>{user.title}</th>
