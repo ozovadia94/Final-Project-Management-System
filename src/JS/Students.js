@@ -236,6 +236,7 @@ class git extends Component {
                     //console.log(a1, a2, a1 - a2)
                     if(a1-a2<Epsilon){
                         console.log(a1, a2, a1 - a2)
+                        console.log(xit)
                     }
                    
                 }
