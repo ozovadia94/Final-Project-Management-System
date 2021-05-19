@@ -21,8 +21,6 @@ var URLSearchParams = require('url-search-params');
 //const moment = require('moment');
 
 
-
-
 class git extends Component {
     constructor(props) {
         super(props);
