@@ -21,8 +21,6 @@ var URLSearchParams = require('url-search-params');
 //const moment = require('moment');
 
 
-
-
 class git extends Component {
     constructor(props) {
         super(props);
@@ -119,7 +117,6 @@ class git extends Component {
                             myDate = gitdate.substring(num, i + 1) + myDate
                     }
 
-
                     fetchedUsers[key] = {
                         sha: res2.data.sha,
                         date: myDate + '\n' + myTime,
@@ -128,7 +125,8 @@ class git extends Component {
                         files: res2.data.files.length,
                         name: res2.data.commit.committer.name,
                         email: res2.data.commit.author.email,
-                        id: key
+                        id: key,
+                        analize: 'OK!'
                     }
                 })
         }
@@ -163,8 +161,6 @@ class git extends Component {
                 myDate = gitdate.substring(num, i + 1) + myDate
         }
 
-        var my_analize='OK!';
-
         return {
             sha: response.data.sha,
             date: myDate,
@@ -176,7 +172,7 @@ class git extends Component {
             name: response.data.commit.committer.name,
             email: response.data.commit.author.email,
             id: key,
-            analize: my_analize,
+            analize: 'OK!'
         }
 
     }
@@ -218,7 +214,6 @@ class git extends Component {
     create_Users = async () => {
 
         const url = await this.return_address()
-        console.log(url)
         const headers = my_header
         // console.log(url)
 
@@ -238,10 +233,30 @@ class git extends Component {
                     let a2 = Date.parse(x[i + 1].gitDate) / (1000)
                     //console.log(a1, a2, a1 - a2)
                     if (a1 - a2 < Epsilon) {
-                        if(this.state.users[i].analize=='OK!')
-                            this.state.users[i].analize='Fast Commit!';
+                        if (x[i].analize != 'OK!')
+                            x[i].analize = 'YAPRACH!';
+
                         console.log(i + 1, i + 2, a1, a2, a1 - a2)
                     }
+                }
+
+
+                for (let i = 0; i < len; i++) {
+                    var str = ''
+                    if (x[i].files > 2 || x[i].total > 200)
+                        str += 'BIG COMMIT\n'
+                    if (x[i].files <= 2)
+                        str += 'SMALL COMMIT\n'
+
+                    if (str !== '') {
+                        console.log('NOTEXIII')
+                        if (x[i].analize == 'OK!')
+                            x[i].analize = str
+                        else
+                            x[i].analize += str
+                    }
+
+
                 }
             })
             .then(() => {
@@ -256,8 +271,8 @@ class git extends Component {
         this.sleep(150).then(() => {
             this.func()
 
-            // let temp = document.getElementById('deepcode_id')
-            // temp.innerText = 'OFir tabat'
+            let temp = document.getElementById('deepcode_id')
+            temp.innerText = 'OFir tabat'
 
         }).catch((err) => {
             console.log(err)
@@ -332,7 +347,7 @@ class git extends Component {
                         <div>
                             <table id="commit_table" class="table">
                                 <tr>
-                                    <th>Oz's Analize</th>
+                                    <th>Oz's analize</th>
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Committer's Email</th>
