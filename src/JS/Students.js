@@ -163,6 +163,8 @@ class git extends Component {
                 myDate = gitdate.substring(num, i + 1) + myDate
         }
 
+        var my_analize='OK!';
+
         return {
             sha: response.data.sha,
             date: myDate,
@@ -173,7 +175,8 @@ class git extends Component {
             files: response.data.files.length,
             name: response.data.commit.committer.name,
             email: response.data.commit.author.email,
-            id: key
+            id: key,
+            analize: my_analize,
         }
 
     }
@@ -215,6 +218,7 @@ class git extends Component {
     create_Users = async () => {
 
         const url = await this.return_address()
+        console.log(url)
         const headers = my_header
         // console.log(url)
 
@@ -230,11 +234,13 @@ class git extends Component {
                 console.log(len)
                 console.log(x)
                 for (let i = 0; i < len - 1; i++) {
-                    let a1 = Date.parse(x[i].gitDate)/(1000)
-                    let a2 = Date.parse(x[i+1].gitDate)/(1000)
+                    let a1 = Date.parse(x[i].gitDate) / (1000)
+                    let a2 = Date.parse(x[i + 1].gitDate) / (1000)
                     //console.log(a1, a2, a1 - a2)
-                    if(a1-a2<Epsilon){
-                        console.log(i+1,i+2,a1, a2, a1 - a2)
+                    if (a1 - a2 < Epsilon) {
+                        if(this.state.users[i].analize=='OK!')
+                            this.state.users[i].analize='Fast Commit!';
+                        console.log(i + 1, i + 2, a1, a2, a1 - a2)
                     }
                 }
             })
@@ -250,8 +256,8 @@ class git extends Component {
         this.sleep(150).then(() => {
             this.func()
 
-            let temp = document.getElementById('deepcode_id')
-            temp.innerText = 'OFir tabat'
+            // let temp = document.getElementById('deepcode_id')
+            // temp.innerText = 'OFir tabat'
 
         }).catch((err) => {
             console.log(err)
@@ -326,6 +332,7 @@ class git extends Component {
                         <div>
                             <table id="commit_table" class="table">
                                 <tr>
+                                    <th>Oz's Analize</th>
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Committer's Email</th>
@@ -339,6 +346,7 @@ class git extends Component {
 
                                 {this.state.users.map(user => (
                                     <tr>
+                                        <th>{user.analize}</th>
                                         <th>{parseInt(user.id) + 1}</th>
                                         <th>{user.date + '\n' + user.time}</th>
                                         <th>{user.email}</th>
