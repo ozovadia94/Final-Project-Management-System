@@ -40,47 +40,6 @@ class git extends Component {
     async componentDidMount() {
         let res2 = await this.create_Users()
 
-
-        // let url = 'https://api.monday.com/v2'
-
-        // const query = `query{
-        //     boards(ids: 1139310891){
-        //       id
-        //       name
-        //       description
-        //       items{id name}
-        //     }
-        //   }`;
-
-
-
-
-        // let options = {
-        //     "headers": axiosMonday
-        // }
-
-        // axios.get("https://api.monday.com/v2",{
-        //     body: JSON.stringify({
-        //         query,
-        //     })},options
-        // ).then(res => {
-        //     console.log(res.data)
-        //     console.log('WTF?')
-        // }).catch((err)=>{
-        //     console.log(err)
-        // })
-
-
-        // console.log(options)
-
-        // axios.get(url, body, options).then(res => {
-        //     console.log('Succes')
-        //     console.log(res)
-        //     return res.data
-        // }).catch(err => {
-        //     console.log(err)
-        // })
-
     }
 
 
