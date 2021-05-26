@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axiosFirebase from '../Firebase/axiosFirebase';
+import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
@@ -23,11 +23,20 @@ class Add_moderator extends Component {
             name: this.input.value,
             email: this.input3.value,
         }
-        axiosFirebase.post('/moderators.json', moderator).then(function (response) {
-            alerts.alert('מנחה נוסף',false)
+        // axiosFirebase.post('/moderators.json', moderator).then(function (response) {
+        //     alerts.alert('מנחה נוסף',false)
+        //     document.getElementById("myForm").reset();
+        // }).catch (error => console.log(error));
+
+        var newPostKey = firebase.database().ref().child('moderators').push().key;
+        var updates = {};
+        updates['/moderators/' + newPostKey] = moderator;
+
+        firebase.database().ref().update(updates).then((x) => {
+            alerts.alert('מנחה נוסף', false)
             document.getElementById("myForm").reset();
-        }).catch (error => console.log(error));
-        e.preventDefault();   
+        }).catch(error => console.log(error));
+        e.preventDefault();
     }
 
     render() {
@@ -48,7 +57,7 @@ class Add_moderator extends Component {
 
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם מלא" ref={(input) => this.input = input}></input>
-                                <p></p>
+                                    <p></p>
                                     <input type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
                                 </div>
                                 <div>

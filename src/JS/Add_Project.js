@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import axiosFirebase from '../Firebase/axiosFirebase';
+import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 
-import firebase from '../Firebase/Firebase'
 
 import '../CSS/Pages.css' /* CSS */
 
