@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axiosFirebase from '../Firebase/axiosFirebase';
+import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
@@ -22,21 +22,19 @@ class Moderators_Dashboard extends Component {
 
 
     componentDidMount() {
-        axiosFirebase.get('/moderators.json')
-            .then(res => {
-                const fetchedUsers = [];
-                for (let key in res.data) {
+        var database = firebase.database().ref('moderators/');
+        database.on('value', (snapshot) => {
+            const res = snapshot.val();
+
+            const fetchedUsers = [];
+                for (let key in res) {
                     fetchedUsers.push({
-                        ...res.data[key],
+                        ...res[key],
                         id: key
                     });
                 }
                 this.setState({ loading: false, users: fetchedUsers });
-            })
-            .catch(err => {
-                this.setState({ loading: false });
-                console.log(err)
-            })
+        })
     }
 
 
@@ -54,12 +52,23 @@ class Moderators_Dashboard extends Component {
     }
 
     deleteUserId = (id) => {
+        // const del = (id) => {
+        //     axiosFirebase.delete('/moderators/' + id + '.json')
+        //         .then(function (response) {
+        //             alerts.alert('מנחה נמחק!')
+        //         }).catch(error => console.log(error))
+        // }
         const del = (id) => {
-            axiosFirebase.delete('/moderators/' + id + '.json')
-                .then(function (response) {
-                    alerts.alert('מנחה נמחק!')
-                }).catch(error => console.log(error))
+            firebase.database().ref('moderators/' + id).remove().then(()=>{
+                alerts.alert('מנחה נמחק!',false)
+            })
+
+            // axiosFirebase.delete('/moderators/' + id + '.json')
+            //     .then(function (response) {
+            //         alerts.alert('מנחה נמחק!')
+            //     }).catch(error => console.log(error))
         }
+        
         alerts.are_you_sure('האם ברצונך למחוק מנחה זה', id, del)
     }
 
@@ -69,11 +78,25 @@ class Moderators_Dashboard extends Component {
             email: this.input3.value,
         }
 
-        axiosFirebase.put('moderators/' + this.state.edit + '.json', moderator)
-            .then(function (response) {
-                alerts.alert('מנחה עודכן')
-            }).catch(error => console.log(error));
+        // axiosFirebase.put('moderators/' + this.state.edit + '.json', moderator)
+        //     .then(function (response) {
+        //         alerts.alert('מנחה עודכן')
+        //     }).catch(error => console.log(error));
+        // e.preventDefault();
+
+        
+        var updates = {};
+        updates['/moderators/' + this.state.edit] = moderator;
+
+        firebase.database().ref().update(updates).then((x) => {
+            alerts.alert('פרוייקט נוסף',false)//true for refresh!
+        }).catch((err) => {
+            console.log(err)
+        });
         e.preventDefault();
+
+        document.getElementById('close_but').click()
+        
     }
 
 
@@ -137,10 +160,10 @@ class Moderators_Dashboard extends Component {
                                     <div class="ozbackground modal-content">
                                         <div class="ozbackground modal-body ozbackground">
                                             <div class="form-group ozbackground">
-                                                <button id="buttClose" type="submit" class="btn btn-dark btn-lg btn-block">עדכן מנחה</button>
+                                                <button id="update_but" type="submit" class="btn btn-dark btn-lg btn-block">עדכן מנחה</button>
                                                 <p></p>
 
-                                                <button type="button" class="btn btn-danger btn-lg btn-block" data-dismiss="modal">סגור</button>
+                                                <button id="close_but" type="button" class="btn btn-danger btn-lg btn-block" data-dismiss="modal">סגור</button>
                                             </div>
                                         </div>
                                     </div>
