@@ -39,7 +39,6 @@ class git extends Component {
 
     async componentDidMount() {
         let res2 = await this.create_Users()
-
     }
 
 
@@ -174,8 +173,6 @@ class git extends Component {
 
         const url = await this.return_address()
         const headers = my_header
-        // console.log(url)
-
 
         let res = await axios.get(url, { "headers": headers })
             .then(res => {
@@ -192,10 +189,8 @@ class git extends Component {
                     let a2 = Date.parse(x[i + 1].gitDate) / (1000)
                     //console.log(a1, a2, a1 - a2)
                     if (a1 - a2 < Epsilon) {
-                        if (x[i].analize != 'OK!')
-                            x[i].analize = 'YAPRACH!';
-
-                        console.log(i + 1, i + 2, a1, a2, a1 - a2)
+                        //if (x[i].analize != 'OK!')
+                        x[i].analize = 'Frequent,\n';
                     }
                 }
 
@@ -203,12 +198,11 @@ class git extends Component {
                 for (let i = 0; i < len; i++) {
                     var str = ''
                     if (x[i].files > 2 || x[i].total > 200)
-                        str += 'BIG COMMIT\n'
+                        str += 'BIG,\n'
                     if (x[i].files <= 2)
-                        str += 'SMALL COMMIT\n'
-
+                        str += 'SMALL,\n'
+                    
                     if (str !== '') {
-                        console.log('NOTEXIII')
                         if (x[i].analize == 'OK!')
                             x[i].analize = str
                         else

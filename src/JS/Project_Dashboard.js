@@ -54,7 +54,6 @@ class Project_Dashboard extends Component {
         })
 
         //this.setState({ users: fetched });
-        console.log(fetchedUsers)
 
         for (let key in fetchedUsers) {
             console.log(this.state.moder_res)
@@ -67,8 +66,6 @@ class Project_Dashboard extends Component {
             else
                 fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
         }
-
-        console.log(fetchedUsers)
     }
 
     componentDidMount() {

@@ -4,6 +4,8 @@ import MyTitle from '../Titles/Title'
 import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 
+import firebase from '../Firebase/Firebase'
+
 import '../CSS/Pages.css' /* CSS */
 
 class Add_Project extends Component {
@@ -14,21 +16,27 @@ class Add_Project extends Component {
     }
 
     componentDidMount() {
-        axiosFirebase.get('/moderators.json')
-            .then(res => {
-                const fetchedUsers = [];
-                for (let key in res.data) {
-                    fetchedUsers.push({
-                        ...res.data[key],
-                        id: key,
+        var database = firebase.database().ref('moderators/');
+        database.on('value', (snapshot) => {
+            const res = snapshot.val();
+            console.log(res)
+            const fetchedUsers = [];
+            for (let key in res) {
+                console.log(key)
+                fetchedUsers.push({
+                    ...res[key],
+                    id: key,
 
-                    });
-                }
-                this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
-            })
-            .catch(err => {
-                this.setState({ loading: false });
-            })
+                });
+            }
+            console.log(fetchedUsers)
+            console.log(res)
+            this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
+        })
+        // .catch(err => {
+        //     console.log('HERE!')
+        //     this.setState({ loading: false });
+        // })
     }
 
     state = {
@@ -44,12 +52,12 @@ class Add_Project extends Component {
         var mod = document.getElementById("moderator_f");
         var numOfPartners = document.getElementById("members");
         var numOfGits = document.getElementById("numOfgits");
-        
+
         //Get all the gits from the user
         let gits = []
         for (let k = 0; k < numOfGits.value; k++) {
             let num = k + 1
-            gits[k]=document.getElementById("git_id" + num).value
+            gits[k] = document.getElementById("git_id" + num).value
         }
 
         //Get all the members from the user
@@ -73,12 +81,24 @@ class Add_Project extends Component {
             numOfGits: numOfGits.value,
             gits: gits,
         }
-        axiosFirebase.post('/projects.json', user).then(function (response) {
+
+        // axiosFirebase.post('/projects.json', user).then(function (response) {
+        // alerts.alert('פרוייקט נוסף')//true for refresh!
+
+
+        // }).catch(error => {
+        //     console.log(error)
+        // });
+
+        var newPostKey = firebase.database().ref().child('projects').push().key;
+        console.log(newPostKey)
+        var updates = {};
+        updates['/projects/' + newPostKey] = user;
+
+        firebase.database().ref().update(updates).then((x) => {
             alerts.alert('פרוייקט נוסף')//true for refresh!
-
-
-        }).catch(error => {
-            console.log(error)
+        }).catch((err) => {
+            console.log('Failed')
         });
 
         e.preventDefault();
@@ -90,14 +110,13 @@ class Add_Project extends Component {
         if (numberOfmembers === null)
             return
         else
-        numberOfmembers = numberOfmembers.value
-        
+            numberOfmembers = numberOfmembers.value
+
         var container = document.getElementById("container");//container of members
 
-        var sum_element_now=container.childElementCount
+        var sum_element_now = container.childElementCount
 
-        if (numberOfmembers>sum_element_now)
-        {
+        if (numberOfmembers > sum_element_now) {
             for (var i = sum_element_now; i < numberOfmembers; i++) {
                 // Append a node with a random text
                 let num = i + 1
@@ -134,8 +153,8 @@ class Add_Project extends Component {
             }
         }
         else
-            for(let y=sum_element_now;y>numberOfmembers;y--)
-                y=container.removeChild(container.lastChild)
+            for (let y = sum_element_now; y > numberOfmembers; y--)
+                y = container.removeChild(container.lastChild)
     }
 
     addFieldsGits = () => {
@@ -144,15 +163,14 @@ class Add_Project extends Component {
         if (numberOfGits === null)
             return
         else
-        numberOfGits = numberOfGits.value
-        
+            numberOfGits = numberOfGits.value
+
         // Container <div> where dynamic content will be placed
         var container = document.getElementById("containerGit");
-        
-        var sum_element_now=container.childElementCount
 
-        if (numberOfGits>sum_element_now)
-        {
+        var sum_element_now = container.childElementCount
+
+        if (numberOfGits > sum_element_now) {
             for (var i = sum_element_now; i < numberOfGits; i++) {
                 // Append a node with a random text
 
@@ -161,16 +179,16 @@ class Add_Project extends Component {
                 input1.id = "git_id" + (i + 1);
                 input1.className = "form-control form-control-lg text-right"
                 input1.placeholder = "git_user/repository"
-                
+
                 input1.appendChild(document.createElement("p"));
                 container.appendChild(input1);
                 // Append a line break 
-                
+
             }
         }
         else
-            for(let y=sum_element_now;y>numberOfGits;y--)
-                y=container.removeChild(container.lastChild)
+            for (let y = sum_element_now; y > numberOfGits; y--)
+                y = container.removeChild(container.lastChild)
     }
 
     render() {
@@ -189,7 +207,7 @@ class Add_Project extends Component {
                                 <div class="form-group" id='form1'>
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                     <p></p>
-                                    <select  id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
+                                    <select id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
                                         <option value='Not selected'>בחר מנחה מהרשימה</option>
                                         {this.state.moderator.map((user) => (
                                             <option value={user.id}>{user.name}</option>
@@ -205,7 +223,7 @@ class Add_Project extends Component {
 
                                 <div class="form-group" id="container">
                                     <div>
-                                        סטודנט 1<br/>
+                                        סטודנט 1<br />
                                         <input type="number" id="member_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
                                         <input type="text" id="member_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
                                         <input type="email" id="member_mail1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
