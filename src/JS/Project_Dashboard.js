@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import axiosFirebase from '../Firebase/axiosFirebase';
+import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
-import firebase from '../Firebase/Firebase'
 
 
 class Project_Dashboard extends Component {
@@ -27,94 +26,47 @@ class Project_Dashboard extends Component {
     }
 
 
-    get_moderators = () => {
-        const fetched = [];
-        var res = [];
-        this.moderators_Ref.orderByChild('name').on('value', (categories) => {
-            categories.forEach((category) => {
-                fetched.push({
-                    ...category.val(),
-                });
-            })
-
-            res = categories.val();
-        })
-        this.setState({ moderators: fetched, moder_res: res });
-    }
-
-    get_projects = () => {
-
+    get_project_mod = () => {
         const fetchedUsers = [];
-        this.projects_Ref.orderByChild('name').on('value', (categories) => {
-            categories.forEach((category) => {
+        var database_pro = firebase.database().ref('projects/');
+        database_pro.on('value', (snapshot) => {
+            const res = snapshot.val();
+            for (let key in res) {
                 fetchedUsers.push({
-                    ...category.val(),
+                    ...res[key],
+                    id: key
                 });
-            })
+            }
         })
 
-        //this.setState({ users: fetched });
-
-        for (let key in fetchedUsers) {
-            console.log(this.state.moder_res)
-            console.log(fetchedUsers[key].moderator_id)
-
-            if (this.state.moder_res[fetchedUsers[key].moderator_id] !== undefined) {
-                fetchedUsers[key]['mod_name'] = this.state.moder_res[fetchedUsers[key].moderator_id].name
+        var database_mod = firebase.database().ref('moderators/');
+        const fetched = [];
+        database_mod.on('value', (snapshot) => {
+            const res = snapshot.val();
+            for (let key in res) {
+                fetched.push({
+                    ...res[key],
+                    id: key
+                });
             }
 
-            else
-                fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
-        }
+            this.setState({ moderators: fetched });
+
+            for (let key in fetchedUsers) {
+                if (fetchedUsers[key].moderator_id === 'Not selected')
+                    fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
+                else
+                    fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
+
+            }
+
+            this.setState({ users: fetchedUsers });
+        })
+
     }
 
     componentDidMount() {
-        // this.get_moderators()
-        // this.get_projects()
-        const fetchedUsers = [];
-        axiosFirebase.get('/projects.json')
-            .then(res => {
-                for (let key in res.data) {
-                    fetchedUsers.push({
-                        ...res.data[key],
-                        id: key
-                    });
-                }
-            }).then((res) => {
-                axiosFirebase.get('/moderators.json')
-                    .then(res => {
-                        const fetched = [];
-                        for (let key in res.data) {
-                            fetched.push({
-                                ...res.data[key],
-                                id: key
-                            });
-                        }
-
-                        this.setState({ moderators: fetched });
-
-                        return res.data
-                    }).then((res) => {
-
-                        for (let key in fetchedUsers) {
-                            if (res[fetchedUsers[key].moderator_id] !== undefined)
-                                fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
-                            else
-                                fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
-
-                        }
-                    }).then(() => {
-                        this.setState({ users: fetchedUsers });
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            })
-            .catch(err => {
-                this.setState({ loading: false });
-                console.log(err)
-            })
-
+        this.get_project_mod()
     }
 
 
@@ -123,12 +75,19 @@ class Project_Dashboard extends Component {
     }
 
     deleteUserId = (id) => {
+
         const del = (id) => {
-            axiosFirebase.delete('/projects/' + id + '.json')
-                .then(function (response) {
-                    alerts.alert('סטודנט נמחק')
-                }).catch(error => console.log(error))
+            firebase.database().ref('projects/' + id).remove().then(() => {
+                alerts.alert('סטודנט נמחק')
+            })
         }
+
+        // const del = (id) => {
+        //     axiosFirebase.delete('/projects/' + id + '.json')
+        //         .then(function (response) {
+        //             alerts.alert('סטודנט נמחק')
+        //         }).catch(error => console.log(error))
+        // }
         alerts.are_you_sure('האם ברצונך למחוק סטודנט זה', id, del)
     }
 
@@ -377,12 +336,25 @@ class Project_Dashboard extends Component {
             gits: gits,
         }
 
-        axiosFirebase.put(`projects/` + this.state.edit + '.json', user)
-            .then(function (response) {
-                alerts.alert('פרוייקט עודכן')
-            })
-            .catch(error => console.log(error));
+        // axiosFirebase.put(`projects/` + this.state.edit + '.json', user)
+        //     .then(function (response) {
+        //         alerts.alert('פרוייקט עודכן')
+        //     })
+        //     .catch(error => console.log(error));
+        // e.preventDefault();
+
+
+        var updates = {};
+        updates['/projects/' + this.state.edit] = user;
+
+        firebase.database().ref().update(updates).then((x) => {
+            alerts.alert('פרוייקט עודכן')//true for refresh!
+        }).catch((err) => {
+            console.log(err)
+        });
         e.preventDefault();
+
+        document.getElementById('close_but').click()
     }
 
     render() {
@@ -516,10 +488,10 @@ class Project_Dashboard extends Component {
 
 
                                     </div>
-                                    <button id="buttClose" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
+                                    <button id="update_but" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
                                     <p></p>
 
-                                    <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
+                                    <button id="close_but" type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
                                 </div>
                             </div>
                         </div>
