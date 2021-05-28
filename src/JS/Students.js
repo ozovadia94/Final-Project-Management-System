@@ -144,9 +144,6 @@ class git extends Component {
     }
 
 
-
-
-
     deepcode_func = async () => {
         var data = {
             "owner": '111',
