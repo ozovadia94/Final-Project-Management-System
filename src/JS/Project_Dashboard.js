@@ -4,6 +4,7 @@ import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
+import { object } from 'underscore';
 
 
 class Project_Dashboard extends Component {
@@ -334,6 +335,7 @@ class Project_Dashboard extends Component {
             members: members,
             numOfGits: numOfGits.value,
             gits: gits,
+            date: [], 
         }
 
         // axiosFirebase.put(`projects/` + this.state.edit + '.json', user)

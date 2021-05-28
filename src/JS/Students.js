@@ -182,8 +182,7 @@ class git extends Component {
                 this.setState({ users: x, check: true })
 
                 let len = x.length
-                console.log(len)
-                console.log(x)
+                
                 for (let i = 0; i < len - 1; i++) {
                     let a1 = Date.parse(x[i].gitDate) / (1000)
                     let a2 = Date.parse(x[i + 1].gitDate) / (1000)
@@ -221,15 +220,15 @@ class git extends Component {
             .catch(err => err)
 
 
-        this.sleep(150).then(() => {
-            this.func()
+        // this.sleep(150).then(() => {
+        //     this.func()
 
-            let temp = document.getElementById('deepcode_id')
-            temp.innerText = 'OFir tabat'
+        //     let temp = document.getElementById('deepcode_id')
+        //     temp.innerText = 'OFir tabat'
 
-        }).catch((err) => {
-            console.log(err)
-        })
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
 
         //let xx = await this.deepcode_func()
     }

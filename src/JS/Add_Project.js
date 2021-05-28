@@ -79,6 +79,7 @@ class Add_Project extends Component {
             members: members,
             numOfGits: numOfGits.value,
             gits: gits,
+            date: [],
         }
 
         // axiosFirebase.post('/projects.json', user).then(function (response) {
