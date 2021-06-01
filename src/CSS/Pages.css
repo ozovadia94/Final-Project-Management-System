@@ -37,3 +37,10 @@ input[type=number] {
 }
 
 
+td,tr{
+    text-align: center; 
+}
+
+.mypointer{
+    cursor: pointer;
+}

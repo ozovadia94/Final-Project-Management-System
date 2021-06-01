@@ -6,6 +6,7 @@ import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
 
 
+
 class Project_Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,7 @@ class Project_Dashboard extends Component {
         this.addFieldsMembers = this.addFieldsMembers.bind(this)
         this.projects_Ref = firebase.database().ref().child('projects');
         this.moderators_Ref = firebase.database().ref().child('moderators');
+        this.getImage('url1')
     }
 
     state = {
@@ -23,6 +25,40 @@ class Project_Dashboard extends Component {
         loading: true,
         selectedUserId: null,
         show: false,
+        githubPic: '',
+        editpic: '',
+        deletepic: '',
+        diarypic: ''
+    }
+
+
+
+    getImage(image) {
+        firebase.storage().ref("images/").child('icons8-github-36.png').getDownloadURL().then((url) => {
+            this.setState({ githubPic: url })
+        }).catch((error) => {
+            // Handle any errors
+        })
+        firebase.storage().ref("images/").child('icons8-edit-36.png').getDownloadURL().then((url) => {
+            this.setState({ editpic: url })
+        }).catch((error) => {
+            // Handle any errors
+        })
+        firebase.storage().ref("images/").child('icons8-delete-24.png').getDownloadURL().then((url) => {
+            this.setState({ deletepic: url })
+        }).catch((error) => {
+            // Handle any errors
+        })
+        firebase.storage().ref("images/").child('icons8-calendar-36.png').getDownloadURL().then((url) => {
+            this.setState({ diarypic: url })
+        }).catch((error) => {
+            // Handle any errors
+        })
+
+
+
+
+
     }
 
 
@@ -92,8 +128,18 @@ class Project_Dashboard extends Component {
     }
 
     studentclick = (user, key) => {
-        window.open('/Students?git=' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
+        window.open('https://github.com/' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
     }
+
+    studentclick_git = (user, key) => {
+        window.open('https://github.com/' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no')
+    }
+
+    studentclick_daybook = (day) => {
+        window.open(day, 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no')
+    }
+
+
 
     addFieldsMembers = () => {
         // Number of inputs to create
@@ -370,28 +416,35 @@ class Project_Dashboard extends Component {
     render() {
         return (
             <div className='ozbackground spec'>
+                <i class="fa fa-github" aria-hidden="true"></i>
+
+
 
                 <MyTitle title="לוח פרוייקטים" />
+
+
+
+
 
                 <div className='ozbackground'>
                     <table class="table table-dark" dir='rtl'>
                         <thead>
                             <tr>
                                 <th scope="col">שם הפרוייקט</th>
-                                <th scope="col">מספר שותפים</th>
+                                <th scope="col">שותפים</th>
                                 <th scope="col">ת.ז</th>
                                 <th scope="col">שמות</th>
                                 <th scope="col">אימיילים</th>
                                 <th scope="col">מנחה</th>
                                 <th scope="col">יומן</th>
-                                <th scope="col">מצב התקדמות בגיט</th>
+                                <th scope="col">גיט</th>
                                 <th scope="col">עריכה</th>
                                 <th scope="col">מחיקה</th>
+                                <th scope="col">מצב התקדמות בגיט</th>
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.users.map((user, index) => (
-
 
 
                                 <tr>
@@ -407,28 +460,31 @@ class Project_Dashboard extends Component {
                                         {user.members[1] ? (<div><p></p>{user.members[1].email}</div>) : (<div></div>)}
                                     </td>
 
-
-
                                     <td>{user.mod_name}</td>
-                                    <td>{user.daybook}</td>
-                                    <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
-                                        {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
+
+                                    {user.daybook === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' onClick={() => this.studentclick_daybook(user.daybook)} src={this.state.diarypic} ></img> </td>
+                                    )}
+
+                                    <td><a class='mypointer' onClick={() => this.studentclick_git(user, 0)} ><img src={this.state.githubPic} id='gitimg' /></a>
+                                        {user.numOfGits > 1 ?
+                                            (<div>
+                                                <p></p>
+                                                <a class='mypointer' onClick={() => this.studentclick_git(user, 1)} data-toggle="modal"><img src={this.state.githubPic} id='gitimg' /></a></div>) : (<div></div>)}
                                     </td>
 
                                     <td>
                                         <a href="#home" onClick={() => {
                                             this.myEdit(user)
 
-                                        }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#modalLRForm">ערוך</a>
+                                        }} class=" Logged-out" data-toggle="modal" data-target="#modalLRForm"><img src={this.state.editpic} /></a>
                                     </td>
 
+                                    <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)}  ><img src={this.state.deletepic} /></a></td>
 
+                                    <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
+                                        {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
+                                    </td>
 
-
-
-
-
-                                    <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button></td>
                                 </tr>
 
 
