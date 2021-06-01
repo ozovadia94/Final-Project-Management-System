@@ -15,6 +15,7 @@ import NotFoundPage from './JS/NotFoundPage'
 //More Components
 import Login from './JS/Login'
 import firebase from './Firebase/Firebase';
+import axios from 'axios';
 
 class App extends Component {
   constructor() {
@@ -28,6 +29,14 @@ class App extends Component {
 
 
   componentDidMount() {
+    console.log('WTF!')
+    axios.get('http://localhost:3000/wtf').then((res)=>{
+      console.log(res)
+      console.log('xxx')
+    }).catch(err=>{
+      console.log('IMMMM')
+      console.log('ERRORRRR!!','\n',err)
+    })
     
 
     document.onreadystatechange = function () {
@@ -52,7 +61,7 @@ class App extends Component {
       }
     };
     this.checkAuth()
-    console.clear()
+    //console.clear()
     
   }
 

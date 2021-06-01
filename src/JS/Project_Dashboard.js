@@ -4,7 +4,6 @@ import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
-import { object } from 'underscore';
 
 
 class Project_Dashboard extends Component {
@@ -327,16 +326,16 @@ class Project_Dashboard extends Component {
             }
         }
 
-        const user = {
-            name: this.input.value,
-            partners: numOfPartners.value,
-            daybook: this.input5.value,
-            moderator_id: mod.value,
-            members: members,
-            numOfGits: numOfGits.value,
-            gits: gits,
-            date: [], 
-        }
+        // const user = {
+        //     name: this.input.value,
+        //     partners: numOfPartners.value,
+        //     daybook: this.input5.value,
+        //     moderator_id: mod.value,
+        //     members: members,
+        //     numOfGits: numOfGits.value,
+        //     gits: gits,
+        //     date: [],
+        // }
 
         // axiosFirebase.put(`projects/` + this.state.edit + '.json', user)
         //     .then(function (response) {
@@ -347,7 +346,16 @@ class Project_Dashboard extends Component {
 
 
         var updates = {};
-        updates['/projects/' + this.state.edit] = user;
+        updates['/projects/' + this.state.edit + '/name'] = this.input.value
+        updates['/projects/' + this.state.edit + '/partners'] = numOfPartners.value
+        updates['/projects/' + this.state.edit + '/daybook'] = this.input5.value
+        updates['/projects/' + this.state.edit + '/moderator_id'] = mod.value
+        updates['/projects/' + this.state.edit + '/members'] = members
+        updates['/projects/' + this.state.edit + '/numOfGits'] = numOfGits.value
+        updates['/projects/' + this.state.edit + '/gits'] = gits
+        updates['/projects/' + this.state.edit + '/date'] = []
+
+
 
         firebase.database().ref().update(updates).then((x) => {
             alerts.alert('פרוייקט עודכן')//true for refresh!

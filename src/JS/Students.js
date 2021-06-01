@@ -5,9 +5,8 @@ import '../CSS/Pages.css' /* CSS */
 
 import my_header from '../Firebase/axiosGithub'
 
-import axiosMonday from '../Firebase/axiosMonday'
-import { use } from 'passport';
-import { isCompositeComponent } from 'react-dom/test-utils';
+// import axiosMonday from '../Firebase/axiosMonday'
+
 
 
 require('dotenv').config()
@@ -119,6 +118,7 @@ class git extends Component {
                 myDate = gitdate.substring(num, i + 1) + myDate
         }
 
+        console.log()
         return {
             sha: response.data.sha,
             date: myDate,
@@ -126,6 +126,8 @@ class git extends Component {
             gitDate: gitdate,
             title: response.data.commit.message,
             total: response.data.stats.total,
+            addition: response.data.stats.additions,
+            deletion: response.data.stats.deletions,
             files: response.data.files.length,
             name: response.data.commit.committer.name,
             email: response.data.commit.author.email,
@@ -179,7 +181,7 @@ class git extends Component {
                 this.setState({ users: x, check: true })
 
                 let len = x.length
-                
+
                 for (let i = 0; i < len - 1; i++) {
                     let a1 = Date.parse(x[i].gitDate) / (1000)
                     let a2 = Date.parse(x[i + 1].gitDate) / (1000)
@@ -197,9 +199,9 @@ class git extends Component {
                         str += 'BIG,\n'
                     if (x[i].files <= 2)
                         str += 'SMALL,\n'
-                    
+
                     if (str !== '') {
-                        if (x[i].analize == 'OK!')
+                        if (x[i].analize === 'OK!')
                             x[i].analize = str
                         else
                             x[i].analize += str
@@ -214,7 +216,10 @@ class git extends Component {
                 })
 
             })
-            .catch(err => err)
+            .catch(err => {
+                alert('Project Not Found, Note! If this is a private git you need to get access from the owner!')
+                console.log(err)
+            })
 
 
         // this.sleep(150).then(() => {
@@ -296,28 +301,31 @@ class git extends Component {
                         <div>
                             <table id="commit_table" class="table">
                                 <tr>
-                                    <th>Oz's analize</th>
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Committer's Email</th>
                                     <th>Committer's Name</th>
                                     <th>Commit's Name</th>
                                     <th>Changed files</th>
-                                    <th>Changed words</th>
-
+                                    <th>Changed total</th>
+                                    <th>Additions</th>
+                                    <th>Deletions</th>
+                                    <th>Oz's analize</th>
 
                                 </tr>
 
                                 {this.state.users.map(user => (
                                     <tr>
-                                        <th>{user.analize}</th>
-                                        <th>{parseInt(user.id) + 1}</th>
+                                        <th >{parseInt(user.id) + 1}</th>
                                         <th>{user.date + '\n' + user.time}</th>
                                         <th>{user.email}</th>
                                         <th>{user.name}</th>
                                         <th>{user.title}</th>
                                         <th>{user.files}</th>
                                         <th>{user.total}</th>
+                                        <th>{user.addition}</th>
+                                        <th>{user.deletion}</th>
+                                        <th>{user.analize}</th>
 
 
 
