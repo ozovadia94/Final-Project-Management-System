@@ -3,7 +3,6 @@ import { Route, Switch, Redirect, Link } from "react-router-dom";
 import './App.css';
 
 //pages
-import MenuPage from './JS/MenuPage'
 import Add_moderator from './JS/Add_moderator'
 import Moderators_Dashboard from './JS/Moderators_Dashboard'
 import Add_Project from './JS/Add_Project'
@@ -95,7 +94,7 @@ class App extends Component {
 
               <nav class="navbar navbar-dark bg-dark" dir="rtl">
                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
-                  <Link to="/MenuPage" type="submit" class="btn btn-dark">תפריט</Link>
+
                   <Link to="/Project_Dashboard" type="submit" class="btn btn-dark">לוח פרוייקטים</Link>
                   <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
                   <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
@@ -105,14 +104,14 @@ class App extends Component {
               </nav>
 
               <Switch>
-                <Route path="/MenuPage" component={MenuPage} exact />
+
                 <Route path="/Add_moderator" component={Add_moderator} />
                 <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
                 <Route path="/Add_Project" component={Add_Project} />
                 <Route path="/Project_Dashboard" component={Project_Dashboard} />
 
                 <Route path="/Students" component={Students} />
-                <Route exact path="/"><Redirect to="/MenuPage" /></Route>
+                <Route exact path="/"><Redirect to="/Project_Dashboard" /></Route>
                 <Route path="/404" component={NotFoundPage} />
                 <Redirect to="/404" />
               </Switch>
