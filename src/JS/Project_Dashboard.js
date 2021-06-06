@@ -5,6 +5,8 @@ import MyTitle from '../Titles/Title'
 import alerts from './Alerts'
 import '../CSS/Pages.css' /* CSS */
 
+import $, { valHooks } from 'jquery';
+
 
 
 class Project_Dashboard extends Component {
@@ -12,58 +14,73 @@ class Project_Dashboard extends Component {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addFieldsMembers = this.addFieldsMembers.bind(this)
-        this.projects_Ref = firebase.database().ref().child('projects');
-        this.moderators_Ref = firebase.database().ref().child('moderators');
-        this.getImage('url1')
+        this.getIcons()
     }
 
     state = {
         moderators: [],
         users: [],
         moder_res: [],
+        all_years: [],
         edit: '',
         loading: true,
         selectedUserId: null,
         show: false,
-        githubPic: '',
-        editpic: '',
-        deletepic: '',
-        diarypic: ''
+        icon_github: '',
+        icon_diary: '',
+        icon_edit: '',
+        icon_delete: '',
     }
 
 
-
-    getImage(image) {
+    getIcons() {
         firebase.storage().ref("images/").child('icons8-github-36.png').getDownloadURL().then((url) => {
-            this.setState({ githubPic: url })
-        }).catch((error) => {
-            // Handle any errors
-        })
-        firebase.storage().ref("images/").child('icons8-edit-36.png').getDownloadURL().then((url) => {
-            this.setState({ editpic: url })
-        }).catch((error) => {
-            // Handle any errors
-        })
-        firebase.storage().ref("images/").child('icons8-delete-24.png').getDownloadURL().then((url) => {
-            this.setState({ deletepic: url })
-        }).catch((error) => {
-            // Handle any errors
-        })
+            this.setState({ icon_github: url })
+        }).catch((error) => console.log(error))
+
         firebase.storage().ref("images/").child('icons8-calendar-36.png').getDownloadURL().then((url) => {
-            this.setState({ diarypic: url })
-        }).catch((error) => {
-            // Handle any errors
-        })
+            this.setState({ icon_diary: url })
+        }).catch((error) => console.log(error))
 
+        firebase.storage().ref("images/").child('icons8-edit-36.png').getDownloadURL().then((url) => {
+            this.setState({ icon_edit: url })
+        }).catch((error) => console.log(error))
 
+        firebase.storage().ref("images/").child('icons8-delete-24.png').getDownloadURL().then((url) => {
+            this.setState({ icon_delete: url })
+        }).catch((error) => console.log(error))
+    }
 
-
-
+    get_data = async () => {
+        var projs = await this.get_projects()
+        var moderators = await this.get_moderators(projs);
+        //var yea = await this.get_years(vals[1])
     }
 
 
-    get_project_mod = () => {
+    get_years = async (uniq) => {
+        console.log(uniq)
+
+        var my_years = document.getElementById('my_years')//.innerHTML
+        var add;
+
+        for (let key in uniq) {
+            add = document.createElement("option");
+            add.value = uniq[key]
+            add.innerHTML = uniq[key]
+            my_years.appendChild(add)
+            console.log(key)
+        }
+
+
+        console.log(my_years)
+    }
+
+    get_projects = async () => {
         const fetchedUsers = [];
+        const years = [];
+        var uniq;
+
         var database_pro = firebase.database().ref('projects/');
         database_pro.on('value', (snapshot) => {
             const res = snapshot.val();
@@ -72,9 +89,16 @@ class Project_Dashboard extends Component {
                     ...res[key],
                     id: key
                 });
-            }
-        })
+                years.push(res[key].year)
 
+            }
+            uniq = years.sort().filter((v, i, a) => a.indexOf(v) === i);
+            this.setState({ all_years: uniq });
+        })
+        return fetchedUsers;
+    }
+
+    get_moderators = async (fetchedUsers) => {
         var database_mod = firebase.database().ref('moderators/');
         const fetched = [];
         database_mod.on('value', (snapshot) => {
@@ -84,9 +108,9 @@ class Project_Dashboard extends Component {
                     ...res[key],
                     id: key
                 });
-            }
 
-            this.setState({ moderators: fetched });
+
+            }
 
             for (let key in fetchedUsers) {
                 if (fetchedUsers[key].moderator_id === 'Not selected')
@@ -95,16 +119,13 @@ class Project_Dashboard extends Component {
                     fetchedUsers[key]['mod_name'] = res[fetchedUsers[key].moderator_id].name
 
             }
-
-            this.setState({ users: fetchedUsers });
+            this.setState({ moderators: fetched, moder_res: res, users: fetchedUsers });
         })
-
     }
 
     componentDidMount() {
-        this.get_project_mod()
+        this.get_data()
     }
-
 
     selectedUserId = (id) => {
         this.setState({ selectedUserId: id });
@@ -128,7 +149,7 @@ class Project_Dashboard extends Component {
     }
 
     studentclick = (user, key) => {
-        window.open('https://github.com/' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
+        window.open('/Students?git=' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no,width=900,height=600')
     }
 
     studentclick_git = (user, key) => {
@@ -228,6 +249,8 @@ class Project_Dashboard extends Component {
     }
 
     myEdit = (user) => {
+        var year = document.getElementById("project_year");
+        year.value = user.year
         var project_name = document.getElementById("project_name");
         project_name.value = user.name
         var numberOfmembers = document.getElementById("members");
@@ -351,6 +374,102 @@ class Project_Dashboard extends Component {
         this.setState({ edit: user.id });
     }
 
+    sortTable = (n) => {
+
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("myTable");
+        switching = true;
+        //Set the sorting direction to ascending:
+        dir = "asc";
+        /*Make a loop that will continue until
+        no switching has been done:*/
+        while (switching) {
+            //start by saying: no switching is done:
+            switching = false;
+            rows = table.getElementsByTagName("TR");
+            /*Loop through all table rows (except the
+            first, which contains table headers):*/
+            for (i = 1; i < rows.length - 1; i++) { //Change i=0 if you have the header th a separate table.
+                //start by saying there should be no switching:
+                shouldSwitch = false;
+                /*Get the two elements you want to compare,
+                one from current row and one from the next:*/
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                /*check if the two rows should switch place,
+                based on the direction, asc or desc:*/
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /*If a switch has been marked, make the switch
+                and mark that a switch has been done:*/
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                //Each time a switch is done, increase this count by 1:
+                switchcount++;
+            } else {
+                /*If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again.*/
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+
+    select_filter = () => {
+        var year = document.getElementById('my_years').value
+        var mod = document.getElementById('my_mod').value
+        var cur_tr, cur_year, cur_mod, mod_name;
+        var len = this.state.users.length
+
+        if (mod !== '0')
+            mod_name = this.state.moder_res[mod].name
+        else
+            mod_name = '0'
+
+        //console.log('YEAR :', year, 'MOD: ', mod_name)
+
+        for (let key = 0; key < len; key++) {
+            cur_year = document.getElementById(('td_year_' + key)).innerText
+            cur_mod = document.getElementById(('td_mod_' + key)).innerText
+            cur_tr = document.getElementById(('tr_' + key))
+
+            // console.log('cur_year :', cur_year, 'cur_mod: ', cur_mod)
+
+            if (year === '0') {
+                if ((mod_name === '0') || (cur_mod === mod_name))
+                    cur_tr.className = ''
+                else
+                    cur_tr.className = 'nonethings'
+            }
+            else if (cur_year === year) {
+                if ((cur_mod === mod_name) || (mod_name === '0'))
+                    cur_tr.className = ''
+                else
+                    cur_tr.className = 'nonethings'
+            }
+            else//when year is not equal\
+                cur_tr.className = 'nonethings'
+
+        }
+    }
+
+
     handleSubmit(e) {
         var mod = document.getElementById("moderator_f");
         var numOfPartners = document.getElementById("members");
@@ -400,6 +519,7 @@ class Project_Dashboard extends Component {
         updates['/projects/' + this.state.edit + '/numOfGits'] = numOfGits.value
         updates['/projects/' + this.state.edit + '/gits'] = gits
         updates['/projects/' + this.state.edit + '/date'] = []
+        updates['/projects/' + this.state.edit + '/year'] = this.input_year.value
 
 
 
@@ -416,38 +536,51 @@ class Project_Dashboard extends Component {
     render() {
         return (
             <div className='ozbackground spec'>
-                <i class="fa fa-github" aria-hidden="true"></i>
-
-
 
                 <MyTitle title="לוח פרוייקטים" />
 
 
-
-
-
                 <div className='ozbackground'>
-                    <table class="table table-dark" dir='rtl'>
+
+                    <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class=" form-control-lg text-right" dir='rtl'>
+                        <option value='0'>כל המנחים</option>
+                        {this.state.moderators.map((mod) => (
+                            <option value={mod.id}>{mod.name}</option>
+
+                        ))}
+                    </select>
+
+                    <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class=" form-control-lg text-right" dir='rtl'>
+                        <option value='0'>כל השנים</option>
+                        {this.state.all_years.map((year) => (
+                            <option value={year}>{year}</option>
+                        ))}
+                    </select>
+
+
+                    <table id='myTable' class="table table-dark table table-striped table-bordered table-sm" dir='rtl'>
                         <thead>
                             <tr>
-                                <th scope="col">שם הפרוייקט</th>
-                                <th scope="col">שותפים</th>
-                                <th scope="col">ת.ז</th>
-                                <th scope="col">שמות</th>
-                                <th scope="col">אימיילים</th>
-                                <th scope="col">מנחה</th>
-                                <th scope="col">יומן</th>
-                                <th scope="col">גיט</th>
-                                <th scope="col">עריכה</th>
-                                <th scope="col">מחיקה</th>
-                                <th scope="col">מצב התקדמות בגיט</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(0) }} >שנה</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(1) }} >שם הפרוייקט</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >שותפים</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3) }} >ת.ז</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >שמות</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(5) }} >אימיילים</th>
+                                <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
+                                <th class="th-sm" scope="col">יומן</th>
+                                <th class="th-sm" scope="col">גיט</th>
+                                <th class="th-sm" scope="col">עריכה</th>
+                                <th class="th-sm" scope="col">מחיקה</th>
+                                <th class="th-sm" scope="col">מצב התקדמות בגיט</th>
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.users.map((user, index) => (
 
 
-                                <tr>
+                                <tr id={'tr_' + index}>
+                                    <td id={'td_year_' + index}>{user.year}</td>
                                     <td>{user.name}</td>
                                     <td>{user.partners}</td>
                                     <td><div>{user.members[0].id}</div>
@@ -460,27 +593,27 @@ class Project_Dashboard extends Component {
                                         {user.members[1] ? (<div><p></p>{user.members[1].email}</div>) : (<div></div>)}
                                     </td>
 
-                                    <td>{user.mod_name}</td>
+                                    <td id={'td_mod_' + index} >{user.mod_name}</td>
 
-                                    {user.daybook === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' onClick={() => this.studentclick_daybook(user.daybook)} src={this.state.diarypic} ></img> </td>
+                                    {user.daybook === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' onClick={() => this.studentclick_daybook(user.daybook)} src={this.state.icon_diary} ></img> </td>
                                     )}
 
-                                    <td><a class='mypointer' onClick={() => this.studentclick_git(user, 0)} ><img src={this.state.githubPic} id='gitimg' /></a>
+                                    <td><a class='mypointer' onClick={() => this.studentclick_git(user, 0)} ><img src={this.state.icon_github} id='gitimg' /></a>
                                         {user.numOfGits > 1 ?
                                             (<div>
                                                 <p></p>
-                                                <a class='mypointer' onClick={() => this.studentclick_git(user, 1)} data-toggle="modal"><img src={this.state.githubPic} id='gitimg' /></a></div>) : (<div></div>)}
+                                                <a class='mypointer' onClick={() => this.studentclick_git(user, 1)} data-toggle="modal"><img src={this.state.icon_github} id='gitimg' /></a></div>) : (<div></div>)}
                                     </td>
 
                                     <td>
                                         <a href="#home" onClick={() => {
                                             this.myEdit(user)
 
-                                        }} class=" Logged-out" data-toggle="modal" data-target="#modalLRForm"><img src={this.state.editpic} /></a>
+                                        }} class="Logged-out" data-toggle="modal" data-target="#modalLRForm"><img src={this.state.icon_edit} /></a>
                                     </td>
 
-                                    <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)}  ><img src={this.state.deletepic} /></a></td>
-
+                                    <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)}  ><img src={this.state.icon_delete} /></a></td>
+                                        
                                     <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
                                         {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
                                     </td>
@@ -507,12 +640,14 @@ class Project_Dashboard extends Component {
 
 
                                         <div class="form-group" id='myform'>
+                                            <input id='project_year' type="number" class="form-control form-control-lg text-right" required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}></input>
+                                            <p></p>
                                             <input id='project_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                             <p></p>
                                             <select id="moderator_f" type='text' name="cars" class="form-control form-control-lg text-right" dir='rtl'>
                                                 <option value='Not selected'>בחר מנחה מהרשימה</option>
-                                                {this.state.moderators.map((user) => (
-                                                    <option value={user.id}>{user.name}</option>
+                                                {this.state.moderators.map((mod) => (
+                                                    <option value={mod.id}>{mod.name}</option>
                                                 ))}
                                             </select>
 
@@ -563,6 +698,9 @@ class Project_Dashboard extends Component {
                         </div>
                     </form>
                 </div>
+
+
+
 
             </div>
         );

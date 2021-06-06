@@ -40,6 +40,75 @@ class git extends Component {
         let res2 = await this.create_Users()
     }
 
+    create_Users = async () => {
+
+        const url = await this.return_address()
+        const headers = my_header
+
+        let res = await axios.get(url, { "headers": headers })
+            .then(res => {
+                console.log(res)
+                return this.create_Array2(res.data);
+                // return this.create_Array(res.data);
+            }).then((x) => {
+                this.setState({ users: x, check: true })
+
+                let len = x.length
+
+                for (let i = 0; i < len - 1; i++) {
+                    let a1 = Date.parse(x[i].gitDate) / (1000)
+                    let a2 = Date.parse(x[i + 1].gitDate) / (1000)
+                    //console.log(a1, a2, a1 - a2)
+                    if (a1 - a2 < Epsilon) {
+                        //if (x[i].analize != 'OK!')
+                        console.log(a1)
+                        x[i].analize = 'Frequent,\n';
+                    }
+                }
+
+
+                for (let i = 0; i < len; i++) {
+                    var str = ''
+                    if (x[i].files > 2 || x[i].total > 200)
+                        str += 'BIG,\n'
+                    if (x[i].files <= 2)
+                        str += 'SMALL,\n'
+
+                    if (str !== '') {
+                        if (x[i].analize === 'OK!')
+                            x[i].analize = str
+                        else
+                            x[i].analize += str
+                    }
+
+
+                }
+            })
+            .then(() => {
+                this.sleep(2000).then(() => {
+                    this.setState({ loading: true })
+                })
+
+            })
+            .catch(err => {
+                alert('Project Not Found, Note! If this is a private git you need to get access from the owner!')
+                console.log(err)
+            })
+
+
+        // this.sleep(150).then(() => {
+        //     this.func()
+
+        //     let temp = document.getElementById('deepcode_id')
+        //     temp.innerText = 'OFir tabat'
+
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
+
+        //let xx = await this.deepcode_func()
+    }
+
 
     create_Array = async (res) => {
         let fetchedUsers = []; // new Array(res.length);
@@ -168,72 +237,7 @@ class git extends Component {
     }
 
 
-    create_Users = async () => {
 
-        const url = await this.return_address()
-        const headers = my_header
-
-        let res = await axios.get(url, { "headers": headers })
-            .then(res => {
-                return this.create_Array2(res.data);
-                // return this.create_Array(res.data);
-            }).then((x) => {
-                this.setState({ users: x, check: true })
-
-                let len = x.length
-
-                for (let i = 0; i < len - 1; i++) {
-                    let a1 = Date.parse(x[i].gitDate) / (1000)
-                    let a2 = Date.parse(x[i + 1].gitDate) / (1000)
-                    //console.log(a1, a2, a1 - a2)
-                    if (a1 - a2 < Epsilon) {
-                        //if (x[i].analize != 'OK!')
-                        x[i].analize = 'Frequent,\n';
-                    }
-                }
-
-
-                for (let i = 0; i < len; i++) {
-                    var str = ''
-                    if (x[i].files > 2 || x[i].total > 200)
-                        str += 'BIG,\n'
-                    if (x[i].files <= 2)
-                        str += 'SMALL,\n'
-
-                    if (str !== '') {
-                        if (x[i].analize === 'OK!')
-                            x[i].analize = str
-                        else
-                            x[i].analize += str
-                    }
-
-
-                }
-            })
-            .then(() => {
-                this.sleep(2000).then(() => {
-                    this.setState({ loading: true })
-                })
-
-            })
-            .catch(err => {
-                alert('Project Not Found, Note! If this is a private git you need to get access from the owner!')
-                console.log(err)
-            })
-
-
-        // this.sleep(150).then(() => {
-        //     this.func()
-
-        //     let temp = document.getElementById('deepcode_id')
-        //     temp.innerText = 'OFir tabat'
-
-        // }).catch((err) => {
-        //     console.log(err)
-        // })
-
-        //let xx = await this.deepcode_func()
-    }
 
 
 

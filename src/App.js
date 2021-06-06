@@ -28,14 +28,14 @@ class App extends Component {
 
 
   componentDidMount() {
-    console.log('WTF!')
-    axios.get('http://localhost:3000/wtf').then((res)=>{
-      console.log(res)
-      console.log('xxx')
-    }).catch(err=>{
-      console.log('IMMMM')
-      console.log('ERRORRRR!!','\n',err)
-    })
+    // console.log('WTF!')
+    // axios.get('http://localhost:3000/wtf').then((res)=>{
+    //   console.log(res)
+    //   console.log('xxx')
+    // }).catch(err=>{
+    //   console.log('IMMMM')
+    //   console.log('ERRORRRR!!','\n',err)
+    // })
     
 
     document.onreadystatechange = function () {

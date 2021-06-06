@@ -10,6 +10,7 @@ class Moderators_Dashboard extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getIcons()
     }
 
     state = {
@@ -18,6 +19,18 @@ class Moderators_Dashboard extends Component {
         loading: true,
         selectedUserId: null,
         show: false,
+        icon_edit: '',
+        icon_delete: '',
+    }
+
+    getIcons() {
+        firebase.storage().ref("images/").child('icons8-edit-36.png').getDownloadURL().then((url) => {
+            this.setState({ icon_edit: url })
+        }).catch((error) => console.log(error))
+
+        firebase.storage().ref("images/").child('icons8-delete-24.png').getDownloadURL().then((url) => {
+            this.setState({ icon_delete: url })
+        }).catch((error) => console.log(error))
     }
 
 
@@ -127,9 +140,12 @@ class Moderators_Dashboard extends Component {
                                         <a href="#home" onClick={() => {
                                             this.editedUserId(user)
 
-                                        }} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal" data-target="#moderator_edit_form">ערוך</a>
+                                        }} class="Logged-out" data-toggle="modal" data-target="#moderator_edit_form"><img src={this.state.icon_edit} /></a>
                                     </td>
-                                    <td><button onClick={() => this.deleteUserId(user.id)} type="button" class="btn btn-danger btn-sm">מחק</button> </td>
+                                        
+                                    <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)}  ><img src={this.state.icon_delete} /></a></td>
+                                       
+                                
                                 </tr>
 
 

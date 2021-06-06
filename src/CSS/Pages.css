@@ -44,3 +44,8 @@ td,tr{
 .mypointer{
     cursor: pointer;
 }
+
+
+.nonethings{
+    display: none;
+}

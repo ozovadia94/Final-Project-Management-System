@@ -80,6 +80,7 @@ class Add_Project extends Component {
             numOfGits: numOfGits.value,
             gits: gits,
             date: [],
+            year: this.input_year.value,
         }
 
         // axiosFirebase.post('/projects.json', user).then(function (response) {
@@ -90,10 +91,11 @@ class Add_Project extends Component {
         //     console.log(error)
         // });
 
-        var newPostKey = firebase.database().ref().child('projects').push().key;
+        var newPostKey = firebase.database().ref().child('projects/').push().key;
         console.log(newPostKey)
+        console.log(this.input_year.value)
         var updates = {};
-        updates['/projects/' + newPostKey] = user;
+        updates['/projects/' + this.input_year.value + '/' + newPostKey] = user;
 
         firebase.database().ref().update(updates).then((x) => {
             alerts.alert('פרוייקט נוסף')//true for refresh!
@@ -205,6 +207,9 @@ class Add_Project extends Component {
                         <div class="Card bg-white text-center card-form">
                             <div class="card-body">
                                 <div class="form-group" id='form1'>
+                                    <input id='project_year' type="number" class="form-control form-control-lg text-right" required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}></input>
+
+                                    <p></p>
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                     <p></p>
                                     <select id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
@@ -214,6 +219,7 @@ class Add_Project extends Component {
                                         ))}
                                     </select>
                                     <p></p>
+
                                     <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={this.addFieldsMembers}>
                                         <option selected="selected" value='1'>פרוייקט יחיד</option>
                                         <option value='2'>פרוייקט זוגי</option>
