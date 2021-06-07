@@ -40,10 +40,33 @@ class git extends Component {
         let res2 = await this.create_Users()
     }
 
+    num_com = async (url, i, headers) => {
+        return axios.get(url + i, { "headers": headers }).then((res) => {
+            return res.data.length
+        })
+    }
+
+    count_num_of_commits = async (url,headers) => {
+        let my_url = url + '?per_page=100&page='
+        var sum = 0
+
+        for (let i = 1; i < 10; i++) {
+            let k = await this.num_com(my_url, i, headers).then(res => { return res })
+            sum += k
+
+            if(k==0)
+                break;
+        }
+        return sum
+    }
+
     create_Users = async () => {
 
         const url = await this.return_address()
         const headers = my_header
+
+
+
 
         let res = await axios.get(url, { "headers": headers })
             .then(res => {

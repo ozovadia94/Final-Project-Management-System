@@ -11,25 +11,42 @@ class Add_Project extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-
     }
 
+    generateArrayOfYears = () => {
+        var y = new Date().getFullYear()
+        var min = 2018
+        var max = y + 3
+
+        var years = document.getElementById("project_year");
+
+        for (var i = min; i < max; i++) {
+            var year =  document.createElement("option");;
+            year.value = i
+            year.innerHTML=i
+            if(i==y)
+            {
+                console.log('this',i)
+                year.selected=' '
+            }
+            years.appendChild(year)
+        }
+    }
+
+
     componentDidMount() {
+        this.generateArrayOfYears()
         var database = firebase.database().ref('moderators/');
         database.on('value', (snapshot) => {
             const res = snapshot.val();
-            console.log(res)
             const fetchedUsers = [];
             for (let key in res) {
-                console.log(key)
                 fetchedUsers.push({
                     ...res[key],
                     id: key,
 
                 });
             }
-            console.log(fetchedUsers)
-            console.log(res)
             this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
         })
         // .catch(err => {
@@ -92,10 +109,8 @@ class Add_Project extends Component {
         // });
 
         var newPostKey = firebase.database().ref().child('projects/').push().key;
-        console.log(newPostKey)
-        console.log(this.input_year.value)
         var updates = {};
-        updates['/projects/' + this.input_year.value + '/' + newPostKey] = user;
+        updates['/projects/' + newPostKey] = user;
 
         firebase.database().ref().update(updates).then((x) => {
             alerts.alert('פרוייקט נוסף')//true for refresh!
@@ -207,8 +222,9 @@ class Add_Project extends Component {
                         <div class="Card bg-white text-center card-form">
                             <div class="card-body">
                                 <div class="form-group" id='form1'>
-                                    <input id='project_year' type="number" class="form-control form-control-lg text-right" required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}></input>
-
+                                    
+                                    <select id="project_year" type='number' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
+                                    </select>
                                     <p></p>
                                     <input type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                     <p></p>
