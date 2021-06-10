@@ -91,13 +91,6 @@ class Moderators_Dashboard extends Component {
             email: this.input3.value,
         }
 
-        // axiosFirebase.put('moderators/' + this.state.edit + '.json', moderator)
-        //     .then(function (response) {
-        //         alerts.alert('מנחה עודכן')
-        //     }).catch(error => console.log(error));
-        // e.preventDefault();
-
-        
         var updates = {};
         updates['/moderators/' + this.state.edit] = moderator;
 
