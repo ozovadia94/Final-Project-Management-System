@@ -428,12 +428,12 @@ class Project_Dashboard extends Component {
 
         }
         user.members[0] = { id: '', name: '', email: '' }
-        if (typeof project.student1_id !== undefined && typeof project.student1_name !== undefined && typeof project.student1_mail !== undefined && project.student1_id !=='' && project.student1_name !=='' && project.student1_mail !=='') {
+        if (typeof project.student1_id !== undefined && typeof project.student1_name !== undefined && typeof project.student1_mail !== undefined && project.student1_id !== '' && project.student1_name !== '' && project.student1_mail !== '') {
             user.members[0].id = project.student1_id
             user.members[0].name = project.student1_name
             user.members[0].email = project.student1_mail
         }
-        else{
+        else {
             return
         }
 
@@ -513,35 +513,61 @@ class Project_Dashboard extends Component {
                                     <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(0) }} >שנה</th>
                                     <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(1) }} >שם הפרוייקט</th>
                                     <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >שותפים</th>
+
                                     <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3) }} >ת.ז</th>
                                     <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >שמות</th>
+
                                     <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(5) }} >אימיילים</th>
                                     <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
 
                                     <th class="th-sm" scope="col">יומן</th>
                                     <th class="th-sm" scope="col">גיט</th>
+
+                                    <th width="1%" class="th-sm" scope="col">קומיט אחרון</th>
+                                    <th width="1%" class="th-sm" scope="col">מספר קומיטים</th>
+                                    <th width="1%" class="th-sm" scope="col">חציון קבצים</th>
+                                    <th width="1%" class="th-sm" scope="col">חציון שורות</th>
+                                    <th class="th-sm" scope="col">מצב התקדמות בגיט</th>
+
                                     <th class="th-sm" scope="col">עריכה</th>
                                     <th class="th-sm" scope="col">מחיקה</th>
-                                    <th class="th-sm" scope="col">מצב התקדמות בגיט</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {this.state.users.map((user, index) => (
 
 
+
+
                                     <tr id={'tr_' + index}>
                                         <td id={'td_year_' + index}>{user.year}</td>
                                         <td width="10%">{user.name}</td>
-                                        <td>{user.partners}</td>
-                                        <td><div>{user.members[0].id}</div>
-                                            {user.members[1] ? (<div><p></p> {user.members[1].id}</div>) : (<div></div>)}
+                                        {user.partners==1?(<td>יחיד</td>):(<td>זוגי</td>)}
+
+
+
+                                        <td>
+                                            <div>{user.members[0].id}</div>
+                                            {user.members[1] ? (<div>{user.members[1].id}</div>) : (<div></div>)}
                                         </td>
+
                                         <td><div>{user.members[0].name}</div>
-                                            {user.members[1] ? (<div><p></p>{user.members[1].name}</div>) : (<div></div>)}
+                                        {user.members[1] ? (<div>{user.members[1].name}</div>) : (<div></div>)}
                                         </td>
                                         <td><div>{user.members[0].email}</div>
-                                            {user.members[1] ? (<div><p></p>{user.members[1].email}</div>) : (<div></div>)}
+                                        {user.members[1] ? (<div>{user.members[1].email}</div>) : (<div></div>)}
                                         </td>
+                                        {/* {user.members[1] ? (
+                                            <tr>
+                                                <td>{user.members[1].id}</td>
+                                                <td>{user.members[1].name}</td>
+                                                <td>{user.members[1].email}</td>
+                                            </tr>
+                                        ) : (<div></div>)} */}
+
+
+
+
 
                                         <td width="10%" id={'td_mod_' + index} >{user.mod_name}</td>
 
@@ -555,6 +581,45 @@ class Project_Dashboard extends Component {
                                                     <a class='mypointer' onClick={() => this.studentclick_git(user, 1)} data-toggle="modal" alt='github address'><img src={this.state.icon_github} id='gitimg' /></a></div>) : (<div></div>)}
                                         </td>
 
+
+                                        <td>{user.stats && user.stats[0] ?
+                                            (<div>{user.stats[0].date}
+                                                {user.stats[1] ? (<div><p></p> {user.stats[1].date}</div>) : (<div></div>)}
+                                            </div>)
+                                            :
+                                            (<div>שגיאה!</div>)}
+                                        </td>
+
+                                        <td>{user.stats && user.stats[0] ?
+                                            (<div>{user.stats[0].Number_of_commits}
+                                                {user.stats[1] ? (<div><p></p> {user.stats[1].Number_of_commits}</div>) : (<div></div>)}
+                                            </div>)
+                                            :
+                                            (<div>שגיאה!</div>)}
+                                        </td>
+
+                                        <td>{user.stats && user.stats[0] ?
+                                            (<div>{user.stats[0].median_File}
+                                                {user.stats[1] ? (<div><p></p> {user.stats[1].median_File}</div>) : (<div></div>)}
+                                            </div>)
+                                            :
+                                            (<div>שגיאה!</div>)}
+                                        </td>
+
+                                        <td>{user.stats && user.stats[0] ?
+                                            (<div>{user.stats[0].median_Total}
+                                                {user.stats[1] ? (<div><p></p> {user.stats[1].median_Total}</div>) : (<div></div>)}
+                                            </div>)
+                                            :
+                                            (<div>שגיאה!</div>)}
+                                        </td>
+
+                                        <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a>
+                                            {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a></div>) : (<div></div>)}
+                                        </td>
+
+
+
                                         <td>
                                             <a href="#home" onClick={() => {
                                                 this.myEdit(user)
@@ -564,9 +629,6 @@ class Project_Dashboard extends Component {
 
                                         <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='delete Buttun'><img src={this.state.icon_delete} /></a></td>
 
-                                        <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a>
-                                            {user.numOfGits > 1 ? (<div><p></p> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">חלון התקדמות בגיט</a></div>) : (<div></div>)}
-                                        </td>
 
                                     </tr>
 
