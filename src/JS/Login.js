@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import firebase from '../Firebase/Firebase'
 import '../CSS/login.css'
-
 class Login extends Component {
     constructor(props) {
         super(props);
