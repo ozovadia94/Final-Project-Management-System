@@ -7,8 +7,6 @@ import '../CSS/Pages.css' /* CSS */
 
 import $, { valHooks } from 'jquery';
 
-
-
 class Project_Dashboard extends Component {
     constructor(props) {
         super(props);
