@@ -91,13 +91,6 @@ class Moderators_Dashboard extends Component {
             email: this.input3.value,
         }
 
-        // axiosFirebase.put('moderators/' + this.state.edit + '.json', moderator)
-        //     .then(function (response) {
-        //         alerts.alert('מנחה עודכן')
-        //     }).catch(error => console.log(error));
-        // e.preventDefault();
-
-        
         var updates = {};
         updates['/moderators/' + this.state.edit] = moderator;
 
@@ -140,10 +133,10 @@ class Moderators_Dashboard extends Component {
                                         <a href="#home" onClick={() => {
                                             this.editedUserId(user)
 
-                                        }} class="Logged-out" data-toggle="modal" data-target="#moderator_edit_form"><img src={this.state.icon_edit} /></a>
+                                        }} class="Logged-out" data-toggle="modal" data-target="#moderator_edit_form"><img src={this.state.icon_edit} alt='mod_edit_image'/></a>
                                     </td>
                                         
-                                    <td><a class='mypointer' onClick={() => this.deleteUserId(user.id)}  ><img src={this.state.icon_delete} /></a></td>
+                                    <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)}  alt='mod_delete_image'></img></td>
                                        
                                 
                                 </tr>

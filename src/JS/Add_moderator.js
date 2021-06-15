@@ -23,19 +23,13 @@ class Add_moderator extends Component {
             name: this.input.value,
             email: this.input3.value,
         }
-        // axiosFirebase.post('/moderators.json', moderator).then(function (response) {
-        //     alerts.alert('מנחה נוסף',false)
-        //     document.getElementById("myForm").reset();
-        // }).catch (error => console.log(error));
 
         var newPostKey = firebase.database().ref().child('moderators').push().key;
-        var updates = {};
-        updates['/moderators/' + newPostKey] = moderator;
-
-        firebase.database().ref().update(updates).then((x) => {
-            alerts.alert('מנחה נוסף', false)
-            document.getElementById("myForm").reset();
-        }).catch(error => console.log(error));
+        firebase.database().ref('moderators/' + newPostKey).set(moderator)
+            .then((x) => {
+                alerts.alert('מנחה נוסף', false)
+                document.getElementById("myForm").reset();
+            }).catch(error => console.log(error))
         e.preventDefault();
     }
 

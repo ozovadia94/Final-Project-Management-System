@@ -1,6 +1,5 @@
 import Swal from 'sweetalert2'
 
-
 var my_success = (titl,if_reload=true) => {
     Swal.fire({
         //position: 'top',

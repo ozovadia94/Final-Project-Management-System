@@ -14,7 +14,6 @@ import NotFoundPage from './JS/NotFoundPage'
 //More Components
 import Login from './JS/Login'
 import firebase from './Firebase/Firebase';
-import axios from 'axios';
 
 class App extends Component {
   constructor() {
