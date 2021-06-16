@@ -37,7 +37,7 @@ class git extends Component {
 
 
     async componentDidMount() {
-        await this.create_Users()
+        let res2 = await this.create_Users()
     }
 
     num_com = async (url, i, headers) => {
@@ -54,7 +54,7 @@ class git extends Component {
             let k = await this.num_com(my_url, i, headers).then(res => { return res })
             sum += k
 
-            if(k===0)
+            if(k==0)
                 break;
         }
         return sum
@@ -68,7 +68,7 @@ class git extends Component {
 
 
 
-        await axios.get(url, { "headers": headers })
+        let res = await axios.get(url, { "headers": headers })
             .then(res => {
                 console.log(res)
                 return this.create_Array2(res.data);
@@ -236,6 +236,33 @@ class git extends Component {
         }
         return fetchedUsers;
     }
+
+
+    deepcode_func = async () => {
+        var data = {
+            "owner": '111',
+            "repo": '222'
+        }
+
+        var options = {
+            "headers": {
+                "Content-Type": "application/json",
+            }
+        }
+
+
+
+        let res2 = await axios.post('http://localhost:3000/vsdeepcode', data, options).then((x) => {
+            //console.log(x)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+
+
+
+
 
     async return_address() {
         const queryString = window.location.search;

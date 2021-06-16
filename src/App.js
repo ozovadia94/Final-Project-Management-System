@@ -8,7 +8,7 @@ import Moderators_Dashboard from './JS/Moderators_Dashboard'
 import Add_Project from './JS/Add_Project'
 import Project_Dashboard from './JS/Project_Dashboard'
 
-import Students from './JS/Students'
+import Git_Commit from './JS/Git_Commit'
 import NotFoundPage from './JS/NotFoundPage'
 
 //More Components
@@ -109,7 +109,7 @@ class App extends Component {
                 <Route path="/Add_Project" component={Add_Project} />
                 <Route path="/Project_Dashboard" component={Project_Dashboard} />
 
-                <Route path="/Students" component={Students} />
+                <Route path="/Git_Commit" component={Git_Commit} />
                 <Route exact path="/"><Redirect to="/Project_Dashboard" /></Route>
                 <Route path="/404" component={NotFoundPage} />
                 <Redirect to="/404" />
