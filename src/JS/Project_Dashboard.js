@@ -1,4 +1,4 @@
-import React, { Component, createElement } from 'react';
+import React, { Component } from 'react';
 import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 
@@ -10,6 +10,7 @@ import Pro_Add_Edit from './Project_AddEdit_Function'
 import * as XLSX from "xlsx";
 
 var myerror = "שגיאה בהצגת נתונים בשל אחת מהסיבות הבאות: \n1. כתובת גיט לא חוקית/לא קיימת. \n2. גיט פרטי ולכן צריך לשתף עם המשתמש projectmanager20. \n3. המערכת מחשבת כרגע את הנתונים. \n"
+var my_underfined = undefined
 
 class Project_Dashboard extends Component {
     constructor(props) {
@@ -93,7 +94,18 @@ class Project_Dashboard extends Component {
         var uniq;
 
         var database_pro = firebase.database().ref('projects/');
+        // database_pro.get().then((snapshot)=>{
+
+
+        //     console.log(snapshot.val())
+        // })
         database_pro.on('value', (snapshot) => {
+            for (let key = 0; key < this.state.users.length; key++) {
+                var cur = document.getElementById('tr_' + key)
+                if (cur !== null)
+                    cur.remove()
+            }
+
             const res = snapshot.val();
             for (let key in res) {
                 fetchedUsers.push({
@@ -105,7 +117,7 @@ class Project_Dashboard extends Component {
             uniq = years.sort().filter((v, i, a) => a.indexOf(v) === i);
             this.setState({ all_years: uniq });
             for (let key in fetchedUsers) {
-                if (fetchedUsers[key].stats) {
+                if (fetchedUsers[key].stats !== undefined) {
                     for (let key2 in fetchedUsers[key].stats)
                         if (fetchedUsers[key].stats[key2] !== undefined && fetchedUsers[key].stats[key2] !== 0 && fetchedUsers[key].stats[key2]['gitdate']) {
                             var gitdate = fetchedUsers[key].stats[key2]['gitdate']
@@ -117,7 +129,7 @@ class Project_Dashboard extends Component {
                                     break
                                 }
 
-                                if (gitdate[i] == '-') {
+                                if (gitdate[i] === '-') {
                                     str = '/' + gitdate.substring(ind, i) + str
                                     ind = i + 1
                                 }
@@ -126,15 +138,13 @@ class Project_Dashboard extends Component {
 
 
                         }
-                    if (fetchedUsers[key].stats['0'] === undefined)
-                        fetchedUsers[key]['stats']['0'] = 0
-                    if (fetchedUsers[key].stats['1'] === undefined)
-                        fetchedUsers[key]['stats']['1'] = 0
+                    if (fetchedUsers[key]['stats'] === undefined)
+                        fetchedUsers[key]['stats'] = { 0: 0, 1: 0 }
 
                 }
                 else {
-                    var st={0: 0,1:0}
-                    fetchedUsers[key]['stats']=st
+                    var st = { 0: 0, 1: 0 }
+                    fetchedUsers[key]['stats'] = st
                 }
 
 
@@ -179,6 +189,7 @@ class Project_Dashboard extends Component {
     }
 
     componentDidMount() {
+
         Pro_Add_Edit.generateArrayOfYears()
         this.get_data()
     }
@@ -205,7 +216,7 @@ class Project_Dashboard extends Component {
         window.open('https://github.com/' + user.gits[key], 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no')
     }
 
-    studentclick_daybook = (day) => {
+    studentclick_diary = (day) => {
         window.open(day, 'MyWindow', 'toolbar=no,location=no,directories=no,status=no, menubar=no,scrollbars=no,resizable=no')
     }
 
@@ -224,9 +235,9 @@ class Project_Dashboard extends Component {
         var moderator_f = document.getElementById("moderator_f");
         moderator_f.value = user.moderator_id
 
-        if (user.daybook !== undefined) {
-            var student_daybook = document.getElementById("daybook");
-            student_daybook.value = user.daybook
+        if (user.diary !== undefined) {
+            var student_diary = document.getElementById("diary");
+            student_diary.value = user.diary
         }
 
         Pro_Add_Edit.addFieldsMembers()
@@ -236,9 +247,9 @@ class Project_Dashboard extends Component {
         let num;
         for (let i = 0; i < numberOfmembers.value; i++) {
             num = i + 1
-            document.getElementById("member_id" + num).value = user.members[i].id
-            document.getElementById("member_mail" + num).value = user.members[i].email
-            document.getElementById("member_name" + num).value = user.members[i].name
+            document.getElementById("student_id" + num).value = user.members[i].id
+            document.getElementById("student_email" + num).value = user.members[i].email
+            document.getElementById("student_name" + num).value = user.members[i].name
         }
 
         for (let i = 0; i < numberOfGits.value; i++) {
@@ -343,52 +354,6 @@ class Project_Dashboard extends Component {
         }
     }
 
-
-    handleSubmit(e) {
-        var mod = document.getElementById("moderator_f");
-        var numOfPartners = document.getElementById("members");
-        var numOfGits = document.getElementById("numOfgits");
-
-        let gits = []
-        for (let k = 0; k < numOfGits.value; k++) {
-            let num = k + 1
-            gits[k] = document.getElementById("git_id" + num).value
-        }
-
-        let members = []
-        for (let k = 0; k < numOfPartners.value; k++) {
-            let num = k + 1
-            members[k] = {
-                id: document.getElementById("member_id" + num).value,
-                name: document.getElementById("member_name" + num).value,
-                email: document.getElementById("member_mail" + num).value,
-            }
-        }
-
-        var updates = {};
-        updates['/projects/' + this.state.edit + '/project_name'] = this.input.value
-        updates['/projects/' + this.state.edit + '/partners'] = numOfPartners.value
-        updates['/projects/' + this.state.edit + '/daybook'] = this.input5.value
-        updates['/projects/' + this.state.edit + '/moderator_id'] = mod.value
-        updates['/projects/' + this.state.edit + '/members'] = members
-        updates['/projects/' + this.state.edit + '/gits'] = gits
-        updates['/projects/' + this.state.edit + '/date'] = []
-        updates['/projects/' + this.state.edit + '/year'] = this.input_year.value
-        updates['/projects/' + this.state.edit + '/stats'] = 0
-
-
-
-
-        firebase.database().ref().update(updates).then((x) => {
-            alerts.alert('פרוייקט עודכן')//true for refresh!
-        }).catch((err) => {
-            console.log(err)
-        });
-        e.preventDefault();
-
-        document.getElementById('close_but').click()
-    }
-
     filePathset = (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -456,39 +421,65 @@ class Project_Dashboard extends Component {
     }
 
     add_projects_from_file = async (projects) => {
-        for (let key in projects) {
-            await this.add_project(projects[key]).then(user => {
-                if (user !== undefined) {
-                    var projID = firebase.database().ref().child('projects/').push().key;
+        var process_log = ''
 
-                    firebase.database().ref('projects/' + projID).set(user)
-                        .then((x) => {
-                            console.log('Succed')
-                        }).catch((err) => {
-                            console.log('Failed')
-                        });
-                }
-            })
+        for (let key = 0; key < projects.length - 1; key++) {
+            await this.add_project2(projects[key], key)
+            let hand = await this.handleSubmit2(key)
+            console.log(hand)
+            if (typeof hand === 'string') {
+                process_log += hand + '\n'
+            }
+            else if (hand !== undefined) {
+                let db_req = await this.add_to_database(hand, key)
+                if (db_req !== undefined)
+                    process_log += db_req;
+                console.log(db_req)
+            }
 
         }
-        alerts.alert('פרוייקטים נוספו')
+        function download(filename, text) {
+            var pom = document.createElement('a');
+            pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            pom.setAttribute('download', filename);
+            document.body.appendChild(pom);
+            pom.click();
+            document.body.removeChild(pom);
+        }
+
+        download("log.txt", process_log)
     }
+
+    add_to_database = async (user, key) => {
+        var projID = firebase.database().ref().child('projects/').push().key;
+        var x = firebase.database().ref('projects/' + projID).set(user)
+            .then((x) => {
+                console.log('Succed')
+                return "שורה " + (parseInt(key) + 2) + ':  נוספה בהצלחה'
+            }).catch((err) => {
+                return "שורה " + (parseInt(key) + 2) + ':  עדכון במסד נתונים נכשל'
+            });
+        return x
+    }
+
     add_project = async (project) => {
+        console.log(project)
+
         const user = {
             year: '',
             project_name: '',
-            partners: 1,
-            daybook: '',
+            diary: '',
             moderator_id: '',
             members: [],
             gits: [],
 
         }
         user.members[0] = { id: '', name: '', email: '' }
-        if (typeof project.student1_id !== undefined && typeof project.student1_name !== undefined && typeof project.student1_mail !== undefined && project.student1_id !== '' && project.student1_name !== '' && project.student1_mail !== '') {
-            user.members[0].id = project.student1_id
-            user.members[0].name = project.student1_name
-            user.members[0].email = project.student1_mail
+
+        if (project.student_id1 !== undefined && project.student_name1 !== undefined && project.student_email1 !== undefined && project.student_id1 !== '' && project.student_name1 !== '' && project.student_email1 !== '') {
+            user.members[0].id = project.student_id1
+            user.members[0].name = project.student_name1
+            user.members[0].email = project.student_email1
         }
         else {
             return
@@ -506,11 +497,11 @@ class Project_Dashboard extends Component {
         }
 
 
-        if (typeof project.daybook !== undefined)
-            user.daybook = project.daybook
+        if (typeof project.diary !== undefined)
+            user.diary = project.diary
         if (typeof project.git1 !== undefined)
             user.gits[0] = project.git1
-        if (typeof project.numOfGits !== undefined && project.partners === '2') {
+        if (typeof project.numOfGits !== undefined && project.numOfGits === '2') {
             if (typeof project.git2 !== undefined)
                 user.gits[1] = project.git2
         }
@@ -536,24 +527,252 @@ class Project_Dashboard extends Component {
 
     }
 
+    add_project2 = async (project, key) => {
+        if (project === undefined || project === null)
+            return;
+        if (project.year !== undefined)
+            document.getElementById('project_year').value = project.year
+
+        if (project.project_name !== undefined)
+            document.getElementById('project_name').value = project.project_name
+
+        // members
+        document.getElementById('moderator_f').value = 'Not selected'
+        if (project.project_supervisor_email !== undefined) {
+            for (let key in this.state.moderators) {
+                if (this.state.moderators[key].email === project.project_supervisor_email) {
+                    document.getElementById('moderator_f').value = this.state.moderators[key].id
+                    break;
+                }
+            }
+        }
+
+        if (project.student_id1 !== undefined && project.student_name1 !== undefined && project.student_email1 !== undefined) {
+            document.getElementById('student_id1').value = project.student_id1
+            document.getElementById('student_name1').value = project.student_name1
+            document.getElementById('student_email1').value = project.student_email1
+        }
+
+
+        if (project.student_id2 !== undefined && project.student_name2 !== undefined && project.student_email2 !== undefined) {
+            document.getElementById('student_id2').value = project.student_id2
+            document.getElementById('student_name2').value = project.student_name2
+            document.getElementById('student_email2').value = project.student_email2
+        }
+
+        if (project.diary !== undefined) {
+            document.getElementById('diary').value = project.diary
+        }
+
+        if (project.git1 !== undefined) {
+            document.getElementById('git_id1').value = project.git1
+        }
+        if (project.git2 !== undefined) {
+            document.getElementById('git_id2').value = project.git2
+        }
+        return;
+    }
+
     do_nothing = () => {
         return
+    }
+
+    async handleSubmit(e) {
+        var mod = document.getElementById("moderator_f");
+        var numOfPartners = document.getElementById("members");
+        var numOfGits = document.getElementById("numOfgits");
+
+        let gits = []
+        for (let k = 0; k < numOfGits.value; k++) {
+            let num = k + 1
+            gits[k] = document.getElementById("git_id" + num).value
+        }
+
+        let members = []
+        for (let k = 0; k < numOfPartners.value; k++) {
+            let num = k + 1
+            members[k] = {
+                id: document.getElementById("student_id" + num).value,
+                name: document.getElementById("student_name" + num).value,
+                email: document.getElementById("student_email" + num).value,
+            }
+        }
+
+        // for(let key in this.state.users){
+        //     cur=this.state.users[key].members
+        //     console.log(members)
+        // }
+
+
+        await Pro_Add_Edit.check_if_user_exist(this.state.users, members, this.input_year.value, true, this.state.edit)
+            .then((x) => {
+                if (x !== undefined) {
+                    alert(x)
+                    e.preventDefault();
+                    return
+                }
+
+                var stats;
+                if (gits.length === 1)
+                    stats = { 0: 0 }
+                else {
+                    stats = { 0: 0, 1: 0 }
+                }
+
+                var ref = this.state.edit
+                if (ref === '')
+                    ref = firebase.database().ref().child('projects').push().key;;
+
+                var updates = {};
+                updates['/projects/' + ref + '/project_name'] = this.input.value
+                updates['/projects/' + ref + '/diary'] = this.input5.value
+                updates['/projects/' + ref + '/moderator_id'] = mod.value
+                updates['/projects/' + ref + '/members'] = members
+                updates['/projects/' + ref + '/gits'] = gits
+                updates['/projects/' + ref + '/date'] = []
+                updates['/projects/' + ref + '/year'] = this.input_year.value
+                updates['/projects/' + ref + '/stats'] = stats
+
+                firebase.database().ref().update(updates).then((x) => {
+                    alerts.alert('פרוייקט עודכן')//true for refresh!
+                }).catch((err) => {
+                    console.log(err)
+                });
+                e.preventDefault();
+
+                document.getElementById('close_but').click()
+
+
+            })
+
+
+    }
+
+    handleSubmit2 = async (key) => {
+        var error_st = ''
+
+        let gits = []
+        let git1 = document.getElementById("git_id1").value
+        let git2 = document.getElementById("git_id2").value
+        if (git1 === '')
+            gits[0] = ''
+        else
+            gits[0] = git1
+
+        if (git2 !== '')
+            gits[1] = git2
+
+        var diary = document.getElementById("diary").value
+
+        var year = document.getElementById("project_year").value
+        if (year === '')
+            error_st += '| year'
+
+        var project_name = document.getElementById("project_name").value
+        if (project_name === '')
+            error_st += '| project_name'
+
+        var moder = document.getElementById("moderator_f").value
+
+
+        let members = []
+        var id = document.getElementById("student_id1").value
+        var name = document.getElementById("student_name1").value
+        var email = document.getElementById("student_email1").value
+        if (id === '')
+            error_st += '| student_id1'
+        if (name === '')
+            error_st += '| student_name1'
+        if (email === '') {
+            error_st += '| student_email1'
+        }
+        members[0] = {
+            id: id,
+            name: name,
+            email: email,
+        }
+
+
+        id = document.getElementById("student_id2").value
+        name = document.getElementById("student_name2").value
+        email = document.getElementById("student_email2").value
+        var err_2 = ''
+        if (id === '')
+            err_2 += '| student_id2'
+        if (name === '')
+            err_2 += '| student_name2'
+        if (email === '') {
+            err_2 += '| student_email2'
+        }
+
+        if (id !== '' && name !== '' && email !== '') {
+            members[1] = {
+                id: id,
+                name: name,
+                email: email,
+            }
+        }
+        else
+            error_st += err_2
+
+        // for (let k = 0; k < numOfPartners.value; k++) {
+        //     let num = k + 1
+        //     members[k] = {
+        //         id: document.getElementById("member_id" + num).value,
+        //         name: document.getElementById("member_name" + num).value,
+        //         email: document.getElementById("member_email" + num).value,
+        //     }
+        // }
+
+
+        var stats;
+        if (gits.length === 1)
+            stats = { 0: 0 }
+        else {
+            stats = { 0: 0, 1: 0 }
+        }
+
+        const user = {
+            year: year,
+            project_name: project_name,
+            diary: diary,
+            moderator_id: moder,
+            members: members,
+            gits: gits,
+            stats: stats
+        }
+
+        document.getElementById("show2").reset();
+
+        let ret = await Pro_Add_Edit.check_if_user_exist(this.state.users, members, year)
+            .then((x) => {
+                if (x !== undefined) {
+                    error_st += x
+                }
+                if (error_st !== '') {
+                    error_st = "שורה " + (parseInt(key) + 2) + '  שגיאה\t' + error_st
+                    // console.log(error_st)
+                    return error_st
+                }
+                else
+                    return user
+            })
+        return ret
+
     }
 
 
 
     render() {
         return (
-            <div className='ozbackground spec'>
+            <div className='ozbackground spec' >
 
                 <MyTitle title="לוח פרוייקטים" />
 
                 {this.state.loading ? (<div>
                     <div className='ozbackground'>
 
-
-
-                        <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class=" form-control-lg text-right" dir='rtl'>
+                        <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class="form-control-lg text-right" dir='rtl'>
                             <option value='0'>כל המנחים</option>
                             {this.state.moderators.map((mod) => (
                                 <option value={mod.id}>{mod.name}</option>
@@ -561,7 +780,7 @@ class Project_Dashboard extends Component {
                             ))}
                         </select>
 
-                        <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class=" form-control-lg text-right" dir='rtl'>
+                        <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class="form-control-lg text-right" dir='rtl'>
                             <option value='0'>כל השנים</option>
                             {this.state.all_years.map((year) => (
                                 <option value={year}>{year}</option>
@@ -617,12 +836,11 @@ class Project_Dashboard extends Component {
 
                                         <td width="10%" id={'td_mod_' + index} >{user.mod_name}</td>
 
-                                        {user.daybook === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' alt='diary' onClick={() => this.studentclick_daybook(user.daybook)} src={this.state.icon_diary} ></img> </td>
+                                        {user.diary !== my_underfined && user.diary === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' alt='diary' onClick={() => this.studentclick_diary(user.diary)} src={this.state.icon_diary} ></img> </td>
                                         )}
 
 
-
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td><img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 0)} alt='github address'></img>
 
@@ -635,7 +853,7 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
                                             (
                                                 <td><img src={this.state.icon_error} title={myerror} alt='github_Error'></img>
                                                     <p></p>
@@ -649,11 +867,11 @@ class Project_Dashboard extends Component {
                                             )
                                             : (this.do_nothing())}
 
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
 
 
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td>{user.stats[0].date}
                                                     <p></p>
@@ -666,7 +884,7 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
                                             (
                                                 <td><div><p /><br /></div>
                                                     <p></p>
@@ -679,9 +897,9 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td>{user.stats[0].Number_of_commits}
                                                     <p></p>
@@ -694,7 +912,7 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
                                             (
                                                 <td><div><p /><br /></div>
                                                     <p></p>
@@ -707,14 +925,14 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
 
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td>{user.stats[0].median_File}
                                                     <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
                                                         (<div><p /> <br /> {user.stats[1].median_File}</div>)
                                                         : (this.do_nothing())}
                                                     {user.stats[1] === -1 ?
@@ -723,7 +941,7 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
                                             (
                                                 <td><div><p /><br /></div>
                                                     <p></p>
@@ -736,14 +954,14 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
 
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td>{user.stats[0].median_Total}
                                                     <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
                                                         (<div><p /> <br /> {user.stats[1].median_Total}</div>)
                                                         : (this.do_nothing())}
                                                     {user.stats[1] === -1 ?
@@ -752,11 +970,11 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
+                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
                                             (
                                                 <td><div><p /><br /></div>
                                                     <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
                                                         (<div><p /> <br /> {user.stats[1].median_Total}</div>)
                                                         : (this.do_nothing())}
                                                     {user.stats[1] === -1 ?
@@ -765,13 +983,13 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
                                         {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
                                             (
                                                 <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a>
                                                     <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
                                                         (<div><p /> <br /> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a></div>)
                                                         : (this.do_nothing())}
                                                     {user.stats[1] === -1 ?
@@ -784,7 +1002,7 @@ class Project_Dashboard extends Component {
                                             (
                                                 <td><div><p /><br /></div>
                                                     <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
                                                         (<div><p /> <br /> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a></div>)
                                                         : (this.do_nothing())}
                                                     {user.stats[1] === -1 ?
@@ -793,14 +1011,14 @@ class Project_Dashboard extends Component {
                                                 </td>
                                             )
                                             : (this.do_nothing())}
-                                        {user.stats[0] === 0?(<td></td>):(this.do_nothing())}
+                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
 
                                         <td>
                                             <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
                                                 this.myEdit(user)
 
-                                            }}  data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
+                                            }} data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
                                         </td>
 
                                         <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='delete_Button'></img></td>
@@ -817,24 +1035,20 @@ class Project_Dashboard extends Component {
                     </div>
 
 
-                    <div>
-                        <input id="file" type="file" ref="fileUploader" onChange={this.filePathset.bind(this)} />
-                        <button onClick={() => { this.readFile(); }}>טען קובץ</button>
-                        <button onClick={() => this.removeFile()}>בטל בחירה</button>
-                        <a href={this.state.excel_example}>הורד קובץ לדוגמא</a>
+                    <div class="" dir='rtl'>
+                        <input className='btn btn-secondary btn-sm hide_file' id="file" type="file" ref="fileUploader" onChange={this.filePathset.bind(this)} />
+                        <button class="btn btn-secondary" onClick={() => { this.readFile(); }}>טען קובץ</button>
+                        <button class="btn btn-secondary" onClick={() => this.removeFile()}>בטל בחירה</button>
+                        <a class="btn btn-dark" href={this.state.excel_example}>הורד קובץ לדוגמא</a>
 
                     </div>
 
                 </div>) :
-                    (<div></div>)}
+                    (<div></div>)
+                }
 
 
-
-
-
-
-
-                <div className="col-md-6">
+                < div className="col-md-6" >
 
                     <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
                         <div class="modal fade" id="modalLRForm" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -866,16 +1080,24 @@ class Project_Dashboard extends Component {
                                             <div class="form-group" id="container">
                                                 <div>
                                                     סטודנט 1<br />
-                                                    <input type="number" id="member_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
-                                                    <input type="text" id="member_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
-                                                    <input type="email" id="member_mail1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
+                                                    <input type="number" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
+                                                    <input type="text" id="student_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
+                                                    <input type="email" id="student_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
                                                 </div>
+                                            </div>
+
+                                            <div id='member2_form' className='nonethings'>סטודנט 2
+                                                <br />
+                                                <input type="number" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
+                                                <input type="text" id="student_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
+                                                <input type="email" id="student_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
+                                                <br />
                                             </div>
 
                                             <p></p><p></p><p></p>
 
                                             <p></p>
-                                            <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                            <input id='diary' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                             <p></p>
 
                                             <select id="numOfgits" type="text" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
@@ -884,6 +1106,9 @@ class Project_Dashboard extends Component {
                                             </select>
                                             <div class="form-group" id="containerGit">
                                                 <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
+                                                <div id='git2_form' className='nonethings'>
+                                                    <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
+                                                </div>
                                             </div>
 
 
@@ -901,12 +1126,12 @@ class Project_Dashboard extends Component {
                             </div>
                         </div>
                     </form>
-                </div>
+                </div >
 
 
 
 
-            </div>
+            </div >
         );
     }
 

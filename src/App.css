@@ -1,3 +1,9 @@
+* {
+  font-size: 100%;
+  font-family: 'Open Sans', sans-serif;
+ }
+
+
 .App {
   text-align: center;
 }

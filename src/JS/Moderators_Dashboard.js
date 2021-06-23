@@ -3,8 +3,9 @@ import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
-
+import Moder_Form from './Moderator_Form'
 import '../CSS/Pages.css' /* CSS */
+
 
 class Moderators_Dashboard extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class Moderators_Dashboard extends Component {
     }
 
     state = {
-        users: [],
+        moderators: [],
         edit: '',
         loading: true,
         selectedUserId: null,
@@ -39,14 +40,14 @@ class Moderators_Dashboard extends Component {
         database.on('value', (snapshot) => {
             const res = snapshot.val();
 
-            const fetchedUsers = [];
-                for (let key in res) {
-                    fetchedUsers.push({
-                        ...res[key],
-                        id: key
-                    });
-                }
-                this.setState({ loading: false, users: fetchedUsers });
+            const fetched = [];
+            for (let key in res) {
+                fetched.push({
+                    ...res[key],
+                    id: key
+                });
+            }
+            this.setState({ loading: false, moderators: fetched });
         })
     }
 
@@ -55,14 +56,7 @@ class Moderators_Dashboard extends Component {
         this.setState({ selectedUserId: id });
     }
 
-    editedUserId = (moder) => {
-        var moderator_name = document.getElementById("moderator_name");
-        moderator_name.value = moder.name
-        var moderator_email = document.getElementById("moderator_email");
-        moderator_email.value = moder.email
 
-        this.setState({ edit: moder.id });
-    }
 
     deleteUserId = (id) => {
         // const del = (id) => {
@@ -72,8 +66,8 @@ class Moderators_Dashboard extends Component {
         //         }).catch(error => console.log(error))
         // }
         const del = (id) => {
-            firebase.database().ref('moderators/' + id).remove().then(()=>{
-                alerts.alert('מנחה נמחק!',false)
+            firebase.database().ref('moderators/' + id).remove().then(() => {
+                alerts.alert('מנחה נמחק!', false)
             })
 
             // axiosFirebase.delete('/moderators/' + id + '.json')
@@ -81,28 +75,51 @@ class Moderators_Dashboard extends Component {
             //         alerts.alert('מנחה נמחק!')
             //     }).catch(error => console.log(error))
         }
-        
+
         alerts.are_you_sure('האם ברצונך למחוק מנחה זה', id, del)
     }
 
     handleSubmit(e) {
+        var cur;
         const moderator = {
-            name: this.input.value,
-            email: this.input3.value,
+            name: document.getElementById('moderator_name').value,
+            email: document.getElementById('moderator_email').value,
+        }
+
+        for (let key in this.state.moderators) {
+            cur = this.state.moderators[key]
+            if (cur.email === moderator.email) {
+                if (cur.id === this.state.edit)
+                    continue
+                else {
+                    e.preventDefault()
+                    alerts.error('יתכן כי הינך מנסה לשנות את המייל למייל שקיים כבר אצל מנחה אחר')
+                    return;
+                }
+            }
         }
 
         var updates = {};
         updates['/moderators/' + this.state.edit] = moderator;
 
         firebase.database().ref().update(updates).then((x) => {
-            alerts.alert('פרוייקט נוסף',false)//true for refresh!
+            alerts.alert('מנחה עודכן', false)//true for refresh!
         }).catch((err) => {
             console.log(err)
         });
         e.preventDefault();
 
         document.getElementById('close_but').click()
-        
+
+    }
+
+    editedUserId = (moder) => {
+        var moderator_name = document.getElementById("moderator_name");
+        moderator_name.value = moder.name
+        var moderator_email = document.getElementById("moderator_email");
+        moderator_email.value = moder.email
+
+        this.setState({ edit: moder.id });
     }
 
 
@@ -123,22 +140,16 @@ class Moderators_Dashboard extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.users.map((user, index) => (
+                            {this.state.moderators.map((user, index) => (
 
 
                                 <tr>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td>
-                                        <a href="#home" onClick={() => {
-                                            this.editedUserId(user)
-
-                                        }} class="Logged-out" data-toggle="modal" data-target="#moderator_edit_form"><img src={this.state.icon_edit} alt='mod_edit_image'/></a>
+                                        <img onClick={() => { this.editedUserId(user) }} src={this.state.icon_edit} alt='mod_edit_image' class="mypointer" data-toggle="modal" data-target="#moderator_edit_form" />
                                     </td>
-                                        
-                                    <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)}  alt='mod_delete_image'></img></td>
-                                       
-                                
+                                    <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='mod_delete_image'></img></td>
                                 </tr>
 
 
@@ -151,27 +162,19 @@ class Moderators_Dashboard extends Component {
 
                 <div className="col-md-6">
 
-                    <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
+                    <div id="show2" class="row justify-content-md-center">
                         <div class="modal fade" id="moderator_edit_form" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="ozbackground modal-dialog cascading-modal" role="document">
                                 <div class="ozbackground modal-content">
                                     <div class="ozbackground modal-body">
 
-
-                                        <div class="form-group">
-                                            <input id='moderator_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם מלא" ref={(input) => this.input = input}></input>
-                                        </div>
-                                        <div class="form-group">
-                                            <input id='moderator_email' type="email" class="form-control form-control-lg text-right" required placeholder="example@gmail.com" ref={(input3) => this.input3 = input3}></input>
-                                        </div>
+                                        <Moder_Form mybut='עדכן מנחה' handleSubmit={() => this.handleSubmit}></Moder_Form>
 
                                     </div>
                                     <div class="ozbackground modal-content">
                                         <div class="ozbackground modal-body ozbackground">
                                             <div class="form-group ozbackground">
-                                                <button id="update_but" type="submit" class="btn btn-dark btn-lg btn-block">עדכן מנחה</button>
                                                 <p></p>
-
                                                 <button id="close_but" type="button" class="btn btn-danger btn-lg btn-block" data-dismiss="modal">סגור</button>
                                             </div>
                                         </div>
@@ -179,7 +182,7 @@ class Moderators_Dashboard extends Component {
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
 

@@ -14,6 +14,7 @@ class Add_Project extends Component {
     }
 
     state = {
+        users: [],
         moderator: [],
         res_data: [],
         loading: true,
@@ -21,29 +22,57 @@ class Add_Project extends Component {
     }
 
 
-    componentDidMount() {
-        Pro_Add_Edit.generateArrayOfYears()
-        var database = firebase.database().ref('moderators/');
-        database.on('value', (snapshot) => {
-            const res = snapshot.val();
-            const fetchedUsers = [];
-            for (let key in res) {
-                fetchedUsers.push({
-                    ...res[key],
-                    id: key,
-
-                });
-            }
-            this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
-        })
+    async componentDidMount() {
+        await Pro_Add_Edit.generateArrayOfYears()
+        await this.get_moderators()
+        await this.getprojects()
         // .catch(err => {
         //     console.log('HERE!')
         //     this.setState({ loading: false });
         // })
     }
 
+    get_moderators = async () => {
+        firebase.database().ref('moderators/')
+            .on('value', (snapshot) => {
+                const res = snapshot.val();
+                const fetchedUsers = [];
+                for (let key in res) {
+                    fetchedUsers.push({
+                        ...res[key],
+                        id: key,
 
-    handleSubmit(e) {
+                    });
+                }
+                this.setState({ loading: false, moderator: fetchedUsers, res_data: res.data });
+            })
+
+    }
+
+    getprojects = async () => {
+        const fetchedUsers = []
+        var database_pro = firebase.database().ref('projects/');
+        database_pro.on('value', (snapshot) => {
+            const res = snapshot.val();
+            for (let key in res) {
+                // for (let mem in res[key].members) {
+                //     // fetchedUsers.push({
+                //     //     id: res[key].members[mem].id,
+                //     //     email: res[key].members[mem].email,
+                //     //     year: res[key].year
+                //     // });
+                // }
+                fetchedUsers.push({
+                    ...res[key],
+                    id: key
+                });
+
+            }
+            this.setState({ users: fetchedUsers });
+        })
+    }
+
+    async handleSubmit(e) {
         var mod = document.getElementById("moderator_f");
         var numOfPartners = document.getElementById("members");
         var numOfGits = document.getElementById("numOfgits");
@@ -62,30 +91,41 @@ class Add_Project extends Component {
             members[k] = {
                 id: document.getElementById("member_id" + num).value,
                 name: document.getElementById("member_name" + num).value,
-                email: document.getElementById("member_mail" + num).value,
+                email: document.getElementById("member_email" + num).value,
             }
         }
 
-        const user = {
-            name: this.input.value,
-            partners: numOfPartners.value,
-            daybook: this.input5.value,
-            moderator_id: mod.value,
-            members: members,
-            numOfGits: numOfGits.value,
-            gits: gits,
-            date: [],
-            year: this.input_year.value,
-        }
-
-        var projID = firebase.database().ref().child('projects/').push().key;
-
-        firebase.database().ref('projects/' + projID).set(user)
+        await Pro_Add_Edit.check_if_user_exist(this.state.users, members, this.input_year.value)
             .then((x) => {
-                alerts.alert('פרוייקט נוסף')//true for refresh!
-            }).catch((err) => {
-                console.log('Failed')
-            });
+                if (x !== undefined) {
+                    alert(x)
+                    return
+                }
+
+                const user = {
+                    name: this.input.value,
+                    diary: this.input5.value,
+                    moderator_id: mod.value,
+                    members: members,
+                    gits: gits,
+                    date: [],
+                    year: this.input_year.value,
+                }
+
+                var projID = firebase.database().ref().child('projects/').push().key;
+
+                firebase.database().ref('projects/' + projID).set(user)
+                    .then((x) => {
+                        alerts.alert('פרוייקט נוסף')//true for refresh!
+                    }).catch((err) => {
+                        console.log('Failed')
+                    });
+
+
+
+            })
+
+        e.preventDefault();
 
         // var newPostKey = firebase.database().ref().child('projects/').push().key;
         // var updates = {};
@@ -96,8 +136,6 @@ class Add_Project extends Component {
         // }).catch((err) => {
         //     console.log('Failed')
         // });
-
-        e.preventDefault();
     }
 
 
@@ -142,20 +180,24 @@ class Add_Project extends Component {
                                         סטודנט 1<br />
                                         <input type="number" id="member_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
                                         <input type="text" id="member_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
-                                        <input type="email" id="member_mail1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
+                                        <input type="email" id="member_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
                                     </div>
                                 </div>
 
-
-
-
+                                <div id='member2_form' className='nonethings'>סטודנט 2
+                                    <br />
+                                    <input type="number" id="member_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
+                                    <input type="text" id="member_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
+                                    <input type="email" id="member_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
+                                    <br />
+                                </div>
                             </div></div></div>
 
                     <div class="col-lg-4">
                         <div class="Card bg-white text-center card-form">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <input id='daybook' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                    <input id='diary' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
                                     <p></p>
                                     <select id="numOfgits" type='text' name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
                                         <option selected="selected" value='1'>מספר גיטים: 1</option>
@@ -165,8 +207,13 @@ class Add_Project extends Component {
                                 </div>
 
                                 <div class="form-group" id="containerGit">
-                                    <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
+                                    <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
+                                    <div id='git2_form' className='nonethings'>
+                                        <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
+                                    </div>
+
                                 </div>
+
 
                                 <div>
                                     <input type="submit" value="הוסף פרוייקט" className="btn btn-dark"></input>
