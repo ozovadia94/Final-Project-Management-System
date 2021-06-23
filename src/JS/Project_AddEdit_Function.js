@@ -1,4 +1,4 @@
-var addFieldsMembers = async () => {
+var addFieldsMembers_old = async () => {
     // Number of inputs to create
     var numberOfmembers = document.getElementById("members");
     if (numberOfmembers === null)
@@ -23,7 +23,7 @@ var addFieldsMembers = async () => {
             input1.required = true
             var input2 = document.createElement("input");
             input2.type = "email";
-            input2.id = "member_mail" + num;
+            input2.id = "member_email" + num;
             input2.className = "form-control form-control-lg text-right"
             input2.placeholder = "example@example.com"
             input2.required = true
@@ -50,7 +50,50 @@ var addFieldsMembers = async () => {
         for (let y = sum_element_now; y > numberOfmembers; y--)
             y = container.removeChild(container.lastChild)
 }
-var addFieldsGits = async () => {
+
+
+var addFieldsMembers = async () => {
+    var numberOfmembers = document.getElementById("members");
+    if (numberOfmembers === null)
+        return
+    else
+        numberOfmembers = numberOfmembers.value
+
+
+    var form = document.getElementById('member2_form')
+    if (numberOfmembers === '1')
+        form.className = 'nonethings'
+
+    else if (numberOfmembers === '2')
+        form.className = ''
+
+}
+
+
+var check_if_user_exist = async (users, members, year,check=false,id='') => {
+    var cur_project; var cur_mem_users; var cur_mem;
+    for (let k_mem = 0; k_mem < members.length; k_mem++) {
+        cur_mem = members[k_mem]
+        for (let k_user in users) {
+            cur_project = users[k_user]
+            for (let k_user_mem in cur_project.members) {
+                cur_mem_users = cur_project.members[k_user_mem]
+                // console.log(cur_mem, '',cur_mem_users)
+                if (cur_mem_users.id === cur_mem.id && cur_project.year === year && (check===false || (check===true && id!=='' && id!==cur_project.id)))
+                    return 'ת.ז זה קיים במערכת בשנת לימוד זו';
+                if (cur_mem_users.email === cur_mem.email && cur_project.year === year && (check===false || (check===true && id!=='' && id!==cur_project.id))) {
+                    return 'אימייל זה קיים במערכת בשנת לימוד זו';
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+var addFieldsGits2 = async () => {
     // Number of inputs to create
     var numberOfGits = document.getElementById("numOfgits");
     if (numberOfGits === null)
@@ -84,7 +127,25 @@ var addFieldsGits = async () => {
             y = container.removeChild(container.lastChild)
 }
 
-var generateArrayOfYears = (ifnew=true) => {
+var addFieldsGits = async () => {
+
+    var numberOfGits = document.getElementById("numOfgits");
+    if (numberOfGits === null)
+        return
+    else
+        numberOfGits = numberOfGits.value
+
+    var form = document.getElementById('git2_form')
+    if (numberOfGits === '1')
+        form.className = 'nonethings'
+
+    else if (numberOfGits === '2')
+        form.className = ''
+
+
+}
+
+var generateArrayOfYears = async (ifnew = true) => {
     var y = new Date().getFullYear()
     var min = 2018
     var max = y + 3
@@ -92,12 +153,11 @@ var generateArrayOfYears = (ifnew=true) => {
     var years = document.getElementById("project_year");
 
     for (var i = min; i < max; i++) {
-        var year =  document.createElement("option");;
+        var year = document.createElement("option");;
         year.value = i
-        year.innerHTML=i
-        if(i===y)
-        {
-            year.selected=' '
+        year.innerHTML = i
+        if (i === y) {
+            year.selected = ' '
         }
         years.appendChild(year)
     }
@@ -106,9 +166,10 @@ var generateArrayOfYears = (ifnew=true) => {
 
 
 var Project_AddEdit_Function = {
-    addFieldsMembers : addFieldsMembers,
-    addFieldsGits : addFieldsGits,
+    addFieldsMembers: addFieldsMembers,
+    addFieldsGits: addFieldsGits,
     generateArrayOfYears: generateArrayOfYears,
+    check_if_user_exist: check_if_user_exist,
 }
 
 export default Project_AddEdit_Function;

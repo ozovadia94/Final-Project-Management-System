@@ -31,8 +31,6 @@ var are_you_sure = async (text,id,func) => {
 }
 
 var my_error = (props) => {
-    console.log(props)
-
     Swal.fire({
         icon: 'error',
         title: 'שגיאה!',
