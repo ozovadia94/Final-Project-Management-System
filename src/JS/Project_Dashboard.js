@@ -1043,11 +1043,11 @@ class Project_Dashboard extends Component {
                                                 : (this.do_nothing())}
                                             {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
-
                                             <td>
                                                 <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
                                                     this.myEdit(user)
 
+                                                    
                                                 }} data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
                                             </td>
 
