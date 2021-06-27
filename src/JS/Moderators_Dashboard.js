@@ -83,7 +83,7 @@ class Moderators_Dashboard extends Component {
         var cur;
         const moderator = {
             name: document.getElementById('moderator_name').value,
-            email: document.getElementById('moderator_email').value,
+            email: (document.getElementById('moderator_email').value).toLowerCase(),
         }
 
         for (let key in this.state.moderators) {
@@ -126,9 +126,11 @@ class Moderators_Dashboard extends Component {
     render() {
         return (
             <div >
-                <div className='backgroundPage'>
+                <div className='ozbackground'>
 
                     <MyTitle title="לוח מנחים" />
+
+                    <br></br>
 
                     <table class="table table-dark" dir='rtl'>
                         <thead>
@@ -185,7 +187,8 @@ class Moderators_Dashboard extends Component {
                     </div>
                 </div>
 
-
+                <br></br>
+                <p></p>
             </div>
         );
     }

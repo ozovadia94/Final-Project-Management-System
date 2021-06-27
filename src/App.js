@@ -89,7 +89,7 @@ class App extends Component {
 
         <div class="after_loading">
           {this.state.login ? (
-            <div>
+            <div className="oztry">
 
               <nav class="navbar navbar-dark bg-dark" dir="rtl">
                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
@@ -98,7 +98,7 @@ class App extends Component {
                   <Link to="/Moderators_Dashboard" type="submit" class="btn btn-dark">לוח מנחים</Link>
                   <Link to="/Add_moderator" type="submit" class="btn btn-dark">הוספת מנחה</Link>
                   <Link to="/Add_Project" type="submit" class="btn btn-dark">הוספת פרוייקט</Link>
-                  <button type="submit" class="btn btn-dark" onClick={this.logout}>התנתק</button>
+                  <button id="disconnect" type="submit" class="btn btn-dark btn-warning" onClick={this.logout}>התנתק</button>
                 </div>
               </nav>
 

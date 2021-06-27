@@ -32,6 +32,7 @@ class Project_Dashboard extends Component {
         icon_edit: '',
         icon_delete: '',
         icon_error: '',
+        icon_github_progress: '',
         file: '',
         results: '',
         excel_example: '',
@@ -39,7 +40,7 @@ class Project_Dashboard extends Component {
 
 
     getIcons = async () => {
-        firebase.storage().ref("images/").child('icons8-github-36.png').getDownloadURL().then((url) => {
+        firebase.storage().ref("images/").child('icons8-github-48.png').getDownloadURL().then((url) => {
             this.setState({ icon_github: url })
         }).catch((error) => console.log(error))
 
@@ -55,8 +56,11 @@ class Project_Dashboard extends Component {
             this.setState({ icon_delete: url })
         }).catch((error) => console.log(error))
 
-        firebase.storage().ref("images/").child('icons8-error-36.png').getDownloadURL().then((url) => {
+        firebase.storage().ref("images/").child('icons8-error-48.png').getDownloadURL().then((url) => {
             this.setState({ icon_error: url })
+        }).catch((error) => console.log(error))
+        firebase.storage().ref("images/").child('icons8-github-48-progress.png').getDownloadURL().then((url) => {
+            this.setState({ icon_github_progress: url })
         }).catch((error) => console.log(error))
 
         firebase.storage().ref().child('אקסל לדוגמא.xlsx').getDownloadURL().then((url) => {
@@ -426,7 +430,7 @@ class Project_Dashboard extends Component {
         for (let key = 0; key < projects.length - 1; key++) {
             await this.add_project2(projects[key], key)
             let hand = await this.handleSubmit2(key)
-            console.log(hand)
+            //console.log(hand)
             if (typeof hand === 'string') {
                 process_log += hand + '\n'
             }
@@ -434,7 +438,7 @@ class Project_Dashboard extends Component {
                 let db_req = await this.add_to_database(hand, key)
                 if (db_req !== undefined)
                     process_log += db_req;
-                console.log(db_req)
+                //console.log(db_req)
             }
 
         }
@@ -448,13 +452,15 @@ class Project_Dashboard extends Component {
         }
 
         download("log.txt", process_log)
+
+        window.location.reload()
     }
 
     add_to_database = async (user, key) => {
         var projID = firebase.database().ref().child('projects/').push().key;
         var x = firebase.database().ref('projects/' + projID).set(user)
             .then((x) => {
-                console.log('Succed')
+                //console.log('Succed')
                 return "שורה " + (parseInt(key) + 2) + ':  נוספה בהצלחה'
             }).catch((err) => {
                 return "שורה " + (parseInt(key) + 2) + ':  עדכון במסד נתונים נכשל'
@@ -463,7 +469,6 @@ class Project_Dashboard extends Component {
     }
 
     add_project = async (project) => {
-        console.log(project)
 
         const user = {
             year: '',
@@ -594,7 +599,7 @@ class Project_Dashboard extends Component {
             members[k] = {
                 id: document.getElementById("student_id" + num).value,
                 name: document.getElementById("student_name" + num).value,
-                email: document.getElementById("student_email" + num).value,
+                email: (document.getElementById("student_email" + num).value).toLowerCase(),
             }
         }
 
@@ -673,7 +678,9 @@ class Project_Dashboard extends Component {
             error_st += '| project_name'
 
         var moder = document.getElementById("moderator_f").value
-
+        if(moder==='Not selected'){
+            error_st+='project_supervisor_email does not exist'
+        }
 
         let members = []
         var id = document.getElementById("student_id1").value
@@ -689,7 +696,7 @@ class Project_Dashboard extends Component {
         members[0] = {
             id: id,
             name: name,
-            email: email,
+            email: email.toLowerCase(),
         }
 
 
@@ -709,7 +716,7 @@ class Project_Dashboard extends Component {
             members[1] = {
                 id: id,
                 name: name,
-                email: email,
+                email: email.toLowerCase(),
             }
         }
         else
@@ -769,367 +776,386 @@ class Project_Dashboard extends Component {
 
                 <MyTitle title="לוח פרוייקטים" />
 
-                {this.state.loading ? (<div>
-                    <div className='ozbackground'>
+                {this.state.loading ? (
+                    <div className="ozbackground">
+                        <div>
 
-                        <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class="form-control-lg text-right" dir='rtl'>
-                            <option value='0'>כל המנחים</option>
-                            {this.state.moderators.map((mod) => (
-                                <option value={mod.id}>{mod.name}</option>
-
-                            ))}
-                        </select>
-
-                        <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class="form-control-lg text-right" dir='rtl'>
-                            <option value='0'>כל השנים</option>
-                            {this.state.all_years.map((year) => (
-                                <option value={year}>{year}</option>
-                            ))}
-                        </select>
-
-
-                        <table id='myTable' class="table table-dark table table-striped table-bordered table-sm" dir='rtl'>
-                            <thead>
-                                <tr>
-                                    <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(0) }} >שנה</th>
-                                    <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(1) }} >שם הפרוייקט</th>
-                                    <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >שותפים</th>
-
-                                    <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3) }} >ת.ז</th>
-                                    <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >שמות</th>
-
-                                    <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(5) }} >אימיילים</th>
-                                    <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
-
-                                    <th class="th-sm" scope="col">יומן</th>
-                                    <th class="th-sm" scope="col">גיט</th>
-
-                                    <th width="1%" class="th-sm" scope="col">קומיט אחרון</th>
-                                    <th width="1%" class="th-sm" scope="col">מספר קומיטים</th>
-                                    <th width="1%" class="th-sm" scope="col">חציון קבצים</th>
-                                    <th width="1%" class="th-sm" scope="col">חציון שורות</th>
-                                    <th class="th-sm" scope="col">מצב התקדמות בגיט</th>
-
-                                    <th class="th-sm" scope="col">עריכה</th>
-                                    <th class="th-sm" scope="col">מחיקה</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.users.map((user, index) => (
-                                    <tr id={'tr_' + index}>
-                                        <td id={'td_year_' + index}>{user.year}</td>
-                                        <td width="10%">{user.project_name}</td>
-                                        {user.partners === 1 ? (<td>יחיד</td>) : (<td>זוגי</td>)}
-
-                                        <td>
-                                            <div>{user.members[0].id}</div>
-                                            {user.members[1] ? (<div>{user.members[1].id}</div>) : (<div></div>)}
-                                        </td>
-
-                                        <td><div>{user.members[0].name}</div>
-                                            {user.members[1] ? (<div>{user.members[1].name}</div>) : (<div></div>)}
-                                        </td>
-                                        <td><div>{user.members[0].email}</div>
-                                            {user.members[1] ? (<div>{user.members[1].email}</div>) : (<div></div>)}
-                                        </td>
-
-
-                                        <td width="10%" id={'td_mod_' + index} >{user.mod_name}</td>
-
-                                        {user.diary !== my_underfined && user.diary === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' alt='diary' onClick={() => this.studentclick_diary(user.diary)} src={this.state.icon_diary} ></img> </td>
-                                        )}
-
-
-                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td><img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 0)} alt='github address'></img>
-
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> <img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                            (
-                                                <td><img src={this.state.icon_error} title={myerror} alt='github_Error'></img>
-                                                    <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> <img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-
-
-                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td>{user.stats[0].date}
-                                                    <p></p>
-                                                    {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].date}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                            (
-                                                <td><div><p /><br /></div>
-                                                    <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].date}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td>{user.stats[0].Number_of_commits}
-                                                    <p></p>
-                                                    {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].Number_of_commits}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                            (
-                                                <td><div><p /><br /></div>
-                                                    <p></p>
-                                                    {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].Number_of_commits}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-
-                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td>{user.stats[0].median_File}
-                                                    <p></p>
-                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].median_File}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                            (
-                                                <td><div><p /><br /></div>
-                                                    <p></p>
-                                                    {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].median_File}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-
-                                        {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td>{user.stats[0].median_Total}
-                                                    <p></p>
-                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].median_Total}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                            (
-                                                <td><div><p /><br /></div>
-                                                    <p></p>
-                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> {user.stats[1].median_Total}</div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-                                        {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                            (
-                                                <td><a href="/" onClick={() => this.studentclick(user, 0)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a>
-                                                    <p></p>
-                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a></div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] && user.stats[0] === -1 ?
-                                            (
-                                                <td><div><p /><br /></div>
-                                                    <p></p>
-                                                    {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                        (<div><p /> <br /> <a href="/" onClick={() => this.studentclick(user, 1)} class="btn btn-outline-warning buttLink Logged-out" data-toggle="modal">התקדמות בגיט</a></div>)
-                                                        : (this.do_nothing())}
-                                                    {user.stats[1] === -1 ?
-                                                        (<div><p /> <br /> </div>)
-                                                        : (this.do_nothing())}
-                                                </td>
-                                            )
-                                            : (this.do_nothing())}
-                                        {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-
-                                        <td>
-                                            <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
-                                                this.myEdit(user)
-
-                                            }} data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
-                                        </td>
-
-                                        <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='delete_Button'></img></td>
-
-
-                                    </tr>
-
+                            <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class="form-control-lg text-right" dir='rtl'>
+                                <option value='0'>כל המנחים</option>
+                                {this.state.moderators.map((mod) => (
+                                    <option value={mod.id}>{mod.name}</option>
 
                                 ))}
+                            </select>
+
+                            <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class="form-control-lg text-right" dir='rtl'>
+                                <option value='0'>כל השנים</option>
+                                {this.state.all_years.map((year) => (
+                                    <option value={year}>{year}</option>
+                                ))}
+
+                            </select>
 
 
-                            </tbody>
-                        </table>
-                    </div>
+                            <table id='myTable' class="table table-dark table-striped table-bordered table-sm table-hover" dir='rtl'>
+                                <thead class="">
+                                    <tr>
+                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(0) }} >שנה</th>
+                                        <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(1) }} >שם הפרוייקט</th>
+                                        {/* <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >שותפים</th> */}
+
+                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3) }} >ת.ז</th>
+                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >שמות</th>
+
+                                        {/* <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(5) }} >אימיילים</th> */}
+                                        <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
+
+                                        <th class="th-sm" scope="col">יומן</th>
+                                        <th class="th-sm" scope="col">גיט</th>
+
+                                        <th width="1%" class="th-sm" scope="col">קומיט אחרון</th>
+                                        <th width="1%" class="th-sm" scope="col">מספר קומיטים</th>
+                                        <th width="1%" class="th-sm" scope="col">חציון קבצים</th>
+                                        <th width="1%" class="th-sm" scope="col">חציון שורות</th>
+                                        <th class="th-sm" scope="col">התקדמות בגיט</th>
+
+                                        <th class="th-sm" scope="col">עריכה</th>
+                                        <th class="th-sm" scope="col">מחיקה</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody id="mytbody">
+                                    {this.state.users.map((user, index) => (
+                                        <tr id={'tr_' + index}>
+
+                                            <td id={'td_year_' + index}>{user.year}</td>
+                                            <td width="10%">{user.project_name}</td>
+                                            {/* {user.partners === 1 ? (<td>יחיד</td>) : (<td>זוגי</td>)} */}
+
+                                            <td>
+                                                <div>{user.members[0].id}</div>
+                                                {user.members[1] ? (<div>{user.members[1].id}</div>) : (<div></div>)}
+                                            </td>
+
+                                            <td>
+                                                <div class="myDIV">
+                                                    <div>{user.members[0].name}</div>
+                                                    {user.members[1] ? (<div>{user.members[1].name}</div>) : (<div></div>)}
+                                                </div>
+
+                                                <div class="hide">{"Email: "}
+                                                    {user.members[0].email}
+
+                                                    {user.members[1] ? (<div>
+                                                        {"Email: " + user.members[1].email}
+
+                                                    </div>) : (<div></div>)}
+                                                </div>
+                                            </td>
+                                            {/* <td><div>{user.members[0].email}</div>
+                                                {user.members[1] ? (<div>{user.members[1].email}</div>) : (<div></div>)}
+                                            </td> */}
 
 
-                    <div class="" dir='rtl'>
-                        <input className='btn btn-secondary btn-sm hide_file' id="file" type="file" ref="fileUploader" onChange={this.filePathset.bind(this)} />
-                        <button class="btn btn-secondary" onClick={() => { this.readFile(); }}>טען קובץ</button>
-                        <button class="btn btn-secondary" onClick={() => this.removeFile()}>בטל בחירה</button>
-                        <a class="btn btn-dark" href={this.state.excel_example}>הורד קובץ לדוגמא</a>
+                                            <td width="10%" id={'td_mod_' + index} >{user.mod_name}</td>
 
-                    </div>
+                                            {user.diary && user.diary === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' alt='diary' onClick={() => this.studentclick_diary(user.diary)} src={this.state.icon_diary} ></img> </td>
+                                            )}
 
-                </div>) :
+
+                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td><img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 0)} alt='github address'></img>
+
+                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
+                                                (
+                                                    <td><img src={this.state.icon_error} width="44px" height="44px" title={myerror} alt='github_Error'></img>
+
+                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div> <img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+
+
+                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td><p />
+                                                        {user.stats[0].date}
+                                                        <p />
+                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> {user.stats[1].date}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div></div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
+                                                (
+                                                    <td><div><p /><br /></div>
+
+                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> <p /> {user.stats[1].date}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div></div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td><p />
+                                                        {user.stats[0].Number_of_commits}
+                                                        <p />
+                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> {user.stats[1].Number_of_commits}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
+                                                (
+                                                    <td><div><p /><br /></div>
+                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> <p /> {user.stats[1].Number_of_commits}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+
+                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td><p></p>
+                                                        {user.stats[0].median_File}
+                                                        <p></p>
+                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> {user.stats[1].median_File}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
+                                                (
+                                                    <td><div><p /><br /></div>
+                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div><p /> {user.stats[1].median_File}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+
+                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td>
+                                                        <p></p>
+                                                        {user.stats[0].median_Total}
+                                                        <p></p>
+                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div> {user.stats[1].median_Total}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
+                                                (
+                                                    <td><div><p /><br /></div>
+
+                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div><p /> {user.stats[1].median_Total}</div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+                                            {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
+                                                (
+                                                    <td>
+                                                        <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 0)} alt='github_progress'></img>
+                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div>
+                                                                <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 1)} alt='github_progress'></img>
+                                                            </div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] && user.stats[0] === -1 ?
+                                                (
+                                                    <td><div><br /></div>
+                                                        <br></br>
+                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
+                                                            (<div>
+                                                                <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 1)} alt='github_progress'></img>
+                                                            </div>)
+                                                            : (this.do_nothing())}
+                                                        {user.stats[1] === -1 ?
+                                                            (<div><p /> <br /> </div>)
+                                                            : (this.do_nothing())}
+                                                    </td>
+                                                )
+                                                : (this.do_nothing())}
+                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+
+
+                                            <td>
+                                                <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
+                                                    this.myEdit(user)
+
+                                                }} data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
+                                            </td>
+
+                                            <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='delete_Button'></img></td>
+                                        </tr>
+
+
+
+                                    ))}
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <div class="" dir='rtl'>
+                            <input className='btn btn-secondary btn-sm hide_file' id="file" type="file" ref="fileUploader" onChange={this.filePathset.bind(this)} />
+                            <button class="btn btn-secondary" onClick={() => { this.readFile(); }}>טען קובץ</button>
+                            <button class="btn btn-secondary" onClick={() => this.removeFile()}>בטל בחירה</button>
+                            <a class="btn btn-dark" href={this.state.excel_example}>הורד קובץ לדוגמא</a>
+
+                        </div>
+
+                    </div>) :
                     (<div></div>)
                 }
 
-
-                < div className="col-md-6" >
-
-                    <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
-                        <div class="modal fade" id="modalLRForm" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                            <div class="modal-dialog cascading-modal" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-body mb-1">
+                <br></br>
 
 
-                                        <div class="form-group" id='myform'>
-                                            <select id="project_year" type='number' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
-                                            </select>  <p></p>
-                                            <input id='project_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
-                                            <p></p>
-                                            <select id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
-                                                <option value='Not selected'>בחר מנחה מהרשימה</option>
-                                                {this.state.moderators.map((mod) => (
-                                                    <option value={mod.id}>{mod.name}</option>
-                                                ))}
-                                            </select>
+
+                <form id="show2" onSubmit={this.handleSubmit} class="row justify-content-md-center">
+                    <div class="modal fade" id="modalLRForm" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog cascading-modal" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body mb-1">
 
 
-                                            <p></p>
-                                            <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsMembers}>
-                                                <option selected="selected" value='1'>פרוייקט יחיד</option>
-                                                <option value='2'>פרוייקט זוגי</option>
-                                            </select>
+                                    <div class="form-group" id='myform'>
+                                        <select id="project_year" type='number' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
+                                        </select>  <p></p>
+                                        <input id='project_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
+                                        <p></p>
+                                        <select id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
+                                            <option value='Not selected'>בחר מנחה מהרשימה</option>
+                                            {this.state.moderators.map((mod) => (
+                                                <option value={mod.id}>{mod.name}</option>
+                                            ))}
+                                        </select>
 
 
-                                            <div class="form-group" id="container">
-                                                <div>
-                                                    סטודנט 1<br />
-                                                    <input type="number" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
-                                                    <input type="text" id="student_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
-                                                    <input type="email" id="student_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
-                                                </div>
+                                        <p></p>
+                                        <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsMembers}>
+                                            <option selected="selected" value='1'>פרוייקט יחיד</option>
+                                            <option value='2'>פרוייקט זוגי</option>
+                                        </select>
+
+
+                                        <div class="form-group" id="container">
+                                            <div>
+                                                סטודנט 1<br />
+                                                <input type="number" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
+                                                <input type="text" id="student_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
+                                                <input type="email" id="student_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
                                             </div>
+                                        </div>
 
-                                            <div id='member2_form' className='nonethings'>סטודנט 2
-                                                <br />
-                                                <input type="number" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
-                                                <input type="text" id="student_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
-                                                <input type="email" id="student_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
-                                                <br />
+                                        <div id='member2_form' className='nonethings'>סטודנט 2
+                                            <br />
+                                            <input type="number" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
+                                            <input type="text" id="student_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
+                                            <input type="email" id="student_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
+                                            <br />
+                                        </div>
+
+                                        <p></p><p></p><p></p>
+
+                                        <p></p>
+                                        <input id='diary' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                        <p></p>
+
+                                        <select id="numOfgits" type="text" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
+                                            <option selected="selected" value='1'>1</option>
+                                            <option value='2'>2</option>
+                                        </select>
+                                        <div class="form-group" id="containerGit">
+                                            <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
+                                            <div id='git2_form' className='nonethings'>
+                                                <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
                                             </div>
-
-                                            <p></p><p></p><p></p>
-
-                                            <p></p>
-                                            <input id='diary' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
-                                            <p></p>
-
-                                            <select id="numOfgits" type="text" name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
-                                                <option selected="selected" value='1'>1</option>
-                                                <option value='2'>2</option>
-                                            </select>
-                                            <div class="form-group" id="containerGit">
-                                                <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
-                                                <div id='git2_form' className='nonethings'>
-                                                    <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
-                                                </div>
-                                            </div>
-
-
-
                                         </div>
 
 
 
                                     </div>
-                                    <button id="update_but" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
-                                    <p></p>
 
-                                    <button id="close_but" type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
+
+
                                 </div>
+                                <button id="update_but" type="submit" class="btn btn-dark btn-lg">עדכן סטודנט</button>
+                                <p></p>
+
+                                <button id="close_but" type="button" class="btn btn-lg btn-danger" data-dismiss="modal">סגור</button>
                             </div>
                         </div>
-                    </form>
-                </div >
-
-
-
+                    </div>
+                </form>
 
             </div >
         );

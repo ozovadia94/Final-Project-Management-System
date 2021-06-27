@@ -91,7 +91,7 @@ class Add_Project extends Component {
             members[k] = {
                 id: document.getElementById("member_id" + num).value,
                 name: document.getElementById("member_name" + num).value,
-                email: document.getElementById("member_email" + num).value,
+                email: (document.getElementById("member_email" + num).value).toLowerCase(),
             }
         }
 
@@ -141,90 +141,90 @@ class Add_Project extends Component {
 
     render() {
         return (
-            <div className='backgroundPage'>
+            <div className='ozbackground backgroundPage'>
 
                 <MyTitle title="הוסף פרוייקט חדש" />
 
                 <div id="show" class="rtt11"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
 
-
                 <form id="myForm" onSubmit={this.handleSubmit} class="row justify-content-md-center" dir='rtl'>
 
-                    <div class="col-lg-4">
-                        <div class="Card bg-white text-center card-form">
-                            <div class="card-body">
-                                <div class="form-group" id='form1'>
-
-                                    <select id="project_year" type='number' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
+                    <div class="">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="project_year">שנת הפרוייקט</label>
+                                    <select id="project_year" type='number' class="form-control" required ref={(year) => this.input_year = year}>
                                     </select>
-                                    <p></p>
-                                    <input type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
-                                    <p></p>
-                                    <select id="moderator_f" type='text' class="form-control form-control-lg text-right" dir='rtl'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="project_name">שם הפרוייקט</label>
+                                    <input id="project_name" type="text" class="form-control" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="moderator_f">מנחה הפרוייקט</label>
+                                    <select id="moderator_f" type='text' class="form-control" dir='rtl'>
                                         <option value='Not selected'>בחר מנחה מהרשימה</option>
                                         {this.state.moderator.map((user) => (
                                             <option value={user.id}>{user.name}</option>
                                         ))}
                                     </select>
-                                    <p></p>
-
-                                    <select id="members" type='text' name="partners" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsMembers}>
-                                        <option selected="selected" value='1'>פרוייקט יחיד</option>
-                                        <option value='2'>פרוייקט זוגי</option>
-                                    </select>
-
                                 </div>
 
-                                <div class="form-group" id="container">
-                                    <div>
-                                        סטודנט 1<br />
-                                        <input type="number" id="member_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
-                                        <input type="text" id="member_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
-                                        <input type="email" id="member_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
-                                    </div>
-                                </div>
-
-                                <div id='member2_form' className='nonethings'>סטודנט 2
-                                    <br />
-                                    <input type="number" id="member_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
-                                    <input type="text" id="member_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
-                                    <input type="email" id="member_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
-                                    <br />
-                                </div>
-                            </div></div></div>
-
-                    <div class="col-lg-4">
-                        <div class="Card bg-white text-center card-form">
-                            <div class="card-body">
                                 <div class="form-group">
-                                    <input id='diary' type="text" class="form-control form-control-lg text-right" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
-                                    <p></p>
-                                    <select id="numOfgits" type='text' name="gits" class="form-control form-control-lg text-right" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
+                                    <input id='diary' type="text" class="form-control" placeholder="כתובת יומן" ref={(input5) => this.input5 = input5}></input>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numOfgits">גיטהאב</label>
+                                    <select id="numOfgits" type='text' name="gits" class="form-control" dir='rtl' onChange={Pro_Add_Edit.addFieldsGits}>
                                         <option selected="selected" value='1'>מספר גיטים: 1</option>
                                         <option value='2'>מספר גיטים: 2</option>
                                     </select>
-
-                                </div>
-
-                                <div class="form-group" id="containerGit">
-                                    <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
-                                    <div id='git2_form' className='nonethings'>
-                                        <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
+                                    <div>
+                                        <input id="git_id1" type="text" class="form-control" placeholder="git_user/repository" />
                                     </div>
-
+                                    <div id='git2_form' className='nonethings'>
+                                        <input id="git_id2" type="text" class="form-control" placeholder="git_user/repository" />
+                                    </div>
                                 </div>
 
 
-                                <div>
-                                    <input type="submit" value="הוסף פרוייקט" className="btn btn-dark"></input>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="members">מספר השותפים בפרוייקט</label>
+                                    <select id="members" type='text' name="partners" class="form-control" dir='rtl' onChange={Pro_Add_Edit.addFieldsMembers}>
+                                        <option selected="selected" value='1'>פרוייקט יחיד</option>
+                                        <option value='2'>פרוייקט זוגי</option>
+                                    </select>
+                                    <div>
+                                        <span>סטודנט 1</span>
+                                        <input type="number" id="member_id1" class="form-control" placeholder="תעודת זהות" required></input>
+                                        <input type="text" id="member_name1" class="form-control" placeholder="שם" required></input>
+                                        <input type="email" id="member_email1" class="form-control" placeholder="example@example.com" required></input>
+                                    </div>
+                                    <div id='member2_form' class="nonethings">
+                                        <span>סטודנט 2</span>
+                                        <input type="number" id="member_id2" class="form-control" placeholder="תעודת זהות" required=""></input>
+                                        <input type="text" id="member_name2" class="form-control" placeholder="שם" required=""></input>
+                                        <input type="email" id="member_email2" class="form-control" placeholder="example@example.com" required=""></input>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
+
+                        <p></p>
+
+                        
+                    <input type="submit" value="הוסף פרוייקט" class="btn btn-dark btn-block"></input>
                     </div>
 
-
-
                 </form>
+                <br></br>
+
             </div>
         );
     }

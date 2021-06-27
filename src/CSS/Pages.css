@@ -1,29 +1,16 @@
-#hide {
-    visibility: hidden
-}
-
-
-
-.backgroundPage{
-    overflow-x: hidden;
-    position: fixed;
-    height: 100%;
+.ozbackground{
     width: 100%;
 }
 
-
-.form-control, .card-body, .form-group, .card-form, .col-lg-4, .backgroundPage, .ozbackground{
-    background-color: #008cff9c;
+.form-control, .card-body, .form-group, .card-form, .col-lg-4, .ozbackground{
+    background-color: #0077ff9c;
 }
 
 
 input[type="text"], input[type="number"],input[type="email"],input[type="password"],select[type="text"]{
-    background-color : #e4e7dab4; 
+    background-color : #afb8c29c; 
     padding: 1px;
 }
-
-
-
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -50,13 +37,44 @@ td,tr{
     display: none;
 }
 
-.remove_border{
-    border: 1px solid rgb(18, 107, 55);
-
-    border: .1px solid #900;
-    border-bottom: none;
-}
-
 #file{
     background-color: #545b62;
 }
+
+.myTable {
+    text-align: center;
+    width: 90%;
+
+  }
+
+#disconnect{
+    color: red;
+}
+
+
+.hide {
+    visibility: hidden;
+
+
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+
+  }
+      
+  .myDIV:hover + .hide,  .hide:hover{
+    visibility: visible;
+
+  }
+
+  .myDIV{
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }

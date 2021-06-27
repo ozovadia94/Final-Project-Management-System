@@ -32,7 +32,7 @@ class Add_moderator extends Component {
     handleSubmit = (e) => {
         const moderator = {
             name: document.getElementById('moderator_name').value,
-            email: document.getElementById('moderator_email').value,
+            email: (document.getElementById('moderator_email').value).toLowerCase(),
         }
 
         for (let key in this.state.moderators) {
@@ -54,22 +54,17 @@ class Add_moderator extends Component {
 
     render() {
         return (
-            <div className='backgroundPage'>
+            <div className='ozbackground'>
                 <MyTitle title="הוסף מנחה חדש" />
 
-                <div id="show" class="rtt11"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
+                <div id="show"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
 
-
-                <div class="backgroundPage row justify-content-md-center">
-
-                    <div class="col-lg-4">
-                        <div class="Card bg-white text-center card-form">
-                            <div class="card-body">
-                                <Moderator_Form mybut='הוסף מנחה' handleSubmit={() => this.handleSubmit}/>
-                            </div>
-                        </div>
-                    </div>
+                <p></p>
+                <div class="justify-content-md-center row">
+                    <Moderator_Form mybut='הוסף מנחה' handleSubmit={() => this.handleSubmit} />
                 </div>
+                <br></br>
+
             </div>
         );
     }
