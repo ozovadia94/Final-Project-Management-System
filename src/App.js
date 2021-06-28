@@ -15,6 +15,8 @@ import NotFoundPage from './JS/NotFoundPage'
 import Login from './JS/Login'
 import firebase from './Firebase/Firebase';
 
+import axios from 'axios';
+
 class App extends Component {
   constructor() {
     super();
@@ -27,7 +29,12 @@ class App extends Component {
 
 
   componentDidMount() {
-    // console.log('WTF!')
+    axios.get('https://projectmanagementserver.herokuapp.com/').then((res) => {
+      console.log(res)
+    }).catch((err) => {
+
+    })
+
     // axios.get('http://localhost:3000/wtf').then((res)=>{
     //   console.log(res)
     //   console.log('xxx')
@@ -35,7 +42,7 @@ class App extends Component {
     //   console.log('IMMMM')
     //   console.log('ERRORRRR!!','\n',err)
     // })
-    
+
 
     document.onreadystatechange = function () {
       var after = document.querySelector(".after_loading")
@@ -60,7 +67,7 @@ class App extends Component {
     };
     this.checkAuth()
     //console.clear()
-    
+
   }
 
   checkAuth() {
