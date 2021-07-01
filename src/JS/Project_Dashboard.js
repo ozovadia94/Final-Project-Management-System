@@ -11,6 +11,9 @@ import * as XLSX from "xlsx";
 
 var myerror = "שגיאה בהצגת נתונים בשל אחת מהסיבות הבאות: \n1. כתובת גיט לא חוקית/לא קיימת. \n2. גיט פרטי ולכן צריך לשתף עם המשתמש projectmanager20. \n3. המערכת מחשבת כרגע את הנתונים. \n"
 var my_underfined = undefined
+var green = 7
+var yellow = 14
+var red = 21
 
 class Project_Dashboard extends Component {
     constructor(props) {
@@ -36,6 +39,8 @@ class Project_Dashboard extends Component {
         file: '',
         results: '',
         excel_example: '',
+        traffic: '',
+        icons_traffic: [],
     }
 
 
@@ -68,6 +73,20 @@ class Project_Dashboard extends Component {
         }).catch((error) => console.log(error))
 
 
+        firebase.storage().ref("traffic/").child('icons8-traffic-light-48.png').getDownloadURL().then((url) => {
+            this.setState({ traffic: url })
+        }).catch((error) => console.log(error))
+
+        firebase.storage().ref("traffic/").child('icons8-green-circle-48.png').getDownloadURL().then((url) => {
+
+            this.state.icons_traffic[0] = url
+        }).catch((error) => console.log(error))
+        firebase.storage().ref("traffic/").child('icons8-yellow-circle-48.png').getDownloadURL().then((url) => {
+            this.state.icons_traffic[1] = url
+        }).catch((error) => console.log(error))
+        firebase.storage().ref("traffic/").child('icons8-red-circle-48.png').getDownloadURL().then((url) => {
+            this.state.icons_traffic[2] = url
+        }).catch((error) => console.log(error))
 
     }
 
@@ -77,19 +96,41 @@ class Project_Dashboard extends Component {
         await this.get_moderators(projs);
         this.setState({ loading: true })
 
-        //var yea = await this.get_years(vals[1])
+        //await this.get_years(projs)
+        setTimeout(async ()=> {
+            await this.year_choose()
+            //your code to be executed after 1 second
+        }, 1500);
+
     }
 
-    get_years = async (uniq) => {
-        var my_years = document.getElementById('my_years')//.innerHTML
-        var add;
+    // get_years = async () => {
+    //     var my_years = document.getElementById('my_years')//.innerHTML
+    //     var add;
 
-        for (let key in uniq) {
-            add = document.createElement("option");
-            add.value = uniq[key]
-            add.innerHTML = uniq[key]
-            my_years.appendChild(add)
-        }
+    //     for (let key in this.state.all_years) {
+    //         console.log(this.state.all_years[key])
+    //         add = document.createElement("option");
+    //         add.value = this.state.all_years[key]
+    //         add.id = 'year_' + this.state.all_years[key]
+    //         add.innerHTML = this.state.all_years[key]
+    //         my_years.appendChild(add)
+    //     }
+    // }
+
+    year_choose = async () => {
+        var r = new Date()
+        var mon = r.getMonth()
+        var y = r.getFullYear()
+        
+        var year = y;
+        if (mon > 8)
+            year++;
+
+
+        document.getElementById('my_years').value = year
+        this.select_filter()
+        //document.getElementById('year_' + year).selected = ' '
     }
 
     get_projects = async () => {
@@ -120,28 +161,30 @@ class Project_Dashboard extends Component {
             }
             uniq = years.sort().filter((v, i, a) => a.indexOf(v) === i);
             this.setState({ all_years: uniq });
+
             for (let key in fetchedUsers) {
                 if (fetchedUsers[key].stats !== undefined) {
                     for (let key2 in fetchedUsers[key].stats)
                         if (fetchedUsers[key].stats[key2] !== undefined && fetchedUsers[key].stats[key2] !== 0 && fetchedUsers[key].stats[key2]['gitdate']) {
                             var gitdate = fetchedUsers[key].stats[key2]['gitdate']
-                            var str = ''
-                            var ind = 0
-                            for (let i = 0; i < gitdate.length; i++) {
-                                if (gitdate[i] === 'T') {
-                                    str = gitdate.substring(ind, i) + str
-                                    break
-                                }
-
-                                if (gitdate[i] === '-') {
-                                    str = '/' + gitdate.substring(ind, i) + str
-                                    ind = i + 1
-                                }
-                            }
-                            fetchedUsers[key].stats[key2]['date'] = str
+                            var time = gitdate.split('T')
+                            var d = time[0].split('-')
+                            fetchedUsers[key].stats[key2]['date'] = d[2] + '/' + d[1] + '/' + d[0]
 
 
+                            var today = new Date()
+                            var com = new Date(gitdate)
+                            var subtract = (today - com) / 1000 / 60 / 60 / 24
+
+                            if (subtract < green)
+                                fetchedUsers[key].stats[key2]['my_stat'] = green
+                            else if (subtract < yellow)
+                                fetchedUsers[key].stats[key2]['my_stat'] = yellow
+                            else
+                                fetchedUsers[key].stats[key2]['my_stat'] = red
                         }
+
+
                     if (fetchedUsers[key]['stats'] === undefined)
                         fetchedUsers[key]['stats'] = { 0: 0, 1: 0 }
 
@@ -192,10 +235,12 @@ class Project_Dashboard extends Component {
         })
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        await Pro_Add_Edit.generateArrayOfYears().then(arr => {
 
-        Pro_Add_Edit.generateArrayOfYears()
-        this.get_data()
+        })
+
+        await this.get_data()
     }
 
     selectedUserId = (id) => {
@@ -264,7 +309,7 @@ class Project_Dashboard extends Component {
         this.setState({ edit: user.id });
     }
 
-    sortTable = (n) => {
+    sortTable = (n, myT = true) => {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
         table = document.getElementById("myTable");
         switching = true;
@@ -287,14 +332,22 @@ class Project_Dashboard extends Component {
                 y = rows[i + 1].getElementsByTagName("TD")[n];
                 /*check if the two rows should switch place,
                 based on the direction, asc or desc:*/
+                var x_in = x.innerHTML.toLowerCase()
+                var y_in = y.innerHTML.toLowerCase()
+                // if(myT==='light')
+                // {
+                //     x_in=x.childNodes
+                //     y_in=y.value
+                // }
+
                 if (dir === "asc") {
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    if (x_in > y_in) {
                         //if so, mark as a switch and break the loop:
                         shouldSwitch = true;
                         break;
                     }
                 } else if (dir === "desc") {
-                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    if (x_in < y_in) {
                         //if so, mark as a switch and break the loop:
                         shouldSwitch = true;
                         break;
@@ -678,8 +731,8 @@ class Project_Dashboard extends Component {
             error_st += '| project_name'
 
         var moder = document.getElementById("moderator_f").value
-        if(moder==='Not selected'){
-            error_st+='project_supervisor_email does not exist'
+        if (moder === 'Not selected') {
+            error_st += 'project_supervisor_email does not exist'
         }
 
         let members = []
@@ -768,6 +821,40 @@ class Project_Dashboard extends Component {
 
     }
 
+    return_git = (user, key, par) => {
+        var stat = user.stats
+
+        if (stat === undefined)
+            return ''
+
+        if (stat[key] === 0)
+            return ''
+
+        if (stat[key] !== my_underfined && stat[key] !== -1 && stat[key] !== 0) {
+            if (par === 'icon_git')
+                return <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, key)} alt='github address'></img>
+            else if (par === 'icon_github_progress')
+                return <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, key)} alt='github_progress'></img>
+            else if (par === 'my_stat') {
+                if (stat[key]['my_stat'] === green)
+                    return <img src={this.state.icons_traffic[0]} alt='Green light' value='1'></img>
+                else if (stat[key]['my_stat'] === yellow)
+                    return <img src={this.state.icons_traffic[1]} alt='Yellow light' value='2'></img>
+                else if (stat[key]['my_stat'] === red)
+                    return <img src={this.state.icons_traffic[2]} alt='Red light' value='3'></img>
+            }
+            return <div><p />{stat[key][par]}</div>
+        }
+
+        if (stat[key] === undefined)
+            return ""
+
+        if (stat[key] === -1 && par === 'icon_git')
+            return <img src={this.state.icon_error} title={myerror} alt='github_Error'></img>
+
+        return ''
+
+    }
 
 
     render() {
@@ -811,14 +898,14 @@ class Project_Dashboard extends Component {
                                         <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
 
                                         <th class="th-sm" scope="col">יומן</th>
-                                        <th class="th-sm" scope="col">גיט</th>
+                                        <th width="1%" class="th-sm" scope="col">גיט</th>
 
                                         <th width="1%" class="th-sm" scope="col">קומיט אחרון</th>
                                         <th width="1%" class="th-sm" scope="col">מספר קומיטים</th>
                                         <th width="1%" class="th-sm" scope="col">חציון קבצים</th>
                                         <th width="1%" class="th-sm" scope="col">חציון שורות</th>
-                                        <th class="th-sm" scope="col">התקדמות בגיט</th>
-
+                                        <th width="1%" class="th-sm" scope="col">התקדמות בגיט</th>
+                                        <th width="1%" class="th-sm" scope="col"><img src={this.state.traffic} alt="traffic light"></img></th>
                                         <th class="th-sm" scope="col">עריכה</th>
                                         <th class="th-sm" scope="col">מחיקה</th>
                                     </tr>
@@ -863,191 +950,49 @@ class Project_Dashboard extends Component {
                                             )}
 
 
-                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td><img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 0)} alt='github address'></img>
+                                            <td>{this.return_git(user, 0, 'icon_git')}
+                                                {this.return_git(user, 1, 'icon_git')}
 
-                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                                (
-                                                    <td><img src={this.state.icon_error} width="44px" height="44px" title={myerror} alt='github_Error'></img>
+                                            </td>
 
-                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, 1)} alt='github address'></img></div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div> <img src={this.state.icon_error} title={myerror} alt='github_Error'></img></div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
+                                            <td>
+                                                <p />
+                                                {this.return_git(user, 0, 'date')}
+                                                {this.return_git(user, 1, 'date')}
+                                            </td>
 
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+                                            <td>
+                                                <p />
+                                                {this.return_git(user, 0, 'Number_of_commits')}
+                                                {this.return_git(user, 1, 'Number_of_commits')}
+                                            </td>
 
+                                            <td>
+                                                <p />
+                                                {this.return_git(user, 0, 'median_File')}
+                                                {this.return_git(user, 1, 'median_File')}
+                                            </td>
 
+                                            <td>
+                                                <p />
+                                                {this.return_git(user, 0, 'median_Total')}
+                                                {this.return_git(user, 1, 'median_Total')}
+                                            </td>
 
-                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td><p />
-                                                        {user.stats[0].date}
-                                                        <p />
-                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> {user.stats[1].date}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div></div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                                (
-                                                    <td><div><p /><br /></div>
+                                            <td>{this.return_git(user, 0, 'icon_github_progress')}
+                                                {this.return_git(user, 1, 'icon_github_progress')}
+                                            </td>
 
-                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> <p /> {user.stats[1].date}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div></div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td><p />
-                                                        {user.stats[0].Number_of_commits}
-                                                        <p />
-                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> {user.stats[1].Number_of_commits}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                                (
-                                                    <td><div><p /><br /></div>
-                                                        {user.stats[1] && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> <p /> {user.stats[1].Number_of_commits}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
+                                            <td>
+                                                {this.return_git(user, 0, 'my_stat')}
+                                                {this.return_git(user, 1, 'my_stat')}
+                                            </td>
 
 
-                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td><p></p>
-                                                        {user.stats[0].median_File}
-                                                        <p></p>
-                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> {user.stats[1].median_File}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                                (
-                                                    <td><div><p /><br /></div>
-                                                        {user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div><p /> {user.stats[1].median_File}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-
-                                            {user.stats[0] !== my_underfined && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td>
-                                                        <p></p>
-                                                        {user.stats[0].median_Total}
-                                                        <p></p>
-                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div> {user.stats[1].median_Total}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] !== my_underfined && user.stats[0] === -1 ?
-                                                (
-                                                    <td><div><p /><br /></div>
-
-                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div><p /> {user.stats[1].median_Total}</div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
-
-                                            {user.stats[0] && user.stats[0] !== -1 && user.stats[0] !== 0 ?
-                                                (
-                                                    <td>
-                                                        <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 0)} alt='github_progress'></img>
-                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div>
-                                                                <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 1)} alt='github_progress'></img>
-                                                            </div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] && user.stats[0] === -1 ?
-                                                (
-                                                    <td><div><br /></div>
-                                                        <br></br>
-                                                        {user.stats[1] !== my_underfined && user.stats[1] !== -1 && user.stats[1] !== 0 ?
-                                                            (<div>
-                                                                <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, 1)} alt='github_progress'></img>
-                                                            </div>)
-                                                            : (this.do_nothing())}
-                                                        {user.stats[1] === -1 ?
-                                                            (<div><p /> <br /> </div>)
-                                                            : (this.do_nothing())}
-                                                    </td>
-                                                )
-                                                : (this.do_nothing())}
-                                            {user.stats[0] === 0 ? (<td></td>) : (this.do_nothing())}
 
                                             <td>
                                                 <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
                                                     this.myEdit(user)
-
-                                                    
                                                 }} data-toggle="modal" data-target="#modalLRForm" alt='edit_Button'></img>
                                             </td>
 

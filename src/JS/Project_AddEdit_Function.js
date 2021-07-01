@@ -151,6 +151,7 @@ var generateArrayOfYears = async (ifnew = true) => {
     var max = y + 3
 
     var years = document.getElementById("project_year");
+    var years_arr=[]
 
     for (var i = min; i < max; i++) {
         var year = document.createElement("option");;
@@ -160,6 +161,7 @@ var generateArrayOfYears = async (ifnew = true) => {
             year.selected = ' '
         }
         years.appendChild(year)
+        years_arr.push(i)
     }
 }
 
