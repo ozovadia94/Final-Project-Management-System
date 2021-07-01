@@ -86,13 +86,11 @@ class App extends Component {
     window.location.reload();
   }
 
-
   render() {
 
 
     return (
       <div className="App">
-
 
         <div class="after_loading">
           {this.state.login ? (
