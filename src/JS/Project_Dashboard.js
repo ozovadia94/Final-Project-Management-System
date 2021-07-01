@@ -393,7 +393,6 @@ class Project_Dashboard extends Component {
 
 
         }
-
     }
 
     removeFile = () => {
