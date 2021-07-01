@@ -988,7 +988,6 @@ class Project_Dashboard extends Component {
                                             </td>
 
 
-
                                             <td>
                                                 <img src={this.state.icon_edit} class='mypointer Logged-out' href="#home" onClick={() => {
                                                     this.myEdit(user)
@@ -997,8 +996,6 @@ class Project_Dashboard extends Component {
 
                                             <td><img src={this.state.icon_delete} class='mypointer' onClick={() => this.deleteUserId(user.id)} alt='delete_Button'></img></td>
                                         </tr>
-
-
 
                                     ))}
 
