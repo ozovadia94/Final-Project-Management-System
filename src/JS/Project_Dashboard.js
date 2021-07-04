@@ -12,8 +12,8 @@ import * as XLSX from "xlsx";
 var myerror = "שגיאה בהצגת נתונים בשל אחת מהסיבות הבאות: \n1. כתובת גיט לא חוקית/לא קיימת. \n2. גיט פרטי ולכן צריך לשתף עם המשתמש projectmanager20. \n3. המערכת מחשבת כרגע את הנתונים. \n"
 var my_underfined = undefined
 var green = 7
-var yellow = 14
-var red = 21
+var yellow = 20
+
 
 class Project_Dashboard extends Component {
     constructor(props) {
@@ -87,17 +87,25 @@ class Project_Dashboard extends Component {
         firebase.storage().ref("traffic/").child('icons8-red-circle-48.png').getDownloadURL().then((url) => {
             this.state.icons_traffic[2] = url
         }).catch((error) => console.log(error))
+        firebase.storage().ref("traffic/").child('icons8-law-50.png').getDownloadURL().then((url) => {
+            this.state.icons_traffic[3] = url
+        }).catch((error) => console.log(error))
+
+
+
 
     }
 
     get_data = async () => {
         await this.getIcons()
         var projs = await this.get_projects()
-        await this.get_moderators(projs);
-        this.setState({ loading: true })
+        projs = await this.get_moderators(projs)
+
+
+        this.setState({ loading: true, users: projs })
 
         //await this.get_years(projs)
-        setTimeout(async ()=> {
+        setTimeout(async () => {
             await this.year_choose()
             //your code to be executed after 1 second
         }, 1500);
@@ -122,11 +130,10 @@ class Project_Dashboard extends Component {
         var r = new Date()
         var mon = r.getMonth()
         var y = r.getFullYear()
-        
+
         var year = y;
         if (mon > 8)
             year++;
-
 
         document.getElementById('my_years').value = year
         this.select_filter()
@@ -144,13 +151,13 @@ class Project_Dashboard extends Component {
 
         //     console.log(snapshot.val())
         // })
-        database_pro.on('value', (snapshot) => {
-            for (let key = 0; key < this.state.users.length; key++) {
-                var cur = document.getElementById('tr_' + key)
-                if (cur !== null)
-                    cur.remove()
-            }
-
+        // database_pro.on('value', (snapshot) => {
+        // for (let key = 0; key < this.state.users.length; key++) {
+        //     var cur = document.getElementById('tr_' + key)
+        //     if (cur !== null)
+        //         cur.remove()
+        // }
+        database_pro.get().then(async (snapshot) => {
             const res = snapshot.val();
             for (let key in res) {
                 fetchedUsers.push({
@@ -162,51 +169,93 @@ class Project_Dashboard extends Component {
             uniq = years.sort().filter((v, i, a) => a.indexOf(v) === i);
             this.setState({ all_years: uniq });
 
-            for (let key in fetchedUsers) {
-                if (fetchedUsers[key].stats !== undefined) {
-                    for (let key2 in fetchedUsers[key].stats)
-                        if (fetchedUsers[key].stats[key2] !== undefined && fetchedUsers[key].stats[key2] !== 0 && fetchedUsers[key].stats[key2]['gitdate']) {
-                            var gitdate = fetchedUsers[key].stats[key2]['gitdate']
-                            var time = gitdate.split('T')
-                            var d = time[0].split('-')
-                            fetchedUsers[key].stats[key2]['date'] = d[2] + '/' + d[1] + '/' + d[0]
+            // for (let key in fetchedUsers) {
+            //     if (fetchedUsers[key].stats !== undefined) {
+            //         for (let key2 in fetchedUsers[key].stats) {
+            //             cur=fetchedUsers[key].stats[key2]
+            //             if (cur !== undefined && cur !== 0 && cur['gitdate']) {
+            //                 var gitdate = fetchedUsers[key]['stats'][key2]['gitdate']
+            //                 var time = gitdate.split('T')
+            //                 var d = time[0].split('-')
+
+            //                 //retarr[0] = d[2] + '/' + d[1] + '/' + d[0]
+            //                 cur['date'] = d[2] + '/' + d[1] + '/' + d[0]
+
+            //                 var today = new Date()
+            //                 var year_today = today.getFullYear()
+
+            //                 var year_pro = parseInt(fetchedUsers[key].year)
+            //                 var com = new Date(gitdate)
+
+            //                 var subtract = (today - com) / 1000 / 60 / 60 / 24
 
 
-                            var today = new Date()
-                            var com = new Date(gitdate)
-                            var subtract = (today - com) / 1000 / 60 / 60 / 24
-
-                            if (subtract < green)
-                                fetchedUsers[key].stats[key2]['my_stat'] = green
-                            else if (subtract < yellow)
-                                fetchedUsers[key].stats[key2]['my_stat'] = yellow
-                            else
-                                fetchedUsers[key].stats[key2]['my_stat'] = red
-                        }
-
-
-                    if (fetchedUsers[key]['stats'] === undefined)
-                        fetchedUsers[key]['stats'] = { 0: 0, 1: 0 }
-
-                }
-                else {
-                    var st = { 0: 0, 1: 0 }
-                    fetchedUsers[key]['stats'] = st
-                }
-
-
-                if (fetchedUsers[key].gits !== undefined)
-                    fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
-
-                if (fetchedUsers[key].members !== undefined)
-                    fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
+            //                 if ((year_today === year_pro && today.getMonth() < 8) || (year_today + 1 === year_pro && today.getMonth() >= 8)) {
+            //                     if (subtract < green)
+            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = green
+            //                     //fetchedUsers[key][key2]['my_stat'] = green
+            //                     else if (subtract < yellow)
+            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = yellow
+            //                     else
+            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = red
+            //                 }
+            //                 else
+            //                     fetchedUsers[key]['stats'][key2]['my_stat'] = finish
+            //             }
+            //             else
+            //                 fetchedUsers[key]['stats'][key2] = 0
+            //         }
+            //     }
+            //     else {
+            //         for (let kk = 0; kk < fetchedUsers[key].gits.length; kk++) {
+            //             fetchedUsers[key]['stats'][kk] = 0
+            //             console.log('asגדכddas')
+            //         }
+            //     }
 
 
+            //     if (fetchedUsers[key].gits !== undefined)
+            //         fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
 
-            }
-
+            //     if (fetchedUsers[key].members !== undefined)
+            //         fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
+            // }
         })
+
+
+
+        setTimeout(async () => {
+            console.log('ttt')
+            console.log(fetchedUsers)
+            //your code to be executed after 1 second
+        }, 1500);
+
         return fetchedUsers;
+    }
+
+    fix_date_and_traffic = async (fetchedUsers) => {
+
+        for (let key in fetchedUsers) {
+            // if (fetchedUsers[key].stats) {
+            //     for (let kk = 0; kk < fetchedUsers[key].gits.length; kk++) {
+            //         fetchedUsers[key]['stats'][kk] = 0
+            //         console.log('asddas')
+            //     }
+            // }
+            // else
+            // {
+
+            // }
+
+
+
+
+            if (fetchedUsers[key].gits !== undefined)
+                fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
+
+            if (fetchedUsers[key].members !== undefined)
+                fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
+        }
     }
 
     get_moderators = async (fetchedUsers) => {
@@ -231,8 +280,15 @@ class Project_Dashboard extends Component {
                     fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
 
             }
-            this.setState({ moderators: fetched, moder_res: res, users: fetchedUsers });
+
+            this.setState({ moderators: fetched, moder_res: res, user: fetchedUsers });
+
         })
+        // var projs = await this.fix_date_and_traffic(fetchedUsers).then(res => {
+        //     console.log(res)
+        //     this.setState({ users: res })
+        // });
+        return fetchedUsers
     }
 
     async componentDidMount() {
@@ -654,6 +710,14 @@ class Project_Dashboard extends Component {
                 email: (document.getElementById("student_email" + num).value).toLowerCase(),
             }
         }
+        if (numOfPartners.value === 2) {
+            if (members[0].id > members[1].id) {
+                console.log('TASDSDA!')
+                var temp1 = members[0]
+                members[0] = members[1]
+                members[1] = temp1
+            }
+        }
 
         // for(let key in this.state.users){
         //     cur=this.state.users[key].members
@@ -735,44 +799,47 @@ class Project_Dashboard extends Component {
         }
 
         let members = []
-        var id = document.getElementById("student_id1").value
+        var id = document.getElementById("student_id1")
         var name = document.getElementById("student_name1").value
-        var email = document.getElementById("student_email1").value
-        if (id === '')
-            error_st += '| student_id1'
+        var email = document.getElementById("student_email1")
+
+        if (id.checkValidity() === false)
+            error_st += ' | student_id1 must be 9 digits'
         if (name === '')
-            error_st += '| student_name1'
-        if (email === '') {
-            error_st += '| student_email1'
-        }
+            error_st += ' | student_name1'
+        if (email.checkValidity() === false)
+            error_st += ' | student_email1'
+
+
         members[0] = {
-            id: id,
+            id: id.value,
             name: name,
-            email: email.toLowerCase(),
+            email: email.value.toLowerCase(),
         }
 
 
-        id = document.getElementById("student_id2").value
-        name = document.getElementById("student_name2").value
-        email = document.getElementById("student_email2").value
+        id = document.getElementById("student_id2")
+        name = document.getElementById("student_name2")
+        email = document.getElementById("student_email2")
+
         var err_2 = ''
-        if (id === '')
-            err_2 += '| student_id2'
-        if (name === '')
-            err_2 += '| student_name2'
-        if (email === '') {
-            err_2 += '| student_email2'
+
+        if (id.checkValidity() === false) {
+            err_2 += ' | student_id2'
+        }
+        if (name.checkValidity() === false || name.value === '')
+            err_2 += ' | student_name2'
+        if (email.checkValidity() === false)
+            err_2 += ' | student_email2'
+
+
+        members[1] = {
+            id: id.value,
+            name: name.value,
+            email: email.value.toLowerCase(),
         }
 
-        if (id !== '' && name !== '' && email !== '') {
-            members[1] = {
-                id: id,
-                name: name,
-                email: email.toLowerCase(),
-            }
-        }
-        else
-            error_st += err_2
+        error_st += err_2
 
         // for (let k = 0; k < numOfPartners.value; k++) {
         //     let num = k + 1
@@ -829,24 +896,42 @@ class Project_Dashboard extends Component {
         if (stat[key] === 0)
             return ''
 
-        if (stat[key] !== my_underfined && stat[key] !== -1 && stat[key] !== 0) {
+        if (stat[key] !== my_underfined && stat[key] !== -1) {
             if (par === 'icon_git')
                 return <img src={this.state.icon_github} class='mypointer' onClick={() => this.studentclick_git(user, key)} alt='github address'></img>
             else if (par === 'icon_github_progress')
                 return <img src={this.state.icon_github_progress} class='mypointer' onClick={() => this.studentclick(user, key)} alt='github_progress'></img>
-            else if (par === 'my_stat') {
-                if (stat[key]['my_stat'] === green)
-                    return <img src={this.state.icons_traffic[0]} alt='Green light' value='1'></img>
-                else if (stat[key]['my_stat'] === yellow)
-                    return <img src={this.state.icons_traffic[1]} alt='Yellow light' value='2'></img>
-                else if (stat[key]['my_stat'] === red)
-                    return <img src={this.state.icons_traffic[2]} alt='Red light' value='3'></img>
+            else if (par === 'my_stat' && stat[key]['gitdate']) {
+                var today = new Date()
+                var year_today = today.getFullYear()
+                var project_year = parseInt(user.year)
+
+                var subtract = (today - new Date(stat[key]['gitdate'])) / 1000 / 60 / 60 / 24
+
+                if ((year_today === project_year && today.getMonth() < 8) || (year_today + 1 === project_year && today.getMonth() >= 8)) {
+                    if (subtract < green)
+                        return <img src={this.state.icons_traffic[0]} alt='Green light' value='1'></img>
+                    else if (subtract < yellow)
+                        return <img src={this.state.icons_traffic[1]} alt='Yellow light' value='2'></img>
+                    else
+                        return <img src={this.state.icons_traffic[2]} alt='Red light' value='3'></img>
+                }
+                else
+                    return <img src={this.state.icons_traffic[3]} alt='Red light' value='4'></img>
+
             }
+            if (par === 'date' && stat[key]['gitdate']) {
+                var gitdate = stat[key]['gitdate']
+                var time = gitdate.split('T')
+                var d = time[0].split('-')
+
+                return <div><p />{d[2] + '/' + d[1] + '/' + d[0]}</div>
+            }
+
             return <div><p />{stat[key][par]}</div>
         }
 
-        if (stat[key] === undefined)
-            return ""
+
 
         if (stat[key] === -1 && par === 'icon_git')
             return <img src={this.state.icon_error} title={myerror} alt='github_Error'></img>
@@ -1051,7 +1136,7 @@ class Project_Dashboard extends Component {
                                         <div class="form-group" id="container">
                                             <div>
                                                 סטודנט 1<br />
-                                                <input type="number" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
+                                                <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
                                                 <input type="text" id="student_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
                                                 <input type="email" id="student_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
                                             </div>
@@ -1059,7 +1144,7 @@ class Project_Dashboard extends Component {
 
                                         <div id='member2_form' className='nonethings'>סטודנט 2
                                             <br />
-                                            <input type="number" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
+                                            <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
                                             <input type="text" id="student_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
                                             <input type="email" id="student_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
                                             <br />
@@ -1076,7 +1161,7 @@ class Project_Dashboard extends Component {
                                             <option value='2'>2</option>
                                         </select>
                                         <div class="form-group" id="containerGit">
-                                            <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" ></input>
+                                            <input id="git_id1" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository"></input>
                                             <div id='git2_form' className='nonethings'>
                                                 <input id="git_id2" type="text" class="form-control form-control-lg text-right" placeholder="git_user/repository" />
                                             </div>

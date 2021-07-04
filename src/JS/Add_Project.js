@@ -73,6 +73,7 @@ class Add_Project extends Component {
     }
 
     async handleSubmit(e) {
+        
         var mod = document.getElementById("moderator_f");
         var numOfPartners = document.getElementById("members");
         var numOfGits = document.getElementById("numOfgits");
@@ -82,6 +83,8 @@ class Add_Project extends Component {
         for (let k = 0; k < numOfGits.value; k++) {
             let num = k + 1
             gits[k] = document.getElementById("git_id" + num).value
+            var ob=document.getElementById("git_id" + num)
+            console.log(ob.checkValidity())
         }
 
         //Get all the members from the user
@@ -94,6 +97,7 @@ class Add_Project extends Component {
                 email: (document.getElementById("member_email" + num).value).toLowerCase(),
             }
         }
+
 
         await Pro_Add_Edit.check_if_user_exist(this.state.users, members, this.input_year.value)
             .then((x) => {
@@ -201,13 +205,13 @@ class Add_Project extends Component {
                                     </select>
                                     <div>
                                         <span>סטודנט 1</span>
-                                        <input type="number" id="member_id1" class="form-control" placeholder="תעודת זהות" required></input>
+                                        <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id1" class="form-control" placeholder="תעודת זהות" required ></input>
                                         <input type="text" id="member_name1" class="form-control" placeholder="שם" required></input>
                                         <input type="email" id="member_email1" class="form-control" placeholder="example@example.com" required></input>
                                     </div>
                                     <div id='member2_form' class="nonethings">
                                         <span>סטודנט 2</span>
-                                        <input type="number" id="member_id2" class="form-control" placeholder="תעודת זהות" required=""></input>
+                                        <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id2" class="form-control" placeholder="תעודת זהות" required=""></input>
                                         <input type="text" id="member_name2" class="form-control" placeholder="שם" required=""></input>
                                         <input type="email" id="member_email2" class="form-control" placeholder="example@example.com" required=""></input>
                                     </div>

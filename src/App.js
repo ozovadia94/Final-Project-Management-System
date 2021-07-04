@@ -29,12 +29,10 @@ class App extends Component {
 
 
   componentDidMount() {
-    axios.get('https://projectmanagementserver.herokuapp.com/').then((res) => {
-      console.log(res)
-    }).catch((err) => {
-
-    })
-
+    // axios.get('https://projectmanagementserver.herokuapp.com/wtf').then((res) => {
+    //   console.log(res)
+    // }).catch((err) => {
+    // })
     // axios.get('http://localhost:3000/wtf').then((res)=>{
     //   console.log(res)
     //   console.log('xxx')
