@@ -800,7 +800,6 @@ class Project_Dashboard extends Component {
         //     }
         // }
 
-
         var stats;
         if (gits.length === 1)
             stats = { 0: 0 }
