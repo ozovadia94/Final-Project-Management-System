@@ -106,6 +106,13 @@ class Add_Project extends Component {
                     return
                 }
 
+                var stats;
+                if (gits.length === 1)
+                    stats = { 0: 0 }
+                else {
+                    stats = { 0: 0, 1: 0 }
+                }
+
                 const user = {
                     name: this.input.value,
                     diary: this.input5.value,
@@ -114,6 +121,7 @@ class Add_Project extends Component {
                     gits: gits,
                     date: [],
                     year: this.input_year.value,
+                    stats: stats
                 }
 
                 var projID = firebase.database().ref().child('projects/').push().key;

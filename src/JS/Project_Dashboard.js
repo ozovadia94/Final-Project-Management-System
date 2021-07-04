@@ -173,45 +173,7 @@ class Project_Dashboard extends Component {
             //     if (fetchedUsers[key].stats !== undefined) {
             //         for (let key2 in fetchedUsers[key].stats) {
             //             cur=fetchedUsers[key].stats[key2]
-            //             if (cur !== undefined && cur !== 0 && cur['gitdate']) {
-            //                 var gitdate = fetchedUsers[key]['stats'][key2]['gitdate']
-            //                 var time = gitdate.split('T')
-            //                 var d = time[0].split('-')
-
-            //                 //retarr[0] = d[2] + '/' + d[1] + '/' + d[0]
-            //                 cur['date'] = d[2] + '/' + d[1] + '/' + d[0]
-
-            //                 var today = new Date()
-            //                 var year_today = today.getFullYear()
-
-            //                 var year_pro = parseInt(fetchedUsers[key].year)
-            //                 var com = new Date(gitdate)
-
-            //                 var subtract = (today - com) / 1000 / 60 / 60 / 24
-
-
-            //                 if ((year_today === year_pro && today.getMonth() < 8) || (year_today + 1 === year_pro && today.getMonth() >= 8)) {
-            //                     if (subtract < green)
-            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = green
-            //                     //fetchedUsers[key][key2]['my_stat'] = green
-            //                     else if (subtract < yellow)
-            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = yellow
-            //                     else
-            //                         fetchedUsers[key]['stats'][key2]['my_stat'] = red
-            //                 }
-            //                 else
-            //                     fetchedUsers[key]['stats'][key2]['my_stat'] = finish
-            //             }
-            //             else
-            //                 fetchedUsers[key]['stats'][key2] = 0
-            //         }
-            //     }
-            //     else {
-            //         for (let kk = 0; kk < fetchedUsers[key].gits.length; kk++) {
-            //             fetchedUsers[key]['stats'][kk] = 0
-            //             console.log('asגדכddas')
-            //         }
-            //     }
+           
 
 
             //     if (fetchedUsers[key].gits !== undefined)
@@ -236,18 +198,6 @@ class Project_Dashboard extends Component {
     fix_date_and_traffic = async (fetchedUsers) => {
 
         for (let key in fetchedUsers) {
-            // if (fetchedUsers[key].stats) {
-            //     for (let kk = 0; kk < fetchedUsers[key].gits.length; kk++) {
-            //         fetchedUsers[key]['stats'][kk] = 0
-            //         console.log('asddas')
-            //     }
-            // }
-            // else
-            // {
-
-            // }
-
-
 
 
             if (fetchedUsers[key].gits !== undefined)
