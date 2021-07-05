@@ -24,7 +24,6 @@ var check_if_user_exist = async (users, members, year,check=false,id='') => {
             cur_project = users[k_user]
             for (let k_user_mem in cur_project.members) {
                 cur_mem_users = cur_project.members[k_user_mem]
-                console.log(cur_mem, '',cur_mem_users)
                 if (cur_mem_users.id === cur_mem.id && cur_project.year === year && (check===false || (check===true && id!=='' && id!==cur_project.id)))
                     return ' | id ' + cur_mem_users.id +  ' exist in this year';
                 if (cur_mem_users.email === cur_mem.email && cur_project.year === year && (check===false || (check===true && id!=='' && id!==cur_project.id))) {

@@ -99,10 +99,10 @@ class Project_Dashboard extends Component {
     get_data = async () => {
         await this.getIcons()
         var projs = await this.get_projects()
-        projs = await this.get_moderators(projs)
+        await this.get_moderators(projs)
 
 
-        this.setState({ loading: true, users: projs })
+        this.setState({ loading: true })
 
         //await this.get_years(projs)
         setTimeout(async () => {
@@ -146,17 +146,6 @@ class Project_Dashboard extends Component {
         var uniq;
 
         var database_pro = firebase.database().ref('projects/');
-        // database_pro.get().then((snapshot)=>{
-
-
-        //     console.log(snapshot.val())
-        // })
-        // database_pro.on('value', (snapshot) => {
-        // for (let key = 0; key < this.state.users.length; key++) {
-        //     var cur = document.getElementById('tr_' + key)
-        //     if (cur !== null)
-        //         cur.remove()
-        // }
         database_pro.get().then(async (snapshot) => {
             const res = snapshot.val();
             for (let key in res) {
@@ -169,44 +158,18 @@ class Project_Dashboard extends Component {
             uniq = years.sort().filter((v, i, a) => a.indexOf(v) === i);
             this.setState({ all_years: uniq });
 
-            // for (let key in fetchedUsers) {
-            //     if (fetchedUsers[key].stats !== undefined) {
-            //         for (let key2 in fetchedUsers[key].stats) {
-            //             cur=fetchedUsers[key].stats[key2]
-           
+            for (let key in fetchedUsers) {
+                if (fetchedUsers[key].gits !== undefined)
+                    fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
 
-
-            //     if (fetchedUsers[key].gits !== undefined)
-            //         fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
-
-            //     if (fetchedUsers[key].members !== undefined)
-            //         fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
-            // }
+                if (fetchedUsers[key].members !== undefined)
+                    fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
+            }
         })
-
-
-
-        setTimeout(async () => {
-            console.log('ttt')
-            console.log(fetchedUsers)
-            //your code to be executed after 1 second
-        }, 1500);
-
-        return fetchedUsers;
+        this.setState({ users: fetchedUsers })
     }
 
-    fix_date_and_traffic = async (fetchedUsers) => {
 
-        for (let key in fetchedUsers) {
-
-
-            if (fetchedUsers[key].gits !== undefined)
-                fetchedUsers[key]['numOfGits'] = fetchedUsers[key].gits.length
-
-            if (fetchedUsers[key].members !== undefined)
-                fetchedUsers[key]['partners'] = fetchedUsers[key].members.length
-        }
-    }
 
     get_moderators = async (fetchedUsers) => {
         var database_mod = firebase.database().ref('moderators/');
@@ -218,26 +181,12 @@ class Project_Dashboard extends Component {
                     ...res[key],
                     id: key
                 });
-
-
             }
 
-            for (let key in fetchedUsers) {
-                var cur = fetchedUsers[key].moderator_id
-                if (cur !== 'Not selected' && res[cur] !== undefined && res[cur].name !== undefined)
-                    fetchedUsers[key]['mod_name'] = res[cur].name
-                else
-                    fetchedUsers[key]['mod_name'] = 'לא נבחר מנחה!'
-
-            }
-
-            this.setState({ moderators: fetched, moder_res: res, user: fetchedUsers });
-
+            this.setState({ moderators: fetched, moder_res: res });
         })
-        // var projs = await this.fix_date_and_traffic(fetchedUsers).then(res => {
-        //     console.log(res)
-        //     this.setState({ users: res })
-        // });
+
+
         return fetchedUsers
     }
 
@@ -889,6 +838,17 @@ class Project_Dashboard extends Component {
 
     }
 
+    return_mod_name = (user) => {
+        if (user !== undefined && user.moderator_id) {
+            if (this.state.moder_res !== my_underfined) {
+                var mod = this.state.moder_res[user.moderator_id]
+                if (mod !== undefined && mod.name!=='Not selected') 
+                        return mod.name
+            }
+        }
+        return 'לא נבחר מנחה!'
+    }
+
 
     render() {
         return (
@@ -977,7 +937,7 @@ class Project_Dashboard extends Component {
                                             </td> */}
 
 
-                                            <td width="10%" id={'td_mod_' + index} >{user.mod_name}</td>
+                                            <td width="10%" id={'td_mod_' + index} >{this.return_mod_name(user)}</td>
 
                                             {user.diary && user.diary === '' ? (<td></td>) : (<td><img id={'day_id_' + index} class='mypointer' alt='diary' onClick={() => this.studentclick_diary(user.diary)} src={this.state.icon_diary} ></img> </td>
                                             )}

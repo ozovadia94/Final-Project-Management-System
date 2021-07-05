@@ -84,7 +84,6 @@ class Add_Project extends Component {
             let num = k + 1
             gits[k] = document.getElementById("git_id" + num).value
             var ob=document.getElementById("git_id" + num)
-            console.log(ob.checkValidity())
         }
 
         //Get all the members from the user
@@ -114,12 +113,11 @@ class Add_Project extends Component {
                 }
 
                 const user = {
-                    name: this.input.value,
+                    project_name: this.input_project_name.value,
                     diary: this.input5.value,
                     moderator_id: mod.value,
                     members: members,
                     gits: gits,
-                    date: [],
                     year: this.input_year.value,
                     stats: stats
                 }
@@ -172,7 +170,7 @@ class Add_Project extends Component {
 
                                 <div class="form-group">
                                     <label for="project_name">שם הפרוייקט</label>
-                                    <input id="project_name" type="text" class="form-control" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
+                                    <input id="project_name" type="text" class="form-control" required placeholder="שם הפרוייקט" ref={(input_project_name) => this.input_project_name = input_project_name}></input>
                                 </div>
 
                                 <div class="form-group">
