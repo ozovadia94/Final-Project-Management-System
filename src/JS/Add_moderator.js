@@ -6,7 +6,9 @@ import alerts from './Alerts'
 
 import '../CSS/Pages.css' /* CSS */
 
-import Moderator_Form from './Moderator_Form'
+import ModeratorForm from './Moderator_Form'
+
+import WakeUpServer from './WakeUpServer'
 
 class Add_moderator extends Component {
     state = {
@@ -46,6 +48,7 @@ class Add_moderator extends Component {
         var newPostKey = firebase.database().ref().child('moderators').push().key;
         firebase.database().ref('moderators/' + newPostKey).set(moderator)
             .then((x) => {
+                // WakeUpServer.update_server()
                 alerts.alert('מנחה נוסף', false)
                 document.getElementById("myForm").reset();
             }).catch(error => console.log(error))
@@ -55,13 +58,13 @@ class Add_moderator extends Component {
     render() {
         return (
             <div className='ozbackground'>
-                <MyTitle title="הוסף מנחה חדש" />
-
-                <div id="show"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
-
+                <MyTitle title="הוסף מנחה חדש" sec_title='אנא מלא את כל השדות'/>
                 <p></p>
+                {/* <div id="show"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div> */}
+
+                
                 <div class="justify-content-md-center row">
-                    <Moderator_Form mybut='הוסף מנחה' handleSubmit={() => this.handleSubmit} />
+                    <ModeratorForm mybut='הוסף מנחה' handleSubmit={() => this.handleSubmit} />
                 </div>
                 <br></br>
 

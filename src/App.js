@@ -15,8 +15,6 @@ import NotFoundPage from './JS/NotFoundPage'
 import Login from './JS/Login'
 import firebase from './Firebase/Firebase';
 
-import axios from 'axios';
-
 class App extends Component {
   constructor() {
     super();
@@ -94,6 +92,8 @@ class App extends Component {
           {this.state.login ? (
             <div className="oztry">
 
+              
+
               <nav class="navbar navbar-dark bg-dark" dir="rtl">
                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" >
 
@@ -104,6 +104,8 @@ class App extends Component {
                   <button id="disconnect" type="submit" class="btn btn-dark btn-warning" onClick={this.logout}>התנתק</button>
                 </div>
               </nav>
+
+              {/* <Toolbar/> */}
 
               <Switch>
 

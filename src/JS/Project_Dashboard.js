@@ -105,10 +105,11 @@ class Project_Dashboard extends Component {
         this.setState({ loading: true })
 
         //await this.get_years(projs)
+
         setTimeout(async () => {
             await this.year_choose()
             //your code to be executed after 1 second
-        }, 1500);
+        }, 2500);
 
     }
 
@@ -135,8 +136,12 @@ class Project_Dashboard extends Component {
         if (mon > 8)
             year++;
 
-        document.getElementById('my_years').value = year
-        this.select_filter()
+        var my_years = document.getElementById('my_years')
+        if(my_years){
+            my_years.value=year
+            this.select_filter()
+        }
+        
         //document.getElementById('year_' + year).selected = ' '
     }
 
@@ -196,6 +201,7 @@ class Project_Dashboard extends Component {
         })
 
         await this.get_data()
+
     }
 
     selectedUserId = (id) => {
@@ -854,7 +860,7 @@ class Project_Dashboard extends Component {
         return (
             <div className='ozbackground spec' >
 
-                <MyTitle title="לוח פרוייקטים" />
+                <MyTitle title="לוח פרוייקטים"/>
 
                 {this.state.loading ? (
                     <div className="ozbackground">

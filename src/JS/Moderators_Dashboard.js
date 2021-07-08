@@ -3,7 +3,7 @@ import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
 
 import alerts from './Alerts'
-import Moder_Form from './Moderator_Form'
+import ModerForm from './Moderator_Form'
 import '../CSS/Pages.css' /* CSS */
 
 
@@ -170,7 +170,7 @@ class Moderators_Dashboard extends Component {
                                 <div class="ozbackground modal-content">
                                     <div class="ozbackground modal-body">
 
-                                        <Moder_Form mybut='עדכן מנחה' handleSubmit={() => this.handleSubmit}></Moder_Form>
+                                        <ModerForm mybut='עדכן מנחה' handleSubmit={() => this.handleSubmit}></ModerForm>
 
                                     </div>
                                     <div class="ozbackground modal-content">

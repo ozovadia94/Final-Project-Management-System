@@ -83,7 +83,6 @@ class Add_Project extends Component {
         for (let k = 0; k < numOfGits.value; k++) {
             let num = k + 1
             gits[k] = document.getElementById("git_id" + num).value
-            var ob=document.getElementById("git_id" + num)
         }
 
         //Get all the members from the user
@@ -153,9 +152,9 @@ class Add_Project extends Component {
         return (
             <div className='ozbackground backgroundPage'>
 
-                <MyTitle title="הוסף פרוייקט חדש" />
-
-                <div id="show" class="rtt11"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div>
+                <MyTitle title="הוסף פרוייקט חדש" sec_title='אנא מלא את כל השדות'/>
+                <p></p>
+                {/* <div id="show" class="rtt11"><SecondaryTitle title='אנא מלא את כל השדות' > </SecondaryTitle></div> */}
 
                 <form id="myForm" onSubmit={this.handleSubmit} class="row justify-content-md-center" dir='rtl'>
 
@@ -164,7 +163,7 @@ class Add_Project extends Component {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="project_year">שנת הפרוייקט</label>
-                                    <select id="project_year" type='number' class="form-control" required ref={(year) => this.input_year = year}>
+                                    <select id="project_year" type='text' class="form-control" required ref={(year) => this.input_year = year}>
                                     </select>
                                 </div>
 
@@ -211,13 +210,13 @@ class Add_Project extends Component {
                                     </select>
                                     <div>
                                         <span>סטודנט 1</span>
-                                        <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id1" class="form-control" placeholder="תעודת זהות" required ></input>
+                                        <input type="text" pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id1" class="form-control" placeholder="תעודת זהות" required ></input>
                                         <input type="text" id="member_name1" class="form-control" placeholder="שם" required></input>
                                         <input type="email" id="member_email1" class="form-control" placeholder="example@example.com" required></input>
                                     </div>
                                     <div id='member2_form' class="nonethings">
                                         <span>סטודנט 2</span>
-                                        <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id2" class="form-control" placeholder="תעודת זהות" required=""></input>
+                                        <input type="text" pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="member_id2" class="form-control" placeholder="תעודת זהות" required=""></input>
                                         <input type="text" id="member_name2" class="form-control" placeholder="שם" required=""></input>
                                         <input type="email" id="member_email2" class="form-control" placeholder="example@example.com" required=""></input>
                                     </div>
