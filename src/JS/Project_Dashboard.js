@@ -137,11 +137,11 @@ class Project_Dashboard extends Component {
             year++;
 
         var my_years = document.getElementById('my_years')
-        if(my_years){
-            my_years.value=year
+        if (my_years) {
+            my_years.value = year
             this.select_filter()
         }
-        
+
         //document.getElementById('year_' + year).selected = ' '
     }
 
@@ -271,6 +271,7 @@ class Project_Dashboard extends Component {
     }
 
     sortTable = (n, myT = true) => {
+        var name2, x_in, y_in;
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
         table = document.getElementById("myTable");
         switching = true;
@@ -293,13 +294,47 @@ class Project_Dashboard extends Component {
                 y = rows[i + 1].getElementsByTagName("TD")[n];
                 /*check if the two rows should switch place,
                 based on the direction, asc or desc:*/
-                var x_in = x.innerHTML.toLowerCase()
-                var y_in = y.innerHTML.toLowerCase()
+
+
+                if (myT === 'name') {
+                    x_in = x.children[0].children[0].innerHTML
+                    name2 = x.children[0].children[1].innerHTML
+
+                    if (name2.length !== 0) {
+                        if (dir === "asc") {
+                            if (x_in > name2) {
+                                x_in = name2
+                            }
+                        }
+                        else if (dir === "desc") {
+                            if (name2 > x_in)
+                                x_in = name2
+
+                        }
+                    }
+                    y_in = y.children[0].children[0].innerHTML
+                    name2 = y.children[0].children[1].innerHTML
+                    if (name2.length !== 0) {
+                        if ((dir === "asc" && y_in > name2) || (dir === "desc" && name2 > y_in)) {
+                            var li = y.children[0].removeChild(y.children[0].childNodes[0]);
+                            y.children[0].appendChild(li)
+                        }
+                    }
+                }
+                else {
+                    x_in = x.innerHTML.toLowerCase()
+                    y_in = y.innerHTML.toLowerCase()
+                }
+
+
                 // if(myT==='light')
                 // {
                 //     x_in=x.childNodes
                 //     y_in=y.value
                 // }
+
+                //asc -> from small to big
+                //desc -> from big to small
 
                 if (dir === "asc") {
                     if (x_in > y_in) {
@@ -617,7 +652,6 @@ class Project_Dashboard extends Component {
         }
         if (numOfPartners.value === 2) {
             if (members[0].id > members[1].id) {
-                console.log('TASDSDA!')
                 var temp1 = members[0]
                 members[0] = members[1]
                 members[1] = temp1
@@ -848,8 +882,8 @@ class Project_Dashboard extends Component {
         if (user !== undefined && user.moderator_id) {
             if (this.state.moder_res !== my_underfined) {
                 var mod = this.state.moder_res[user.moderator_id]
-                if (mod !== undefined && mod.name!=='Not selected') 
-                        return mod.name
+                if (mod !== undefined && mod.name !== 'Not selected')
+                    return mod.name
             }
         }
         return 'לא נבחר מנחה!'
@@ -860,7 +894,7 @@ class Project_Dashboard extends Component {
         return (
             <div className='ozbackground spec' >
 
-                <MyTitle title="לוח פרוייקטים"/>
+                <MyTitle title="לוח פרוייקטים" />
 
                 {this.state.loading ? (
                     <div className="ozbackground">
@@ -890,11 +924,11 @@ class Project_Dashboard extends Component {
                                         <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(1) }} >שם הפרוייקט</th>
                                         {/* <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >שותפים</th> */}
 
-                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3) }} >ת.ז</th>
-                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >שמות</th>
+                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(2) }} >ת.ז</th>
+                                        <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(3, 'name') }} >שמות</th>
 
                                         {/* <th class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(5) }} >אימיילים</th> */}
-                                        <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(6) }} >מנחה</th>
+                                        <th width="10%" class="th-sm mypointer" scope="col" onClick={() => { this.sortTable(4) }} >מנחה</th>
 
                                         <th class="th-sm" scope="col">יומן</th>
                                         <th width="1%" class="th-sm" scope="col">גיט</th>
@@ -904,7 +938,7 @@ class Project_Dashboard extends Component {
                                         <th width="1%" class="th-sm" scope="col">חציון קבצים</th>
                                         <th width="1%" class="th-sm" scope="col">חציון שורות</th>
                                         <th width="1%" class="th-sm" scope="col">התקדמות בגיט</th>
-                                        <th width="1%" class="th-sm" scope="col"><img src={this.state.traffic} alt="traffic light"></img></th>
+                                        <th width="1%" class="th-sm mypointer" scope="col"><img src={this.state.traffic} alt="traffic light" ></img></th>
                                         <th class="th-sm" scope="col">עריכה</th>
                                         <th class="th-sm" scope="col">מחיקה</th>
                                     </tr>
@@ -929,8 +963,7 @@ class Project_Dashboard extends Component {
                                                     {user.members[1] ? (<div>{user.members[1].name}</div>) : (<div></div>)}
                                                 </div>
 
-                                                <div class="hide">{"Email: "}
-                                                    {user.members[0].email}
+                                                <div class="hide">{"Email: " + user.members[0].email}
 
                                                     {user.members[1] ? (<div>
                                                         {"Email: " + user.members[1].email}
@@ -1029,7 +1062,7 @@ class Project_Dashboard extends Component {
 
 
                                     <div class="form-group" id='myform'>
-                                        <select id="project_year" type='number' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
+                                        <select id="project_year" type='text' class="form-control form-control-lg text-right" dir='rtl' required placeholder="שנת הפרוייקט" ref={(year) => this.input_year = year}>
                                         </select>  <p></p>
                                         <input id='project_name' type="text" class="form-control form-control-lg text-right" required placeholder="שם הפרוייקט" ref={(input) => this.input = input}></input>
                                         <p></p>
@@ -1051,17 +1084,17 @@ class Project_Dashboard extends Component {
                                         <div class="form-group" id="container">
                                             <div>
                                                 סטודנט 1<br />
-                                                <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="student_id1" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
-                                                <input type="text" id="student_name1" class="form-control form-control-lg text-right" placeholder="שם" required></input>
-                                                <input type="email" id="student_email1" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
+                                                <input id="student_id1" type='text' pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required></input>
+                                                <input id="student_name1" type="text" class="form-control form-control-lg text-right" placeholder="שם" required></input>
+                                                <input id="student_email1" type="email" class="form-control form-control-lg text-right" placeholder="example@example.com" required></input>
                                             </div>
                                         </div>
 
                                         <div id='member2_form' className='nonethings'>סטודנט 2
                                             <br />
-                                            <input pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" id="student_id2" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
-                                            <input type="text" id="student_name2" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
-                                            <input type="email" id="student_email2" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
+                                            <input id="student_id2" type='text' pattern="[0-9]{9}" title="ת.ז מורכב מ9 ספרות" class="form-control form-control-lg text-right" placeholder="תעודת זהות" required=""></input>
+                                            <input id="student_name2" type="text" class="form-control form-control-lg text-right" placeholder="שם" required=""></input>
+                                            <input id="student_email2" type="email" class="form-control form-control-lg text-right" placeholder="example@example.com" required=""></input>
                                             <br />
                                         </div>
 
