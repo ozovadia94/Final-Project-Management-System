@@ -12,6 +12,9 @@ import my_header from '../Firebase/axiosGithub'
 require('dotenv').config()
 
 const Epsilon = 180
+const max_of_file=8
+const max_of_total=300
+const min_of_total=10
 
 //import URLSearchParams from 'url-search-params'
 
@@ -418,7 +421,6 @@ class git extends Component {
                     //console.log(a1, a2, a1 - a2)
                     if (a1 - a2 < Epsilon) {
                         //if (x[i].analize != 'OK!')
-                        console.log(a1)
                         x[i].analize = 'Frequent,\n';
                     }
                 }
@@ -426,9 +428,9 @@ class git extends Component {
 
                 for (let i = 0; i < len; i++) {
                     var str = ''
-                    if (x[i].files > 2 || x[i].total > 200)
+                    if (x[i].files > max_of_file || x[i].total > max_of_total)
                         str += 'BIG,\n'
-                    if (x[i].files <= 2)
+                    if (x[i].total <= min_of_total)
                         str += 'SMALL,\n'
 
                     if (str !== '') {
@@ -670,7 +672,7 @@ class git extends Component {
                                     <th>Changed total</th>
                                     <th>Additions</th>
                                     <th>Deletions</th>
-                                    <th>Oz's analize</th>
+                                    <th>Analysis</th>
 
                                 </tr>
 

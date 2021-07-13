@@ -8,8 +8,6 @@ import '../CSS/Pages.css' /* CSS */
 
 import ModeratorForm from './Moderator_Form'
 
-import WakeUpServer from './WakeUpServer'
-
 class Add_moderator extends Component {
     state = {
         moderators: [],
