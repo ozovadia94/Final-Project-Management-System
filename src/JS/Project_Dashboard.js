@@ -900,7 +900,7 @@ class Project_Dashboard extends Component {
                     <div className="ozbackground">
                         <div>
 
-                            <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class="form-control-lg text-right" dir='rtl'>
+                            <select onChange={() => this.select_filter()} id="my_mod" type='text' name="mods" class="form-control-lg text-right my_option_size" dir='rtl'>
                                 <option value='0'>כל המנחים</option>
                                 {this.state.moderators.map((mod) => (
                                     <option value={mod.id}>{mod.name}</option>
@@ -908,7 +908,7 @@ class Project_Dashboard extends Component {
                                 ))}
                             </select>
 
-                            <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class="form-control-lg text-right" dir='rtl'>
+                            <select onChange={() => this.select_filter()} id="my_years" type='text' name="years" class="form-control-lg text-right my_option_size" dir='rtl'>
                                 <option value='0'>כל השנים</option>
                                 {this.state.all_years.map((year) => (
                                     <option value={year}>{year}</option>

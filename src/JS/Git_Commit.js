@@ -434,7 +434,7 @@ class git extends Component {
                         str += 'SMALL,\n'
 
                     if (str !== '') {
-                        if (x[i].analize === 'OK!')
+                        if (x[i].analize === 'Regular commit!')
                             x[i].analize = str
                         else
                             x[i].analize += str
@@ -511,7 +511,7 @@ class git extends Component {
                         name: res2.data.commit.committer.name,
                         email: res2.data.commit.author.email,
                         id: key,
-                        analize: 'OK!'
+                        analize: 'Regular commit!'
                     }
                 })
         }
@@ -560,7 +560,7 @@ class git extends Component {
             name: response.data.commit.committer.name,
             email: response.data.commit.author.email,
             id: key,
-            analize: 'OK!'
+            analize: 'Regular commit!'
         }
 
     }

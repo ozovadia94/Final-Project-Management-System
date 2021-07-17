@@ -78,3 +78,8 @@ td,tr{
     display: inline-block;
     border-bottom: 1px dotted black;
   }
+
+  .my_option_size{
+      width: 222px;
+
+  }
