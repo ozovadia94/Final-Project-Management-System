@@ -72,13 +72,11 @@ class Project_Dashboard extends Component {
             this.setState({ excel_example: url })
         }).catch((error) => console.log(error))
 
-
         firebase.storage().ref("traffic/").child('icons8-traffic-light-48.png').getDownloadURL().then((url) => {
             this.setState({ traffic: url })
         }).catch((error) => console.log(error))
 
         firebase.storage().ref("traffic/").child('icons8-green-circle-48.png').getDownloadURL().then((url) => {
-
             this.state.icons_traffic[0] = url
         }).catch((error) => console.log(error))
         firebase.storage().ref("traffic/").child('icons8-yellow-circle-48.png').getDownloadURL().then((url) => {
@@ -90,42 +88,42 @@ class Project_Dashboard extends Component {
         firebase.storage().ref("traffic/").child('icons8-law-50.png').getDownloadURL().then((url) => {
             this.state.icons_traffic[3] = url
         }).catch((error) => console.log(error))
-
-
-
-
     }
 
-    get_data = async () => {
-        await this.getIcons()
-        var projs = await this.get_projects()
-        await this.get_moderators(projs)
+    
+    select_filter = () => {
+        var year = document.getElementById('my_years').value
+        var mod = document.getElementById('my_mod').value
+        var cur_tr, cur_year, cur_mod, mod_name;
+        var len = this.state.users.length
 
+        if (mod !== '0')
+            mod_name = this.state.moder_res[mod].name
+        else
+            mod_name = '0'
 
-        this.setState({ loading: true })
+        for (let key = 0; key < len; key++) {
+            cur_year = document.getElementById(('td_year_' + key)).innerText
+            cur_mod = document.getElementById(('td_mod_' + key)).innerText
+            cur_tr = document.getElementById(('tr_' + key))
 
-        //await this.get_years(projs)
+            if (year === '0') {
+                if ((mod_name === '0') || (cur_mod === mod_name))
+                    cur_tr.className = ''
+                else
+                    cur_tr.className = 'nonethings'
+            }
+            else if (cur_year === year) {
+                if ((cur_mod === mod_name) || (mod_name === '0'))
+                    cur_tr.className = ''
+                else
+                    cur_tr.className = 'nonethings'
+            }
+            else//when year is not equal\
+                cur_tr.className = 'nonethings'
 
-        setTimeout(async () => {
-            await this.year_choose()
-            //your code to be executed after 1 second
-        }, 2500);
-
+        }
     }
-
-    // get_years = async () => {
-    //     var my_years = document.getElementById('my_years')//.innerHTML
-    //     var add;
-
-    //     for (let key in this.state.all_years) {
-    //         console.log(this.state.all_years[key])
-    //         add = document.createElement("option");
-    //         add.value = this.state.all_years[key]
-    //         add.id = 'year_' + this.state.all_years[key]
-    //         add.innerHTML = this.state.all_years[key]
-    //         my_years.appendChild(add)
-    //     }
-    // }
 
     year_choose = async () => {
         var r = new Date()
@@ -133,7 +131,7 @@ class Project_Dashboard extends Component {
         var y = r.getFullYear()
 
         var year = y;
-        if (mon > 8)
+        if (mon >= 8)
             year++;
 
         var my_years = document.getElementById('my_years')
@@ -141,8 +139,19 @@ class Project_Dashboard extends Component {
             my_years.value = year
             this.select_filter()
         }
+    }
 
-        //document.getElementById('year_' + year).selected = ' '
+    get_data = async () => {
+        await this.getIcons()
+        var projs = await this.get_projects()
+        await this.get_moderators(projs)
+
+        this.setState({ loading: true })
+
+        setTimeout(async () => {
+            await this.year_choose()
+            //your code to be executed after 1 second
+        }, 2500);
     }
 
     get_projects = async () => {
@@ -174,8 +183,6 @@ class Project_Dashboard extends Component {
         this.setState({ users: fetchedUsers })
     }
 
-
-
     get_moderators = async (fetchedUsers) => {
         var database_mod = firebase.database().ref('moderators/');
         const fetched = [];
@@ -187,21 +194,17 @@ class Project_Dashboard extends Component {
                     id: key
                 });
             }
-
             this.setState({ moderators: fetched, moder_res: res });
         })
-
 
         return fetchedUsers
     }
 
     async componentDidMount() {
         await Pro_Add_Edit.generateArrayOfYears().then(arr => {
-
         })
 
         await this.get_data()
-
     }
 
     selectedUserId = (id) => {
@@ -369,43 +372,6 @@ class Project_Dashboard extends Component {
     }
 
 
-    select_filter = () => {
-        var year = document.getElementById('my_years').value
-        var mod = document.getElementById('my_mod').value
-        var cur_tr, cur_year, cur_mod, mod_name;
-        var len = this.state.users.length
-
-        if (mod !== '0')
-            mod_name = this.state.moder_res[mod].name
-        else
-            mod_name = '0'
-
-        //console.log('YEAR :', year, 'MOD: ', mod_name)
-
-        for (let key = 0; key < len; key++) {
-            cur_year = document.getElementById(('td_year_' + key)).innerText
-            cur_mod = document.getElementById(('td_mod_' + key)).innerText
-            cur_tr = document.getElementById(('tr_' + key))
-
-            // console.log('cur_year :', cur_year, 'cur_mod: ', cur_mod)
-
-            if (year === '0') {
-                if ((mod_name === '0') || (cur_mod === mod_name))
-                    cur_tr.className = ''
-                else
-                    cur_tr.className = 'nonethings'
-            }
-            else if (cur_year === year) {
-                if ((cur_mod === mod_name) || (mod_name === '0'))
-                    cur_tr.className = ''
-                else
-                    cur_tr.className = 'nonethings'
-            }
-            else//when year is not equal\
-                cur_tr.className = 'nonethings'
-
-        }
-    }
 
     filePathset = (e) => {
         e.stopPropagation();
@@ -476,8 +442,8 @@ class Project_Dashboard extends Component {
         var process_log = ''
 
         for (let key = 0; key < projects.length - 1; key++) {
-            await this.add_project2(projects[key], key)
-            let hand = await this.handleSubmit2(key)
+            await this.add_one_project(projects[key], key)
+            let hand = await this.handleSubmitEdit(key)
             //console.log(hand)
             if (typeof hand === 'string') {
                 process_log += hand + '\n'
@@ -516,71 +482,7 @@ class Project_Dashboard extends Component {
         return x
     }
 
-    add_project = async (project) => {
-
-        const user = {
-            year: '',
-            project_name: '',
-            diary: '',
-            moderator_id: '',
-            members: [],
-            gits: [],
-
-        }
-        user.members[0] = { id: '', name: '', email: '' }
-
-        if (project.student_id1 !== undefined && project.student_name1 !== undefined && project.student_email1 !== undefined && project.student_id1 !== '' && project.student_name1 !== '' && project.student_email1 !== '') {
-            user.members[0].id = project.student_id1
-            user.members[0].name = project.student_name1
-            user.members[0].email = project.student_email1
-        }
-        else {
-            return
-        }
-
-        if (typeof project.partners !== undefined && project.partners === '2') {
-            user.partners = project.partners
-            user.members[1] = { id: '', name: '', email: '' }
-            if (typeof project.student2_id !== undefined)
-                user.members[1].id = project.student2_id
-            if (typeof project.student2_name !== undefined)
-                user.members[1].name = project.student2_name
-            if (typeof project.student2_mail !== undefined)
-                user.members[1].email = project.student2_mail
-        }
-
-
-        if (typeof project.diary !== undefined)
-            user.diary = project.diary
-        if (typeof project.git1 !== undefined)
-            user.gits[0] = project.git1
-        if (typeof project.numOfGits !== undefined && project.numOfGits === '2') {
-            if (typeof project.git2 !== undefined)
-                user.gits[1] = project.git2
-        }
-
-        if (typeof project.project_name !== undefined && project.name !== '' && typeof project.year !== undefined && project.year !== '') {
-            user.name = project.project_name
-            user.year = project.year
-            user.moderator_id = 'Not selected'
-            if (typeof project.project_supervisor_email !== undefined) {
-                for (let i in this.state.moderators) {
-                    if (project.project_supervisor_email === this.state.moderators[i].email) {
-                        user.moderator_id = this.state.moderators[i].id
-                        break;
-                    }
-
-                }
-            }
-        }
-        else {
-            return;
-        }
-        return user
-
-    }
-
-    add_project2 = async (project, key) => {
+    add_one_project = async (project, key) => {
         if (project === undefined || project === null)
             return;
         if (project.year !== undefined)
@@ -658,12 +560,6 @@ class Project_Dashboard extends Component {
             }
         }
 
-        // for(let key in this.state.users){
-        //     cur=this.state.users[key].members
-        //     console.log(members)
-        // }
-
-
         await Pro_Add_Edit.check_if_user_exist(this.state.users, members, this.input_year.value, true, this.state.edit)
             .then((x) => {
                 if (x !== undefined) {
@@ -701,14 +597,10 @@ class Project_Dashboard extends Component {
                 e.preventDefault();
 
                 document.getElementById('close_but').click()
-
-
             })
-
-
     }
 
-    handleSubmit2 = async (key) => {
+    handleSubmitEdit = async (key) => {
         var error_st = ''
 
         let gits = []
@@ -865,17 +757,13 @@ class Project_Dashboard extends Component {
 
                 return <div><p />{d[2] + '/' + d[1] + '/' + d[0]}</div>
             }
-
             return <div><p />{stat[key][par]}</div>
         }
-
-
 
         if (stat[key] === -1 && par === 'icon_git')
             return <img src={this.state.icon_error} title={myerror} alt='github_Error'></img>
 
         return ''
-
     }
 
     return_mod_name = (user) => {
@@ -915,7 +803,6 @@ class Project_Dashboard extends Component {
                                 ))}
 
                             </select>
-
 
                             <table id='myTable' class="table table-dark table-striped table-bordered table-sm table-hover" dir='rtl'>
                                 <thead class="">

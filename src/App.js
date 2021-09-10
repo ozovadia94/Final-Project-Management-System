@@ -28,19 +28,6 @@ class App extends Component {
 
 
   componentDidMount() {
-    // axios.get('https://projectmanagementserver.herokuapp.com/wtf').then((res) => {
-    //   console.log(res)
-    // }).catch((err) => {
-    // })
-    // axios.get('http://localhost:3000/wtf').then((res)=>{
-    //   console.log(res)
-    //   console.log('xxx')
-    // }).catch(err=>{
-    //   console.log('IMMMM')
-    //   console.log('ERRORRRR!!','\n',err)
-    // })
-
-
     document.onreadystatechange = function () {
       var after = document.querySelector(".after_loading")
       var loader = document.querySelector(".loader")
@@ -109,7 +96,6 @@ class App extends Component {
               {/* <Toolbar/> */}
 
               <Switch>
-
                 <Route path="/Add_moderator" component={Add_moderator} />
                 <Route path="/Moderators_Dashboard" component={Moderators_Dashboard} />
                 <Route path="/Add_Project" component={Add_Project} />

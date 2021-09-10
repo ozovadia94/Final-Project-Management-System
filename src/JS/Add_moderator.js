@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
-import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 
 import '../CSS/Pages.css' /* CSS */

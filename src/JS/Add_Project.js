@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import firebase from '../Firebase/Firebase'
 import MyTitle from '../Titles/Title'
-import SecondaryTitle from '../Titles/SecondaryTitle'
 import alerts from './Alerts'
 import Pro_Add_Edit from './Project_AddEdit_Function'
 
@@ -26,10 +25,6 @@ class Add_Project extends Component {
         await Pro_Add_Edit.generateArrayOfYears()
         await this.get_moderators()
         await this.getprojects()
-        // .catch(err => {
-        //     console.log('HERE!')
-        //     this.setState({ loading: false });
-        // })
     }
 
     get_moderators = async () => {
@@ -55,13 +50,6 @@ class Add_Project extends Component {
         database_pro.on('value', (snapshot) => {
             const res = snapshot.val();
             for (let key in res) {
-                // for (let mem in res[key].members) {
-                //     // fetchedUsers.push({
-                //     //     id: res[key].members[mem].id,
-                //     //     email: res[key].members[mem].email,
-                //     //     year: res[key].year
-                //     // });
-                // }
                 fetchedUsers.push({
                     ...res[key],
                     id: key
@@ -135,16 +123,6 @@ class Add_Project extends Component {
             })
 
         e.preventDefault();
-
-        // var newPostKey = firebase.database().ref().child('projects/').push().key;
-        // var updates = {};
-        // updates['/projects/' + newPostKey] = user;
-
-        // firebase.database().ref().update(updates).then((x) => {
-        //     alerts.alert('פרוייקט נוסף')//true for refresh!
-        // }).catch((err) => {
-        //     console.log('Failed')
-        // });
     }
 
 
